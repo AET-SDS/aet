@@ -123,6 +123,7 @@
 
   <build>
     <plugins>
+      <!-- ToDo: remove me when all felix dependencies are removed -->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-scr-plugin</artifactId>
