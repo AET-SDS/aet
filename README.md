@@ -1,6 +1,6 @@
 ![Cognifide logo](http://cognifide.github.io/images/cognifide-logo.png)
 
-[![Build Status](https://travis-ci.org/Cognifide/aet.svg?branch=master)](https://travis-ci.org/Cognifide/aet)
+[![Build Status](https://travis-ci.org/AET-SDS/aet.svg?branch=master)](https://travis-ci.org/AET-SDS/aet)
 [![Apache License, Version 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/)
 [![][gitter img]][gitter]
 
