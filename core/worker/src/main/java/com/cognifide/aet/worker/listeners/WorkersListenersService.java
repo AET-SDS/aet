@@ -62,6 +62,7 @@ public class WorkersListenersService {
     consumers = new HashSet<>();
     consumers.addAll(spawnCollectors(config));
     consumers.addAll(spawnComparators(config));
+    consumers.addAll(spawnGroupers(config));
   }
 
   private Set<WorkerMessageListener> spawnListeners(int noOfInstances,
@@ -101,6 +102,18 @@ public class WorkersListenersService {
         config.comparatorInstancesNo()),
         no -> new ComparatorMessageListener("Comparator-" + no, comparatorDispatcher,
             jmsConnection, queueName, QueuesConstant.COMPARATOR.getResultsQueueName()));
+  }
+
+  private Set<WorkerMessageListener> spawnGroupers(WorkersListenersServiceConfig config) {
+    final String queueName = QueuesConstant.GROUPER.getJobsQueueName() + "?consumer.prefetchSize=" + "1"; //todo use config
+    return spawnListeners(
+        5, //todo use config
+        no ->
+            new GrouperMessageListener(
+                "Grouper-" + no,
+                jmsConnection,
+                queueName,
+                QueuesConstant.GROUPER.getResultsQueueName()));
   }
 
   @Deactivate

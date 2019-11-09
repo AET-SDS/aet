@@ -18,14 +18,15 @@ package com.cognifide.aet.runner.processing.steps;
 import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
+import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.metadata.Statistics;
 import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
-import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
+import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
@@ -85,7 +86,9 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
             messagesReceivedFailed.get(), getTotalTasksCount(), correlationId);
 
         addComparatorToSuite(comparatorResultData);
-        if (comparatorResultData.getStatus() != JobStatus.SUCCESS) {
+        if (comparatorResultData.getStatus() == JobStatus.SUCCESS) {
+          onSuccess(comparatorResultData);
+        } else {
           onError(comparatorResultData.getProcessingError());
         }
       } catch (JMSException e) {
@@ -96,6 +99,21 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
         persistMetadataIfFinished();
       }
     }
+  }
+
+  private void onSuccess(ComparatorResultData comparatorResultData)
+      throws JMSException {
+    GrouperJobData grouperJobData =
+        new GrouperJobData(
+            runIndexWrapper.get().getCompany(),
+            runIndexWrapper.get().getProject(),
+            runIndexWrapper.get().getName(),
+            comparatorResultData.getTestName(),
+            comparatorResultData.getUrlName(),
+            comparatorResultData.getComparisonResult());
+    ObjectMessage message = session.createObjectMessage(grouperJobData);
+    message.setJMSCorrelationID(correlationId);
+    sender.send(message);
   }
 
   private void persistMetadataIfFinished() {
@@ -155,7 +173,7 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
 
   @Override
   protected String getQueueOutName() {
-    return null;
+    return QueuesConstant.GROUPER.getJobsQueueName();
   }
 
   @Override

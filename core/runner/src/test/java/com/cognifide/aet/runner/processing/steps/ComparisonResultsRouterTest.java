@@ -112,7 +112,7 @@ public class ComparisonResultsRouterTest extends StepManagerTest {
   @Override
   @Test
   public void getQueueOutName() throws Exception {
-    assertNull(tested.getQueueOutName());
+    assertThat(tested.getQueueOutName(), is("AET.grouperJobs"));
   }
 
   @Override
@@ -127,6 +127,6 @@ public class ComparisonResultsRouterTest extends StepManagerTest {
     tested.closeConnections();
     verify(session, VerificationModeFactory.times(1)).close();
     verify(consumer, VerificationModeFactory.times(1)).close();
-    verify(sender, VerificationModeFactory.times(0)).close();
+    verify(sender, VerificationModeFactory.times(1)).close();
   }
 }

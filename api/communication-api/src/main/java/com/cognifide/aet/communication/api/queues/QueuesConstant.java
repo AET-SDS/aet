@@ -17,7 +17,8 @@ package com.cognifide.aet.communication.api.queues;
 
 public enum QueuesConstant implements WorkerConfig {
   COLLECTOR("collectorJobs", "collectorResults"),
-  COMPARATOR("comparatorJobs", "comparatorResults");
+  COMPARATOR("comparatorJobs", "comparatorResults"),
+  GROUPER("grouperJobs", "grouperResults");
 
   public static final String NAMESPACE = "AET.";
 
