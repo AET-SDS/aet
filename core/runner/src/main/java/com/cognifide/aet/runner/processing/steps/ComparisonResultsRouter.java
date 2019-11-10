@@ -37,8 +37,8 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ComparisonResultsRouter extends StepManager implements ChangeObserver,
-    TaskFinishPoint {
+public class ComparisonResultsRouter extends StepManagerObservable
+    implements ChangeObserver, TaskFinishPoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ComparisonResultsRouter.class);
 
@@ -96,6 +96,9 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
             correlationId, e);
         onError(ProcessingError.comparingError(e.getMessage()));
       } finally {
+        if (isFinished()) {
+          notifyCompleted();
+        }
         persistMetadataIfFinished();
       }
     }
@@ -103,6 +106,7 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
 
   private void onSuccess(ComparatorResultData comparatorResultData)
       throws JMSException {
+    notifyMessagesCount(1);
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
@@ -180,5 +184,4 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
   protected String getStepName() {
     return STEP_NAME;
   }
-
 }

@@ -22,6 +22,7 @@ import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import com.cognifide.aet.runner.processing.steps.CollectDispatcher;
 import com.cognifide.aet.runner.processing.steps.CollectionResultsRouter;
 import com.cognifide.aet.runner.processing.steps.ComparisonResultsRouter;
+import com.cognifide.aet.runner.processing.steps.GroupingResultsRouter;
 import com.cognifide.aet.runner.scheduler.CollectorJobSchedulerService;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -61,6 +62,12 @@ public class SuiteExecutionFactory {
       RunIndexWrapper runIndexWrapper) throws JMSException {
     return new ComparisonResultsRouter(timeoutWatch, jmsConnection,
         runnerConfiguration, runIndexWrapper);
+  }
+
+  GroupingResultsRouter newGroupingResultsRouter(
+      TimeoutWatch timeoutWatch, RunIndexWrapper runIndexWrapper) throws JMSException {
+    return new GroupingResultsRouter(
+        timeoutWatch, jmsConnection, runnerConfiguration, runIndexWrapper);
   }
 
   public MessagesSender newMessagesSender(Destination jmsReplyTo) throws JMSException {
