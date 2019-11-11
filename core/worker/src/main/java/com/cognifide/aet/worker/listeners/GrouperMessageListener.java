@@ -41,7 +41,7 @@ class GrouperMessageListener extends WorkerMessageListener {
       return;
     }
     LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
-    dispatcher.run(jmsCorrelationId);
+    dispatcher.run(jmsCorrelationId, grouperJobData);
     // todo artifactId null when comparatorstepresult.status = passed
   }
 }

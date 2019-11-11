@@ -56,9 +56,9 @@ public class SuiteRunIndexWrapperTest {
 
   @Before
   public void setUp() throws Exception {
-    suiteRunIndexWrapper = new SuiteRunIndexWrapper(objectToRunWrapper);
     when(objectToRunWrapper.getRealSuite()).thenReturn(suite);
     when(objectToRunWrapper.getObjectToRun()).thenReturn(suite);
+    suiteRunIndexWrapper = new SuiteRunIndexWrapper(objectToRunWrapper);
     test = Optional
         .of(new com.cognifide.aet.communication.api.metadata.Test("testName", "proxy", "chrome"));
     test2 = Optional

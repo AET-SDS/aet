@@ -57,10 +57,10 @@ public class TestRunIndexWrapperTest {
         .of(new com.cognifide.aet.communication.api.metadata.Test("testName", "proxy", "chrome"));
     url = Optional.of(new Url("urlName","urlUrl","urlDomain"));
     url2 = Optional.of(new Url("urlName2","urlUrl2","urlDomain2"));
-    testRunIndexWrapper = new TestRunIndexWrapper(objectToRunWrapper);
     when(objectToRunWrapper.getRealSuite()).thenReturn(suite);
     when(suite.getTest(any(String.class))).thenReturn(test);
     when(objectToRunWrapper.getObjectToRun()).thenReturn(test.get());
+    testRunIndexWrapper = new TestRunIndexWrapper(objectToRunWrapper);
   }
 
   @Test

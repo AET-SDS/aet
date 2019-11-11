@@ -23,6 +23,7 @@ import com.cognifide.aet.communication.api.wrappers.Run;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,22 @@ public abstract class RunIndexWrapper<T> {
 
   protected Run<T> objectToRunWrapper;
 
+  private final Map<Comparator, Long> comparatorCounts;
+
+  private final Set<Comparator> usedComparators;
+
   RunIndexWrapper(Run<T> objectToRunWrapper) {
     this.objectToRunWrapper = objectToRunWrapper;
+    this.comparatorCounts =
+        getUrls().stream()
+            .flatMap(url -> url.getObjectToRun().getSteps().stream())
+            .flatMap(step -> step.getComparators().stream())
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    this.usedComparators =
+        getUrls().stream()
+            .flatMap(url -> url.getObjectToRun().getSteps().stream())
+            .flatMap(step -> step.getComparators().stream())
+            .collect(Collectors.toSet());
   }
 
   public static void cleanUrlFromExecutionData(Url url) {
@@ -69,19 +84,12 @@ public abstract class RunIndexWrapper<T> {
 
   public abstract int countUrls();
 
-  public Map<Comparator, Long> getComparatorCounts() {  //todo test
-    return getUrls().stream()
-        .flatMap(url -> url.getObjectToRun().getSteps().stream())
-        .flatMap(step -> step.getComparators().stream())
-        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+  public Map<Comparator, Long> getComparatorCounts() { // todo test
+    return comparatorCounts;
   }
 
-  public List<Comparator> getUsedComparators() {  //todo test
-    return getUrls().stream()
-        .flatMap(url -> url.getObjectToRun().getSteps().stream())
-        .flatMap(step -> step.getComparators().stream())
-        .distinct()
-        .collect(Collectors.toList());
+  public Set<Comparator> getUsedComparators() { // todo test
+    return usedComparators;
   }
 
   @Override

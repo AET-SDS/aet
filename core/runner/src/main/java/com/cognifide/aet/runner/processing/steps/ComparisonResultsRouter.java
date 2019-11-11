@@ -45,7 +45,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
 
   private static final String MODULE_NAME = "comparison";
 
-  private final RunIndexWrapper runIndexWrapper;
+  private final RunIndexWrapper<?> runIndexWrapper;
 
   private boolean collectingFinished;
 
@@ -87,7 +87,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
         if (comparatorResultData.getStatus() == JobStatus.SUCCESS) {
           onSuccess(comparatorResultData);
         } else {
-          onError(comparatorResultData.getProcessingError());
+          onError(comparatorResultData.getProcessingError());//todo send info to jobqueue
         }
       } catch (JMSException e) {
         LOGGER.error("Error while collecting results in CollectionResultsRouter. CorrelationId: {}",
@@ -109,6 +109,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
             runIndexWrapper.get().getCompany(),
             runIndexWrapper.get().getProject(),
             runIndexWrapper.get().getName(),
+            runIndexWrapper.getComparatorCounts(),  //todo too much data being sent?
             comparatorResultData.getTestName(),
             comparatorResultData.getUrlName(),
             comparatorResultData.getComparisonResult());
