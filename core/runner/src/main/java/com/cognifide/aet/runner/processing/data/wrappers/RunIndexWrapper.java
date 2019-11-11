@@ -15,12 +15,16 @@
  */
 package com.cognifide.aet.runner.processing.data.wrappers;
 
+import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.wrappers.MetadataRunDecorator;
 import com.cognifide.aet.communication.api.wrappers.Run;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class RunIndexWrapper<T> {
 
@@ -64,6 +68,21 @@ public abstract class RunIndexWrapper<T> {
   public abstract List<MetadataRunDecorator<Url>> getUrls();
 
   public abstract int countUrls();
+
+  public Map<Comparator, Long> getComparatorCounts() {  //todo test
+    return getUrls().stream()
+        .flatMap(url -> url.getObjectToRun().getSteps().stream())
+        .flatMap(step -> step.getComparators().stream())
+        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+  }
+
+  public List<Comparator> getUsedComparators() {  //todo test
+    return getUrls().stream()
+        .flatMap(url -> url.getObjectToRun().getSteps().stream())
+        .flatMap(step -> step.getComparators().stream())
+        .distinct()
+        .collect(Collectors.toList());
+  }
 
   @Override
   public String toString() {

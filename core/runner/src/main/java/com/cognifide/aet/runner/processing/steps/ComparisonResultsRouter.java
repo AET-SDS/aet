@@ -104,7 +104,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
 
   private void onSuccess(ComparatorResultData comparatorResultData)
       throws JMSException {
-    notifyMessagesCount(1);
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),

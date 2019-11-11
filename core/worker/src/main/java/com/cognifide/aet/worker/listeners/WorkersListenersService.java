@@ -19,6 +19,7 @@ import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.worker.api.CollectorDispatcher;
 import com.cognifide.aet.worker.api.ComparatorDispatcher;
+import com.cognifide.aet.worker.api.GrouperDispatcher;
 import com.cognifide.aet.worker.drivers.WebDriverProvider;
 import java.util.HashSet;
 import java.util.Optional;
@@ -53,6 +54,9 @@ public class WorkersListenersService {
 
   @Reference
   private ComparatorDispatcher comparatorDispatcher;
+
+  @Reference
+  private GrouperDispatcher grouperDispatcher;
 
   private Set<WorkerMessageListener> consumers;
 
@@ -105,15 +109,19 @@ public class WorkersListenersService {
   }
 
   private Set<WorkerMessageListener> spawnGroupers(WorkersListenersServiceConfig config) {
-    final String queueName = QueuesConstant.GROUPER.getJobsQueueName() + "?consumer.prefetchSize=" + "1"; //todo use config
+    final String queueName =
+        QueuesConstant.GROUPER.getJobsQueueName()
+            + "?consumer.prefetchSize="
+            + "1"; // todo use config
     return spawnListeners(
-        5, //todo use config
+        5, // todo use config
         no ->
             new GrouperMessageListener(
                 "Grouper-" + no,
                 jmsConnection,
                 queueName,
-                QueuesConstant.GROUPER.getResultsQueueName()));
+                QueuesConstant.GROUPER.getResultsQueueName(),
+                grouperDispatcher));
   }
 
   @Deactivate

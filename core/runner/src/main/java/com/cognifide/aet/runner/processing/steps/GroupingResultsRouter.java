@@ -31,11 +31,12 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
         runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.taskName = runIndexWrapper.get().getRealSuite().getName();
+    this.messagesToReceive.set(runIndexWrapper.getUsedComparators().size());
   }
 
   @Override
   public void updateAmountToReceive(int additionalCount) {
-    messagesToReceive.addAndGet(additionalCount);
+    // not used
   }
 
   @Override
