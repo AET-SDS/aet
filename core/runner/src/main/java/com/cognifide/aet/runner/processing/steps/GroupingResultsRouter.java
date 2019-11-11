@@ -7,10 +7,15 @@ import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
 
 public class GroupingResultsRouter extends StepManager implements ChangeObserver, TaskFinishPoint {
 
   private static final String STEP_NAME = "GROUPED";
+
+  private static final String MODULE_NAME = "grouping";
+
+  private final String taskName;
 
   private boolean comparisonCompleted = false;
 
@@ -25,6 +30,7 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
         jmsConnection,
         runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
+    this.taskName = runIndexWrapper.get().getRealSuite().getName();
   }
 
   @Override
@@ -38,7 +44,15 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
   }
 
   @Override
-  public void onMessage(Message message) {}
+  public void onMessage(Message message) {
+    if (!(message instanceof ObjectMessage)) {
+      return;
+    }
+    timeoutWatch.update();
+    if (isFinished()) {
+      timer.finishAndLog(taskName);
+    }
+  }
 
   @Override
   public boolean isFinished() {
@@ -59,5 +73,10 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
   @Override
   protected String getStepName() {
     return STEP_NAME;
+  }
+
+  @Override
+  protected String getModuleNameForTimer() {
+    return MODULE_NAME;
   }
 }

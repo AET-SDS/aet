@@ -24,7 +24,6 @@ import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
-import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
@@ -48,11 +47,11 @@ public class CollectionResultsRouter extends StepManagerObservable implements Ta
 
   private static final String STEP_NAME = "COLLECTED";
 
+  private static final String MODULE_NAME = "collection";
+
   private final CollectorJobSchedulerService collectorJobScheduler;
 
   private RunIndexWrapper runIndexWrapper;
-
-  private final ExecutionTimer timer;
 
   public CollectionResultsRouter(TimeoutWatch timeoutWatch, JmsConnection jmsConnection,
       RunnerConfiguration runnerConfiguration,
@@ -63,7 +62,6 @@ public class CollectionResultsRouter extends StepManagerObservable implements Ta
     this.collectorJobScheduler = collectorJobScheduler;
     this.runIndexWrapper = runIndexWrapper;
     this.messagesToReceive.getAndSet(runIndexWrapper.countUrls());
-    timer = ExecutionTimer.createAndRun("collection");
   }
 
   @Override
@@ -182,5 +180,10 @@ public class CollectionResultsRouter extends StepManagerObservable implements Ta
   @Override
   protected String getStepName() {
     return STEP_NAME;
+  }
+
+  @Override
+  protected String getModuleNameForTimer() {
+    return MODULE_NAME;
   }
 }

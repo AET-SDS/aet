@@ -19,6 +19,7 @@ import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.messages.ProcessingErrorMessage;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
+import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.queues.JmsUtils;
 import com.cognifide.aet.communication.api.messages.ProgressLog;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
@@ -56,6 +57,8 @@ public abstract class StepManager extends Observable implements MessageListener 
 
   protected final AtomicInteger messagesToReceive;
 
+  protected final ExecutionTimer timer;
+
   public StepManager(TimeoutWatch timeoutWatch, JmsConnection jmsConnection, String correlationId,
       long messageTimeToLive) throws JMSException {
     this.timeoutWatch = timeoutWatch;
@@ -77,6 +80,7 @@ public abstract class StepManager extends Observable implements MessageListener 
     this.messagesReceivedSuccess = new AtomicInteger(0);
     this.messagesReceivedFailed = new AtomicInteger(0);
     this.messagesToReceive = new AtomicInteger(0);
+    this.timer = ExecutionTimer.createAndRun(getModuleNameForTimer());
   }
 
   protected void onError(ProcessingError processingError) {
@@ -117,5 +121,7 @@ public abstract class StepManager extends Observable implements MessageListener 
   protected abstract String getQueueOutName();
 
   protected abstract String getStepName();
+
+  protected abstract String getModuleNameForTimer();
 
 }

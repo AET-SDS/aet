@@ -114,4 +114,9 @@ public class CollectDispatcher extends StepManager {
     return null;
   }
 
+  @Override
+  protected String getModuleNameForTimer() {
+    return null;
+  }
+
 }

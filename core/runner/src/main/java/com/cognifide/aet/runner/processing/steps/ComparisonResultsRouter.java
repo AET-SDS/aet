@@ -26,7 +26,6 @@ import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
-import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
@@ -44,9 +43,9 @@ public class ComparisonResultsRouter extends StepManagerObservable
 
   private static final String STEP_NAME = "COMPARED";
 
-  private final RunIndexWrapper runIndexWrapper;
+  private static final String MODULE_NAME = "comparison";
 
-  private final ExecutionTimer timer;
+  private final RunIndexWrapper runIndexWrapper;
 
   private boolean collectingFinished;
 
@@ -57,7 +56,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
     super(timeoutWatch, jmsConnection, runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.runIndexWrapper = runIndexWrapper;
-    timer = ExecutionTimer.createAndRun("comparison");
   }
 
   @Override
@@ -183,5 +181,10 @@ public class ComparisonResultsRouter extends StepManagerObservable
   @Override
   protected String getStepName() {
     return STEP_NAME;
+  }
+
+  @Override
+  protected String getModuleNameForTimer() {
+    return MODULE_NAME;
   }
 }
