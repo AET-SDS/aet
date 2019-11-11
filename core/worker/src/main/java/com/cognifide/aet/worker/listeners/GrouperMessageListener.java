@@ -4,6 +4,8 @@ import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.queues.JmsUtils;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
+import com.google.common.base.Strings;
+import java.util.Objects;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.slf4j.Logger;
@@ -13,16 +15,16 @@ class GrouperMessageListener extends WorkerMessageListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GrouperMessageListener.class);
 
-  private final GrouperDispatcher grouperDispatcher;
+  private final GrouperDispatcher dispatcher;
 
   GrouperMessageListener(
       String name,
       JmsConnection jmsConnection,
       String consumerQueueName,
       String producerQueueName,
-      GrouperDispatcher grouperDispatcher) {
+      GrouperDispatcher dispatcher) {
     super(name, jmsConnection, consumerQueueName, producerQueueName);
-    this.grouperDispatcher = grouperDispatcher;
+    this.dispatcher = dispatcher;
   }
 
   @Override
@@ -34,7 +36,12 @@ class GrouperMessageListener extends WorkerMessageListener {
       e.printStackTrace(); // todo
     }
     String jmsCorrelationId = JmsUtils.getJMSCorrelationID(message);
+
+    if (Objects.isNull(grouperJobData) || Strings.isNullOrEmpty(jmsCorrelationId)) {
+      return;
+    }
     LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
-    // todo null when comparatorstepresult.status = passed
+    dispatcher.run(jmsCorrelationId);
+    // todo artifactId null when comparatorstepresult.status = passed
   }
 }
