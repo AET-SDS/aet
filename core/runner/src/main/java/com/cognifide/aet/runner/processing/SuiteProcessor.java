@@ -81,9 +81,10 @@ public class SuiteProcessor {
         LOGGER.info("Finished suite run: {}. Task finished in {} ms ({}).",
             runIndexWrapper.get().getCorrelationId(), timer.getExecutionTimeInMillis(),
             timer.getExecutionTimeInMMSS());
-        LOGGER.info("Total tasks finished in steps: collect: {}; compare: {}.",
+        LOGGER.info("Total tasks finished in steps: collect: {}; compare: {}, group: {}.",
             collectionResultsRouter.getTotalTasksCount(),
-            comparisonResultsRouter.getTotalTasksCount());
+            comparisonResultsRouter.getTotalTasksCount(),
+            groupingResultsRouter.getTotalTasksCount());
       } else if (suiteIsTimedOut()) {
         timer.finish();
         LOGGER.warn(

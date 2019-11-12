@@ -14,7 +14,7 @@ public class JsErrorsGrouperFactory implements GrouperFactory {
   }
 
   @Override
-  public GrouperJob createInstance() {
-    return new JsErrorsGrouper();
+  public GrouperJob createInstance(long expectedInputCount) {
+    return new JsErrorsGrouper(expectedInputCount);
   }
 }

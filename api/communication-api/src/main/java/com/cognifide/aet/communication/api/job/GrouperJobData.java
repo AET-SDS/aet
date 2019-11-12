@@ -6,10 +6,10 @@ import java.util.Map;
 // todo javadoc
 public class GrouperJobData extends JobData {
 
+  private static final long serialVersionUID = -3814742820402766119L;
+
   private final String urlName;
-
   private final Comparator comparisonResult; // todo maybe ComparatorStepResult?
-
   private final Map<Comparator, Long> comparatorCounts;
 
   /**

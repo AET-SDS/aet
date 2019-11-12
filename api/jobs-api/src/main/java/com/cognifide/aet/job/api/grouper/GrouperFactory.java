@@ -5,5 +5,5 @@ public interface GrouperFactory {
 
   String getName();
 
-  GrouperJob createInstance();  //todo more params
+  GrouperJob createInstance(long expectedInputCount);  //todo more params
 }

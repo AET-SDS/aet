@@ -1,6 +1,7 @@
 package com.cognifide.aet.worker.listeners;
 
 import com.cognifide.aet.communication.api.job.GrouperJobData;
+import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.queues.JmsUtils;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
@@ -40,8 +41,11 @@ class GrouperMessageListener extends WorkerMessageListener {
     if (Objects.isNull(grouperJobData) || Strings.isNullOrEmpty(jmsCorrelationId)) {
       return;
     }
-    LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
-    dispatcher.run(jmsCorrelationId, grouperJobData);
     // todo artifactId null when comparatorstepresult.status = passed
+    // LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
+    GrouperResultData resultData = dispatcher.run(jmsCorrelationId, grouperJobData);
+    if (resultData.isReady()) {
+      feedbackQueue.sendObjectMessageWithCorrelationID(resultData, jmsCorrelationId);
+    }
   }
 }

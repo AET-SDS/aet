@@ -1,5 +1,7 @@
 package com.cognifide.aet.runner.processing.steps;
 
+import com.cognifide.aet.communication.api.JobStatus;
+import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
@@ -50,6 +52,12 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
       return;
     }
     timeoutWatch.update();
+    try {
+      GrouperResultData grouperResultData = (GrouperResultData) ((ObjectMessage) message).getObject();
+      updateCounters(JobStatus.SUCCESS);
+    } catch (JMSException e) {
+      e.printStackTrace(); //todo
+    }
     if (isFinished()) {
       timer.finishAndLog(taskName);
     }
