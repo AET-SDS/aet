@@ -1,5 +1,6 @@
 package com.cognifide.aet.job.common.groupers.jserrors;
 
+import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
@@ -23,7 +24,7 @@ public class JsErrorsGrouper implements GrouperJob {
 
   @Override
   public GrouperResultData group(GrouperJobData jobData) {
-    long value = counter.decrementAndGet(); // todo debug
-    return new GrouperResultData(value == 0);
+    long value = counter.decrementAndGet();
+    return new GrouperResultData(JobStatus.SUCCESS, value == 0);
   }
 }

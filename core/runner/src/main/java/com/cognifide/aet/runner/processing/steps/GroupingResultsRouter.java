@@ -54,7 +54,7 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
     timeoutWatch.update();
     try {
       GrouperResultData grouperResultData = (GrouperResultData) ((ObjectMessage) message).getObject();
-      updateCounters(JobStatus.SUCCESS);
+      updateCounters(grouperResultData.getJobStatus());
     } catch (JMSException e) {
       e.printStackTrace(); //todo
     }

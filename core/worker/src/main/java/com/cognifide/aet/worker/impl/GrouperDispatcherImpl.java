@@ -1,5 +1,6 @@
 package com.cognifide.aet.worker.impl;
 
+import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.metadata.Comparator;
@@ -47,7 +48,7 @@ class GrouperDispatcherImpl implements GrouperDispatcher {
     GrouperResultData result;
     if (!grouperJobs.containsKey(comparisonResult)) {   //todo improve
       long value = comparatorCounts.get(comparisonResult).decrementAndGet();
-      result = new GrouperResultData(value == 0);
+      result = new GrouperResultData(JobStatus.SUCCESS, value == 0);
     } else {
       GrouperJob grouperJob = grouperJobs.get(comparisonResult);
       result = grouperJob.group(grouperJobData);
