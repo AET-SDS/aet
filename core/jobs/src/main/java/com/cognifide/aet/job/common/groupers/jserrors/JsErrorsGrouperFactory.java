@@ -3,10 +3,16 @@ package com.cognifide.aet.job.common.groupers.jserrors;
 import com.cognifide.aet.job.api.grouper.GrouperFactory;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.common.comparators.jserrors.JsErrorsComparator;
+import com.cognifide.aet.vs.ArtifactsDAO;
+import com.cognifide.aet.vs.DBKey;
+import java.util.concurrent.atomic.AtomicLong;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component
 public class JsErrorsGrouperFactory implements GrouperFactory {
+
+  @Reference private ArtifactsDAO artifactsDAO;
 
   @Override
   public String getName() {
@@ -14,7 +20,8 @@ public class JsErrorsGrouperFactory implements GrouperFactory {
   }
 
   @Override
-  public GrouperJob createInstance(long expectedInputCount) {
-    return new JsErrorsGrouper(expectedInputCount);
+  public GrouperJob createInstance(DBKey dbKey, long expectedInputCount) {
+    AtomicLong inputCounter = new AtomicLong(expectedInputCount);
+    return new JsErrorsGrouper(artifactsDAO, dbKey, inputCounter);
   }
 }

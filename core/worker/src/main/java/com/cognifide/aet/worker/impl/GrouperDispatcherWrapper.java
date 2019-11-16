@@ -5,6 +5,8 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.grouper.GrouperFactory;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
+import com.cognifide.aet.vs.DBKey;
+import com.cognifide.aet.vs.SimpleDBKey;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
 import com.cognifide.aet.worker.api.JobRegistry;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
   @Override
   public GrouperResultData run(String correlationId, GrouperJobData grouperJobData) {
     Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
-    GrouperDispatcher dispatcher = getDispatcher(correlationId, comparatorCounts);
+    GrouperDispatcher dispatcher = getDispatcher(correlationId, grouperJobData);
     GrouperResultData resultData = dispatcher.run(correlationId, grouperJobData);
     if (resultData.isReady()) {
       AtomicInteger completedJobsCounter = getCompletedJobsCounter(correlationId, comparatorCounts);
@@ -55,13 +57,13 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
         correlationId, __ -> new AtomicInteger(comparatorCounts.keySet().size()));
   }
 
-  private GrouperDispatcher getDispatcher(
-      String correlationId, Map<Comparator, Long> comparatorCounts) {
+  private GrouperDispatcher getDispatcher(String correlationId, GrouperJobData grouperJobData) {
+    Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
     return dispatchers.computeIfAbsent(
         correlationId,
         __ -> {
           Map<Comparator, AtomicLong> counters = prepareComparatorCounters(comparatorCounts);
-          Map<Comparator, GrouperJob> grouperJobs = prepareGrouperJobs(comparatorCounts);
+          Map<Comparator, GrouperJob> grouperJobs = prepareGrouperJobs(grouperJobData);
           return new GrouperDispatcherImpl(counters, grouperJobs);
         });
   }
@@ -72,14 +74,16 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
         .collect(Collectors.toMap(Entry::getKey, it -> new AtomicLong(it.getValue())));
   }
 
-  private Map<Comparator, GrouperJob> prepareGrouperJobs(Map<Comparator, Long> comparatorCounts) {
+  private Map<Comparator, GrouperJob> prepareGrouperJobs(GrouperJobData grouperJobData) {
+    final DBKey dbKey = new SimpleDBKey(grouperJobData.getCompany(), grouperJobData.getProject());
+    Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
     Map<Comparator, GrouperJob> grouperJobs = new HashMap<>();
     for (Comparator comparator : comparatorCounts.keySet()) {
       String comparatorTypeName = comparator.getType();
       Optional<GrouperFactory> grouperFactory = jobRegistry.getGrouperFactory(comparatorTypeName);
       if (grouperFactory.isPresent()) {
         long expectedInputCount = comparatorCounts.get(comparator);
-        GrouperJob grouperJob = grouperFactory.get().createInstance(expectedInputCount);
+        GrouperJob grouperJob = grouperFactory.get().createInstance(dbKey, expectedInputCount);
         grouperJobs.put(comparator, grouperJob);
       } else {
         LOGGER.warn("GrouperJob not found for given type: {}", comparatorTypeName);
