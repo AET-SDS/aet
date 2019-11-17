@@ -70,11 +70,13 @@ public class JsErrorsGrouper implements GrouperJob {
     for (Entry<String, JsErrorLog> entry1 : jsErrors.entries()) {
       for (Entry<String, JsErrorLog> entry2 : jsErrors.entries()) {
         // todo what if the same
-        int distance =
-            new LevenshteinDistance()
-                .apply(entry1.getValue().getErrorMessage(), entry2.getValue().getErrorMessage());
+        String errorMessage1 = entry1.getValue().getErrorMessage();
+        String errorMessage2 = entry2.getValue().getErrorMessage();
+        int distance = new LevenshteinDistance().apply(errorMessage1, errorMessage2);
+        int longerLength = Math.max(errorMessage1.length(), errorMessage2.length());
+        int relativeDistance = (longerLength - distance) * 100 / longerLength;
         Pair<Entry<String, JsErrorLog>, Entry<String, JsErrorLog>> key = Pair.of(entry1, entry2);
-        distances.put(key, distance);
+        distances.put(key, relativeDistance);
       }
     }
   }
