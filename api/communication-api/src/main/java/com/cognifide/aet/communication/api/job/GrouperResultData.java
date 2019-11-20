@@ -9,10 +9,13 @@ public final class GrouperResultData implements Serializable {
 
   private final JobStatus jobStatus;
   private final boolean isFinished;
+  private final String testName;
+  private String artifactId;
 
-  public GrouperResultData(JobStatus jobStatus, boolean isFinished) {
+  public GrouperResultData(JobStatus jobStatus, boolean isFinished, String testName) {
     this.jobStatus = jobStatus;
     this.isFinished = isFinished;
+    this.testName = testName;
   }
 
   public JobStatus getJobStatus() {
@@ -21,5 +24,17 @@ public final class GrouperResultData implements Serializable {
 
   public boolean isReady() {
     return isFinished;
+  }
+
+  public String getTestName() {
+    return testName;
+  }
+
+  public String getArtifactId() {
+    return artifactId;
+  }
+
+  public void setArtifactId(String artifactId) {
+    this.artifactId = artifactId;
   }
 }

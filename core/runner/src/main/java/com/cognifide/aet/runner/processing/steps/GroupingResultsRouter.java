@@ -1,6 +1,5 @@
 package com.cognifide.aet.runner.processing.steps;
 
-import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
@@ -53,10 +52,12 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
     }
     timeoutWatch.update();
     try {
-      GrouperResultData grouperResultData = (GrouperResultData) ((ObjectMessage) message).getObject();
+      GrouperResultData grouperResultData =
+          (GrouperResultData) ((ObjectMessage) message).getObject();
+      // todo save artifactid to metadata
       updateCounters(grouperResultData.getJobStatus());
     } catch (JMSException e) {
-      e.printStackTrace(); //todo
+      e.printStackTrace(); // todo
     }
     if (isFinished()) {
       timer.finishAndLog(taskName);

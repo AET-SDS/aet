@@ -9,7 +9,7 @@ import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -31,7 +31,7 @@ public class JsErrorsGrouper implements GrouperJob {
   private final ArtifactsDAO artifactsDAO;
   private final DBKey dbKey;
   private final AtomicLong inputCounter;
-  private final Multimap<String, JsErrorLog> jsErrors = LinkedListMultimap.create();
+  private final ListMultimap<String, JsErrorLog> jsErrors = LinkedListMultimap.create();
   private final Map<Pair<Entry<String, JsErrorLog>, Entry<String, JsErrorLog>>, Integer> distances;
 
   JsErrorsGrouper(ArtifactsDAO artifactsDAO, DBKey dbKey, AtomicLong inputCounter) {
@@ -56,14 +56,17 @@ public class JsErrorsGrouper implements GrouperJob {
     }
 
     long value = inputCounter.decrementAndGet();
+    GrouperResultData result =
+        new GrouperResultData(JobStatus.SUCCESS, value == 0, jobData.getTestName());
     if (value == 0) {
       calculateDistances();
       String artifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, distances);
       // todo prints:
       // "(promocje\u003dcom.cognifide.aet.job.api.collector.JsErrorLog@90ac2780,promocje\u003dcom.cognifide.aet.job.api.collector.JsErrorLog@90ac2780)":0
       LOGGER.error("GROUPER RESULT ARTIFACT_ID: {}", artifactId); // todo
+      result.setArtifactId(artifactId);
     }
-    return new GrouperResultData(JobStatus.SUCCESS, value == 0);
+    return result;
   }
 
   private void calculateDistances() {

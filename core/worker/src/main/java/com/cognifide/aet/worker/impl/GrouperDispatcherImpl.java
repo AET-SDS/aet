@@ -26,7 +26,7 @@ class GrouperDispatcherImpl implements GrouperDispatcher {
     GrouperResultData result;
     if (!grouperJobs.containsKey(comparisonResult)) {
       long value = comparatorCounts.get(comparisonResult).decrementAndGet();
-      result = new GrouperResultData(JobStatus.SUCCESS, value == 0);
+      result = new GrouperResultData(JobStatus.SUCCESS, value == 0, grouperJobData.getTestName());
     } else {
       GrouperJob grouperJob = grouperJobs.get(comparisonResult);
       result = grouperJob.group(grouperJobData);

@@ -44,7 +44,7 @@ class GrouperMessageListener extends WorkerMessageListener {
     // todo artifactId null when comparatorstepresult.status = passed
     // LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
     GrouperResultData resultData = dispatcher.run(jmsCorrelationId, grouperJobData);
-    if (resultData.isReady()) {
+    if (resultData.isReady()) { // todo maybe when artifactid not null
       feedbackQueue.sendObjectMessageWithCorrelationID(resultData, jmsCorrelationId);
     }
   }

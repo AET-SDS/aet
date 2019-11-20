@@ -30,37 +30,42 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
 
   @Reference private JobRegistry jobRegistry;
 
-  private final ConcurrentMap<String, AtomicInteger> completedJobsCounters =
+  private final ConcurrentMap<SuiteTestIdentifier, AtomicInteger> completedJobsCounters =
       new ConcurrentHashMap<>();
-  private final ConcurrentMap<String, GrouperDispatcher> dispatchers = new ConcurrentHashMap<>();
+  private final ConcurrentMap<SuiteTestIdentifier, GrouperDispatcher> dispatchers =
+      new ConcurrentHashMap<>();
 
   @Override
   public GrouperResultData run(String correlationId, GrouperJobData grouperJobData) {
+    SuiteTestIdentifier suiteTestIdentifier =
+        new SuiteTestIdentifier(correlationId, grouperJobData.getTestName());
     Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
-    GrouperDispatcher dispatcher = getDispatcher(correlationId, grouperJobData);
+    GrouperDispatcher dispatcher = getDispatcher(suiteTestIdentifier, grouperJobData);
     GrouperResultData resultData = dispatcher.run(correlationId, grouperJobData);
     if (resultData.isReady()) {
-      AtomicInteger completedJobsCounter = getCompletedJobsCounter(correlationId, comparatorCounts);
+      AtomicInteger completedJobsCounter =
+          getCompletedJobsCounter(suiteTestIdentifier, comparatorCounts);
       int numberOfPendingJobs = completedJobsCounter.decrementAndGet();
       if (numberOfPendingJobs == 0) {
-        LOGGER.error("DELETING DISPATCHER FOR ID: {}", correlationId); // todo
-        dispatchers.remove(correlationId);
-        completedJobsCounters.remove(correlationId);
+        LOGGER.error("DELETING DISPATCHER FOR ID: {}", suiteTestIdentifier); // todo
+        dispatchers.remove(suiteTestIdentifier);
+        completedJobsCounters.remove(suiteTestIdentifier);
       }
     }
     return resultData;
   }
 
   private AtomicInteger getCompletedJobsCounter(
-      String correlationId, Map<Comparator, Long> comparatorCounts) {
+      SuiteTestIdentifier suiteTestIdentifier, Map<Comparator, Long> comparatorCounts) {
     return completedJobsCounters.computeIfAbsent(
-        correlationId, __ -> new AtomicInteger(comparatorCounts.keySet().size()));
+        suiteTestIdentifier, __ -> new AtomicInteger(comparatorCounts.keySet().size()));
   }
 
-  private GrouperDispatcher getDispatcher(String correlationId, GrouperJobData grouperJobData) {
+  private GrouperDispatcher getDispatcher(
+      SuiteTestIdentifier suiteTestIdentifier, GrouperJobData grouperJobData) {
     Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
     return dispatchers.computeIfAbsent(
-        correlationId,
+        suiteTestIdentifier,
         __ -> {
           Map<Comparator, AtomicLong> counters = prepareComparatorCounters(comparatorCounts);
           Map<Comparator, GrouperJob> grouperJobs = prepareGrouperJobs(grouperJobData);
