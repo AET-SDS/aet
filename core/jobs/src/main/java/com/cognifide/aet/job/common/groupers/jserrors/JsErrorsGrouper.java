@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsErrorsGrouper implements GrouperJob {
 
+  public static final String NAME = "js-errors";
   private static final Logger LOGGER = LoggerFactory.getLogger(JsErrorsGrouper.class);
   private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {}.getType();
 
@@ -57,7 +58,7 @@ public class JsErrorsGrouper implements GrouperJob {
 
     long value = inputCounter.decrementAndGet();
     GrouperResultData result =
-        new GrouperResultData(JobStatus.SUCCESS, value == 0, jobData.getTestName());
+        new GrouperResultData(JobStatus.SUCCESS, NAME, value == 0, jobData.getTestName());
     if (value == 0) {
       calculateDistances();
       String artifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, distances);

@@ -19,10 +19,7 @@ import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
-import com.cognifide.aet.communication.api.metadata.Statistics;
 import com.cognifide.aet.communication.api.metadata.Step;
-import com.cognifide.aet.communication.api.metadata.Suite;
-import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
@@ -66,7 +63,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
   @Override
   public void informChangesCompleted() {
     collectingFinished = true;
-    persistMetadataIfFinished();
   }
 
   @Override
@@ -97,7 +93,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
         if (isFinished()) {
           notifyCompleted();
         }
-        persistMetadataIfFinished();
       }
     }
   }
@@ -116,18 +111,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);
     sender.send(message);
-  }
-
-  private void persistMetadataIfFinished() {
-    if (allResultsReceived()) {
-      LOGGER.info("All results received ({})! Persisting metadata. CorrelationId: {}",
-          messagesToReceive.get(), correlationId);
-      final Suite currentSuite = this.runIndexWrapper.get().getRealSuite();
-      timer.finishAndLog(currentSuite.getName());
-      currentSuite.setFinishedTimestamp(new Timestamp(System.currentTimeMillis()));
-      long delta = currentSuite.getFinishedTimestamp().get() - currentSuite.getRunTimestamp().get();
-      currentSuite.setStatistics(new Statistics(delta));
-    }
   }
 
   private void addComparatorToSuite(ComparatorResultData comparisonResult) {
