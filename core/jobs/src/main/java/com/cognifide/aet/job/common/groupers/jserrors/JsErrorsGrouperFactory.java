@@ -21,7 +21,7 @@ public class JsErrorsGrouperFactory implements GrouperFactory {
 
   @Override
   public GrouperJob createInstance(DBKey dbKey, long expectedInputCount) {
-    AtomicLong inputCounter = new AtomicLong(expectedInputCount);
-    return new JsErrorsGrouper(artifactsDAO, dbKey, inputCounter);
+    AtomicLong expectedMessagesCount = new AtomicLong(expectedInputCount);
+    return new JsErrorsGrouper(artifactsDAO, dbKey, expectedMessagesCount);
   }
 }

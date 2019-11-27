@@ -74,7 +74,7 @@ public class JsErrorLog implements Serializable, Comparable<JsErrorLog> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceName, lineNumber, errorMessage);
+    return Objects.hash(sourceName, lineNumber, errorMessage, urlName);
   }
 
   @Override
@@ -86,7 +86,8 @@ public class JsErrorLog implements Serializable, Comparable<JsErrorLog> {
       JsErrorLog other = (JsErrorLog) obj;
       result = Objects.equals(errorMessage, other.errorMessage)
           && Objects.equals(sourceName, other.sourceName)
-          && Objects.equals(lineNumber, other.lineNumber);
+          && Objects.equals(lineNumber, other.lineNumber)
+          && Objects.equals(urlName, other.urlName);
     }
     return result;
   }

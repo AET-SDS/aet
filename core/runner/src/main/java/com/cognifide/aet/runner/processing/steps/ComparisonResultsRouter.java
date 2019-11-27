@@ -106,7 +106,6 @@ public class ComparisonResultsRouter extends StepManagerObservable
             runIndexWrapper.get().getName(),
             runIndexWrapper.getComparatorCounts(),  //todo too much data being sent?
             comparatorResultData.getTestName(),
-            comparatorResultData.getUrlName(),
             comparatorResultData.getComparisonResult());
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);
