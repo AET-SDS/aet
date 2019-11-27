@@ -9,6 +9,7 @@ import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.api.grouper.SimilarityValue;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
+import com.google.common.base.Strings;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -17,11 +18,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsErrorsGrouper implements GrouperJob {
 
   public static final String NAME = "js-errors"; // todo ErrorType?
   private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {}.getType();
+  private static final Logger LOGGER = LoggerFactory.getLogger(JsErrorsGrouper.class);
 
   private final ArtifactsDAO artifactsDAO;
   private final DBKey dbKey;
@@ -36,26 +40,32 @@ public class JsErrorsGrouper implements GrouperJob {
 
   @Override
   public GrouperResultData group(GrouperJobData jobData) {
-    try {
-      Comparator comparisonResult = jobData.getComparisonResult();
-      String artifactId = comparisonResult.getStepResult().getArtifactId();
-      Set<JsErrorLog> jsErrorLogs =
-          artifactsDAO.getJsonFormatArtifact(dbKey, artifactId, COMPARATOR_OUTPUT_TYPE);
-      jsErrors.addAll(jsErrorLogs);
-    } catch (IOException e) {
-      e.printStackTrace(); // todo
+    Comparator comparisonResult = jobData.getComparisonResult();
+    String inputArtifactId = comparisonResult.getStepResult().getArtifactId();
+    if (!Strings.isNullOrEmpty(inputArtifactId)) {
+      loadJsErrors(inputArtifactId);
     }
-
     long currentMessagesRemaining = messagesRemaining.decrementAndGet();
     GrouperResultData result =
         new GrouperResultData(
             JobStatus.SUCCESS, NAME, currentMessagesRemaining == 0, jobData.getTestName());
     if (currentMessagesRemaining == 0) {
       List<SimilarityValue<JsErrorLog>> similarityValues = calculateDistances(jsErrors);
-      String artifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, similarityValues);
-      result.setArtifactId(artifactId);
+      String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, similarityValues);
+      result.setArtifactId(outputArtifactId);
     }
     return result;
+  }
+
+  private void loadJsErrors(String inputArtifactId) {
+    try {
+      Set<JsErrorLog> jsErrorLogs =
+          artifactsDAO.getJsonFormatArtifact(dbKey, inputArtifactId, COMPARATOR_OUTPUT_TYPE);
+      jsErrors.addAll(jsErrorLogs);
+    } catch (IOException e) {
+      LOGGER.error("Could not fetch jsErrors: {}", inputArtifactId, e);
+      // todo change jobStatus? partial success?
+    }
   }
 
   private static List<SimilarityValue<JsErrorLog>> calculateDistances(List<JsErrorLog> jsErrors) {

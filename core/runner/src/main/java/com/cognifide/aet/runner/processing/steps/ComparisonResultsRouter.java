@@ -15,7 +15,6 @@
  */
 package com.cognifide.aet.runner.processing.steps;
 
-import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
@@ -80,11 +79,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
             messagesReceivedFailed.get(), getTotalTasksCount(), correlationId);
 
         addComparatorToSuite(comparatorResultData);
-        if (comparatorResultData.getStatus() == JobStatus.SUCCESS) {
-          onSuccess(comparatorResultData);
-        } else {
-          onError(comparatorResultData.getProcessingError());//todo send info to jobqueue
-        }
+        sendGrouperJobData(comparatorResultData);
       } catch (JMSException e) {
         LOGGER.error("Error while collecting results in CollectionResultsRouter. CorrelationId: {}",
             correlationId, e);
@@ -97,7 +92,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
     }
   }
 
-  private void onSuccess(ComparatorResultData comparatorResultData)
+  private void sendGrouperJobData(ComparatorResultData comparatorResultData)
       throws JMSException {
     GrouperJobData grouperJobData =
         new GrouperJobData(

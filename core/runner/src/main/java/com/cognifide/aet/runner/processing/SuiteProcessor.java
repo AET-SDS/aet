@@ -16,12 +16,12 @@
 package com.cognifide.aet.runner.processing;
 
 import com.cognifide.aet.communication.api.ProcessingError;
-import com.cognifide.aet.communication.api.messages.ProgressMessage;
+import com.cognifide.aet.communication.api.messages.FullProgressLog;
 import com.cognifide.aet.communication.api.messages.ProcessingErrorMessage;
 import com.cognifide.aet.communication.api.messages.ProgressLog;
+import com.cognifide.aet.communication.api.messages.ProgressMessage;
 import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.runner.RunnerConfiguration;
-import com.cognifide.aet.communication.api.messages.FullProgressLog;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import com.cognifide.aet.runner.processing.steps.CollectDispatcher;
 import com.cognifide.aet.runner.processing.steps.CollectionResultsRouter;
@@ -67,7 +67,7 @@ public class SuiteProcessor {
         .newGroupingResultsRouter(timeoutWatch, this.runIndexWrapper);
     collectionResultsRouter.addObserver(messagesSender);
     comparisonResultsRouter.addObserver(messagesSender);
-    //todo grouping?
+    groupingResultsRouter.addObserver(messagesSender);
     collectionResultsRouter.addChangeObserver(comparisonResultsRouter);
     comparisonResultsRouter.addChangeObserver(groupingResultsRouter);
   }
