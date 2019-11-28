@@ -1,9 +1,8 @@
 package com.cognifide.aet.runner.processing.steps;
 
+import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
-import com.cognifide.aet.communication.api.metadata.Statistics;
 import com.cognifide.aet.communication.api.metadata.Suite;
-import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
@@ -38,6 +37,7 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
         runnerConfiguration.getMttl());
     this.suite = runIndexWrapper.get().getRealSuite();
     this.messagesToReceive.set(runIndexWrapper.getUsedComparators().size());
+    // todo possible bug when multiple tests in suite
   }
 
   @Override
@@ -48,6 +48,7 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
   @Override
   public void informChangesCompleted() {
     comparisonCompleted = true;
+    logIfFinished();
   }
 
   @Override
@@ -62,19 +63,10 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
       updateCounters(grouperResultData.getJobStatus());
       saveGrouperResult(grouperResultData);
     } catch (JMSException e) {
-      e.printStackTrace(); // todo
+      LOGGER.error("Error while grouping. CorrelationId: {}", correlationId, e);
+      onError(ProcessingError.comparingError(e.getMessage()));
     } finally {
-      if (isFinished()) {
-        LOGGER.info(
-            "All results received ({})! Persisting metadata. CorrelationId: {}",
-            messagesToReceive.get(),
-            correlationId);
-        timer.finishAndLog(suite.getName());
-        // todo move this responsibility somewhere else
-        suite.setFinishedTimestamp(new Timestamp(System.currentTimeMillis()));
-        long delta = suite.getFinishedTimestamp().get() - suite.getRunTimestamp().get();
-        suite.setStatistics(new Statistics(delta));
-      }
+      logIfFinished();
     }
   }
 
@@ -85,7 +77,6 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
 
   @Override
   public boolean isFinished() {
-    // todo comparisonCompleted is possible to be set after receiving results
     return comparisonCompleted
         && messagesToReceive.get() == messagesReceivedSuccess.get() + messagesReceivedFailed.get();
   }
@@ -108,5 +99,15 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
   @Override
   protected String getModuleNameForTimer() {
     return MODULE_NAME;
+  }
+
+  private void logIfFinished() {
+    if (isFinished()) {
+      timer.finishAndLog(suite.getName());
+      LOGGER.info(
+          "Grouping stage finished (received {} messages). CorrelationId: {}",
+          messagesToReceive.get(),
+          correlationId);
+    }
   }
 }

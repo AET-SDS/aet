@@ -88,7 +88,7 @@ public abstract class RunIndexWrapper<T> {
     return comparatorCounts;
   }
 
-  public Set<Comparator> getUsedComparators() { // todo test
+  public Set<Comparator> getUsedComparators() { // todo test, consider many tests in suite
     return usedComparators;
   }
 

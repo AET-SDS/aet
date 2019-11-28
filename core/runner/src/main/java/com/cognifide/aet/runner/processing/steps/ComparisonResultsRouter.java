@@ -87,6 +87,11 @@ public class ComparisonResultsRouter extends StepManagerObservable
       } finally {
         if (isFinished()) {
           notifyCompleted();
+          timer.finishAndLog(runIndexWrapper.get().getRealSuite().getName());
+          LOGGER.info(
+              "Comparison stage finished (received {} messages). CorrelationId: {}",
+              messagesToReceive.get(),
+              correlationId);
         }
       }
     }

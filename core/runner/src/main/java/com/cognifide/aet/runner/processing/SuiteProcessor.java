@@ -20,6 +20,9 @@ import com.cognifide.aet.communication.api.messages.FullProgressLog;
 import com.cognifide.aet.communication.api.messages.ProcessingErrorMessage;
 import com.cognifide.aet.communication.api.messages.ProgressLog;
 import com.cognifide.aet.communication.api.messages.ProgressMessage;
+import com.cognifide.aet.communication.api.metadata.Statistics;
+import com.cognifide.aet.communication.api.metadata.Suite;
+import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
@@ -94,6 +97,10 @@ public class SuiteProcessor {
             TimeUnit.NANOSECONDS.toSeconds(timeoutWatch.getLastUpdateDifference()));
         forceFinishSuite();
       }
+      Suite suite = runIndexWrapper.get().getRealSuite();
+      suite.setFinishedTimestamp(new Timestamp(System.currentTimeMillis()));
+      long delta = suite.getFinishedTimestamp().get() - suite.getRunTimestamp().get();
+      suite.setStatistics(new Statistics(delta));
     }
   }
 
