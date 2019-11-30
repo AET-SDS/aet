@@ -15,8 +15,8 @@
  */
 package com.cognifide.aet.communication.api.job;
 
+import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.metadata.Comparator;
-import java.util.Map;
 
 // todo javadoc
 public class GrouperJobData extends JobData {
@@ -24,7 +24,7 @@ public class GrouperJobData extends JobData {
   private static final long serialVersionUID = -3814742820402766119L;
 
   private final Comparator comparisonResult; // todo maybe ComparatorStepResult?
-  private final Map<Comparator, Long> comparatorCounts;
+  private final SuiteComparatorsCount suiteComparatorsCount;
 
   /**
    * @param company - company name.
@@ -37,19 +37,19 @@ public class GrouperJobData extends JobData {
       String company,
       String project,
       String suiteName,
-      Map<Comparator, Long> comparatorCounts,
       String testName,
+      SuiteComparatorsCount suiteComparatorsCount,
       Comparator comparisonResult) {
     super(company, project, suiteName, testName);
     this.comparisonResult = comparisonResult;
-    this.comparatorCounts = comparatorCounts;
+    this.suiteComparatorsCount = suiteComparatorsCount;
   }
 
   public Comparator getComparisonResult() {
     return comparisonResult;
   }
 
-  public Map<Comparator, Long> getComparatorCounts() {
-    return comparatorCounts;
+  public SuiteComparatorsCount getSuiteComparatorsCount() {
+    return suiteComparatorsCount;
   }
 }

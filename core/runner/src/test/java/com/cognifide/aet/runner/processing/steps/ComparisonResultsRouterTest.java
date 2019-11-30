@@ -30,6 +30,7 @@ import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.messages.ProgressLog;
+import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Optional;
@@ -76,6 +77,8 @@ public class ComparisonResultsRouterTest extends StepManagerTest {
     when(mockedUrl.getSteps()).thenReturn(Collections.singletonList(Mockito.mock(Step.class)));
     when(runIndexWrapper.getTestUrl(anyString(), anyString())).thenReturn(Optional.of(mockedUrl));
     ((ComparisonResultsRouter) tested).updateAmountToReceive(1);
+    when(runIndexWrapper.get().getRealSuite()).thenReturn(suite);//todo check if needed still
+    when(suite.getTests()).thenReturn(Lists.newArrayList());//todo check if needed still
 
     ProgressLog progress = tested.getProgress();
     assertThat(progress.toString(), is("COMPARED: [success:   0, total:   1]"));
@@ -94,6 +97,8 @@ public class ComparisonResultsRouterTest extends StepManagerTest {
     when(mockedUrl.getSteps()).thenReturn(Collections.singletonList(Mockito.mock(Step.class)));
     when(runIndexWrapper.getTestUrl(anyString(), anyString())).thenReturn(Optional.of(mockedUrl));
     ((ComparisonResultsRouter) tested).updateAmountToReceive(1);
+    when(runIndexWrapper.get().getRealSuite()).thenReturn(suite);//todo check if needed still
+    when(suite.getTests()).thenReturn(Lists.newArrayList());//todo check if needed still
 
     ProgressLog progress = tested.getProgress();
     assertThat(progress.toString(), is("COMPARED: [success:   0, total:   1]"));

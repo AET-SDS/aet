@@ -15,18 +15,25 @@
  */
 package com.cognifide.aet.runner.processing.steps;
 
+import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
+import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Step;
+import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -101,15 +108,26 @@ public class ComparisonResultsRouter extends StepManagerObservable
     }
   }
 
-  private void sendGrouperJobData(ComparatorResultData comparatorResultData)
-      throws JMSException {
+  private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
+    //todo move
+    Map<String, Map<Comparator, Integer>> comparatorCounts = new HashMap<>();
+    for (Test test : runIndexWrapper.get().getRealSuite().getTests()) {
+      Map<Comparator, Integer> collect =
+          test.getUrls().stream()
+              .flatMap(url -> url.getSteps().stream())
+              .flatMap(step -> step.getComparators().stream())
+              .collect(Collectors
+                  .groupingBy(Function.identity(), Collectors.reducing(0, el -> 1, Integer::sum)));
+      comparatorCounts.put(test.getName(), collect);
+    }
+    SuiteComparatorsCount suiteComparatorsCount = new SuiteComparatorsCount(comparatorCounts);
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
             runIndexWrapper.get().getProject(),
             runIndexWrapper.get().getName(),
-            runIndexWrapper.getComparatorCounts(),  //todo too much data being sent?
             comparatorResultData.getTestName(),
+            suiteComparatorsCount, // todo too much data being sent?
             comparatorResultData.getComparisonResult());
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);

@@ -23,15 +23,15 @@ import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class GrouperDispatcherImpl implements GrouperDispatcher {
 
-  private final Map<Comparator, AtomicLong> comparatorCounts;
+  private final Map<Comparator, AtomicInteger> comparatorCounts;
   private final Map<Comparator, GrouperJob> grouperJobs;
 
   GrouperDispatcherImpl(
-      Map<Comparator, AtomicLong> comparatorCounts, Map<Comparator, GrouperJob> grouperJobs) {
+      Map<Comparator, AtomicInteger> comparatorCounts, Map<Comparator, GrouperJob> grouperJobs) {
     this.comparatorCounts = comparatorCounts;
     this.grouperJobs = grouperJobs;
   }
@@ -41,7 +41,7 @@ class GrouperDispatcherImpl implements GrouperDispatcher {
     Comparator comparisonResult = grouperJobData.getComparisonResult();
     GrouperResultData result;
     if (!grouperJobs.containsKey(comparisonResult)) {
-      long value = comparatorCounts.get(comparisonResult).decrementAndGet();
+      int value = comparatorCounts.get(comparisonResult).decrementAndGet();
       result =
           new GrouperResultData(
               JobStatus.SUCCESS,

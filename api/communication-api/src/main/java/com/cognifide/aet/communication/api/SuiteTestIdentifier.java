@@ -14,17 +14,17 @@
  * the License.
  */
 
-package com.cognifide.aet.worker.impl;
+package com.cognifide.aet.communication.api;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
-class SuiteTestIdentifier {
+public class SuiteTestIdentifier {
 
   private final String correlationId;
   private final String testName;
 
-  SuiteTestIdentifier(String correlationId, String testName) {
+  public SuiteTestIdentifier(String correlationId, String testName) {
     this.correlationId = correlationId;
     this.testName = testName;
   }

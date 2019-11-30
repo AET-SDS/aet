@@ -16,6 +16,7 @@
 
 package com.cognifide.aet.worker.impl;
 
+import com.cognifide.aet.communication.api.SuiteTestIdentifier;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.metadata.Comparator;
@@ -27,13 +28,9 @@ import com.cognifide.aet.worker.api.GrouperDispatcher;
 import com.cognifide.aet.worker.api.JobRegistry;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -45,67 +42,37 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(GrouperDispatcherWrapper.class);
 
   @Reference private JobRegistry jobRegistry;
-
-  private final ConcurrentMap<SuiteTestIdentifier, AtomicInteger> completedJobsCounters =
-      new ConcurrentHashMap<>();
-  private final ConcurrentMap<SuiteTestIdentifier, GrouperDispatcher> dispatchers =
-      new ConcurrentHashMap<>();
+  @Reference private GrouperDispatcherFactory grouperDispatcherFactory;
 
   @Override
   public GrouperResultData run(String correlationId, GrouperJobData grouperJobData) {
     SuiteTestIdentifier suiteTestIdentifier =
         new SuiteTestIdentifier(correlationId, grouperJobData.getTestName());
-    Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
-    GrouperDispatcher dispatcher = getDispatcher(suiteTestIdentifier, grouperJobData);
+    GrouperDispatcher dispatcher =
+        grouperDispatcherFactory.getDispatcher(
+            suiteTestIdentifier,
+            grouperJobData.getSuiteComparatorsCount(),
+            () -> prepareGrouperJobs(grouperJobData));
     GrouperResultData resultData = dispatcher.run(correlationId, grouperJobData);
     if (resultData.isReady()) {
-      AtomicInteger completedJobsCounter =
-          getCompletedJobsCounter(suiteTestIdentifier, comparatorCounts);
-      int numberOfPendingJobs = completedJobsCounter.decrementAndGet();
-      if (numberOfPendingJobs == 0) {
-        LOGGER.error("DELETING DISPATCHER FOR ID: {}", suiteTestIdentifier); // todo
-        dispatchers.remove(suiteTestIdentifier);
-        completedJobsCounters.remove(suiteTestIdentifier);
-      }
+      grouperDispatcherFactory.tick(suiteTestIdentifier);
     }
     return resultData;
   }
 
-  private AtomicInteger getCompletedJobsCounter(
-      SuiteTestIdentifier suiteTestIdentifier, Map<Comparator, Long> comparatorCounts) {
-    return completedJobsCounters.computeIfAbsent(
-        suiteTestIdentifier, __ -> new AtomicInteger(comparatorCounts.keySet().size()));
-  }
-
-  private GrouperDispatcher getDispatcher(
-      SuiteTestIdentifier suiteTestIdentifier, GrouperJobData grouperJobData) {
-    Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
-    return dispatchers.computeIfAbsent(
-        suiteTestIdentifier,
-        __ -> {
-          Map<Comparator, AtomicLong> counters = prepareComparatorCounters(comparatorCounts);
-          Map<Comparator, GrouperJob> grouperJobs = prepareGrouperJobs(grouperJobData);
-          return new GrouperDispatcherImpl(counters, grouperJobs);
-        });
-  }
-
-  private Map<Comparator, AtomicLong> prepareComparatorCounters(
-      Map<Comparator, Long> comparatorCounts) {
-    return comparatorCounts.entrySet().stream()
-        .collect(Collectors.toMap(Entry::getKey, it -> new AtomicLong(it.getValue())));
-  }
-
   private Map<Comparator, GrouperJob> prepareGrouperJobs(GrouperJobData grouperJobData) {
+    final Set<Pair<Comparator, Integer>> allComparatorCountsForTest =
+        grouperJobData
+            .getSuiteComparatorsCount()
+            .getAllComparatorCountsForTest(grouperJobData.getTestName());
     final DBKey dbKey = new SimpleDBKey(grouperJobData.getCompany(), grouperJobData.getProject());
-    Map<Comparator, Long> comparatorCounts = grouperJobData.getComparatorCounts();
-    Map<Comparator, GrouperJob> grouperJobs = new HashMap<>();
-    for (Comparator comparator : comparatorCounts.keySet()) {
-      String comparatorTypeName = comparator.getType();
+    final Map<Comparator, GrouperJob> grouperJobs = new HashMap<>();
+    for (Pair<Comparator, Integer> pair : allComparatorCountsForTest) {
+      String comparatorTypeName = pair.getLeft().getType();
       Optional<GrouperFactory> grouperFactory = jobRegistry.getGrouperFactory(comparatorTypeName);
       if (grouperFactory.isPresent()) {
-        long expectedInputCount = comparatorCounts.get(comparator);
-        GrouperJob grouperJob = grouperFactory.get().createInstance(dbKey, expectedInputCount);
-        grouperJobs.put(comparator, grouperJob);
+        GrouperJob grouperJob = grouperFactory.get().createInstance(dbKey, pair.getRight());
+        grouperJobs.put(pair.getLeft(), grouperJob);
       } else {
         LOGGER.warn("GrouperJob not found for given type: {}", comparatorTypeName);
       }

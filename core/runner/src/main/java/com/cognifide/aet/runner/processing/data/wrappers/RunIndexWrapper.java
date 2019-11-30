@@ -15,30 +15,19 @@
  */
 package com.cognifide.aet.runner.processing.data.wrappers;
 
-import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.wrappers.MetadataRunDecorator;
 import com.cognifide.aet.communication.api.wrappers.Run;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public abstract class RunIndexWrapper<T> {
 
   protected Run<T> objectToRunWrapper;
 
-  private final Map<Comparator, Long> comparatorCounts;
-
   RunIndexWrapper(Run<T> objectToRunWrapper) {
     this.objectToRunWrapper = objectToRunWrapper;
-    this.comparatorCounts =
-        getUrls().stream()
-            .flatMap(url -> url.getObjectToRun().getSteps().stream())
-            .flatMap(step -> step.getComparators().stream())
-            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
   }
 
   public static void cleanUrlFromExecutionData(Url url) {
@@ -75,10 +64,6 @@ public abstract class RunIndexWrapper<T> {
   public abstract List<MetadataRunDecorator<Url>> getUrls();
 
   public abstract int countUrls();
-
-  public Map<Comparator, Long> getComparatorCounts() { // todo test
-    return comparatorCounts;
-  }//todo
 
   @Override
   public String toString() {
