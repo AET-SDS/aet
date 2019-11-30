@@ -15,6 +15,7 @@
  */
 package com.cognifide.aet.runner.processing;
 
+import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.runner.MessagesManager;
 import com.cognifide.aet.runner.RunnerConfiguration;
@@ -65,9 +66,11 @@ public class SuiteExecutionFactory {
   }
 
   GroupingResultsRouter newGroupingResultsRouter(
-      TimeoutWatch timeoutWatch, RunIndexWrapper runIndexWrapper) throws JMSException {
+      TimeoutWatch timeoutWatch, RunIndexWrapper<?> runIndexWrapper) throws JMSException {
+    Suite suite = runIndexWrapper.get().getRealSuite();
+    int messagesToReceive = CountGroupingResults.INSTANCE.apply(suite);
     return new GroupingResultsRouter(
-        timeoutWatch, jmsConnection, runnerConfiguration, runIndexWrapper);
+        timeoutWatch, jmsConnection, runnerConfiguration, runIndexWrapper, messagesToReceive);
   }
 
   public MessagesSender newMessagesSender(Destination jmsReplyTo) throws JMSException {

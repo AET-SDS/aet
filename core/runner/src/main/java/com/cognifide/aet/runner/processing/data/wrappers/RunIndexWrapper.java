@@ -23,7 +23,6 @@ import com.cognifide.aet.communication.api.wrappers.Run;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,8 +32,6 @@ public abstract class RunIndexWrapper<T> {
 
   private final Map<Comparator, Long> comparatorCounts;
 
-  private final Set<Comparator> usedComparators;
-
   RunIndexWrapper(Run<T> objectToRunWrapper) {
     this.objectToRunWrapper = objectToRunWrapper;
     this.comparatorCounts =
@@ -42,11 +39,6 @@ public abstract class RunIndexWrapper<T> {
             .flatMap(url -> url.getObjectToRun().getSteps().stream())
             .flatMap(step -> step.getComparators().stream())
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-    this.usedComparators =
-        getUrls().stream()
-            .flatMap(url -> url.getObjectToRun().getSteps().stream())
-            .flatMap(step -> step.getComparators().stream())
-            .collect(Collectors.toSet());
   }
 
   public static void cleanUrlFromExecutionData(Url url) {
@@ -86,11 +78,7 @@ public abstract class RunIndexWrapper<T> {
 
   public Map<Comparator, Long> getComparatorCounts() { // todo test
     return comparatorCounts;
-  }
-
-  public Set<Comparator> getUsedComparators() { // todo test, consider many tests in suite
-    return usedComparators;
-  }
+  }//todo
 
   @Override
   public String toString() {

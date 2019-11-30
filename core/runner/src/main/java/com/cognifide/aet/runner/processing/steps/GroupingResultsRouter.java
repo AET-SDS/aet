@@ -28,7 +28,8 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
       TimeoutWatch timeoutWatch,
       JmsConnection jmsConnection,
       RunnerConfiguration runnerConfiguration,
-      RunIndexWrapper runIndexWrapper)
+      RunIndexWrapper<?> runIndexWrapper,
+      int messagesToReceive)
       throws JMSException {
     super(
         timeoutWatch,
@@ -36,8 +37,7 @@ public class GroupingResultsRouter extends StepManager implements ChangeObserver
         runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.suite = runIndexWrapper.get().getRealSuite();
-    this.messagesToReceive.set(runIndexWrapper.getUsedComparators().size());
-    // todo possible bug when multiple tests in suite
+    this.messagesToReceive.set(messagesToReceive);
   }
 
   @Override
