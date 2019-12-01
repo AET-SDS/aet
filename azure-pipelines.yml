@@ -17,4 +17,4 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    goals: 'install -DskipTests=true -Dmaven.javadoc.skip=true -B -V'
+    goals: 'install -DskipTests=true -Drat.skip=true -Dmaven.javadoc.skip=true -B -V'
