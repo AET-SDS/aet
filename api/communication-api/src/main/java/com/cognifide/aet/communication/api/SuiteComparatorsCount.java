@@ -19,7 +19,6 @@ package com.cognifide.aet.communication.api;
 import com.cognifide.aet.communication.api.metadata.Comparator;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -45,8 +44,10 @@ public class SuiteComparatorsCount implements Serializable {
         .collect(Collectors.toSet());
   }
 
-  public Map<Comparator, AtomicInteger> prepareCountdownsByComparatorTypes(String testName) {
+  public Map<String, AtomicInteger> prepareCountdownsByComparatorTypes(String testName) {
+    // todo enum as key
     return map.get(testName).entrySet().stream()
-        .collect(Collectors.toMap(Entry::getKey, it -> new AtomicInteger(it.getValue())));
+        .collect(
+            Collectors.toMap(e -> e.getKey().getType(), it -> new AtomicInteger(it.getValue())));
   }
 }

@@ -16,15 +16,16 @@
 package com.cognifide.aet.communication.api.job;
 
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
-import com.cognifide.aet.communication.api.metadata.Comparator;
+import com.cognifide.aet.communication.api.metadata.ComparatorStepResult;
 
 // todo javadoc
 public class GrouperJobData extends JobData {
 
   private static final long serialVersionUID = -3814742820402766119L;
 
-  private final Comparator comparisonResult; // todo maybe ComparatorStepResult?
+  private final ComparatorStepResult comparisonResult;
   private final SuiteComparatorsCount suiteComparatorsCount;
+  private final String comparatorType; // todo enum
 
   /**
    * @param company - company name.
@@ -39,17 +40,23 @@ public class GrouperJobData extends JobData {
       String suiteName,
       String testName,
       SuiteComparatorsCount suiteComparatorsCount,
-      Comparator comparisonResult) {
+      ComparatorStepResult comparisonResult,
+      String comparatorType) {
     super(company, project, suiteName, testName);
     this.comparisonResult = comparisonResult;
     this.suiteComparatorsCount = suiteComparatorsCount;
+    this.comparatorType = comparatorType;
   }
 
-  public Comparator getComparisonResult() {
+  public ComparatorStepResult getComparisonResult() {
     return comparisonResult;
   }
 
   public SuiteComparatorsCount getSuiteComparatorsCount() {
     return suiteComparatorsCount;
+  }
+
+  public String getComparatorType() {
+    return comparatorType;
   }
 }

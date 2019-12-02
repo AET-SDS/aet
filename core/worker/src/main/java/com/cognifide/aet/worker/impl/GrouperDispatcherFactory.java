@@ -18,7 +18,6 @@ package com.cognifide.aet.worker.impl;
 
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.SuiteTestIdentifier;
-import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class GrouperDispatcherFactory {
   public GrouperDispatcher getDispatcher(
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
-      Supplier<Map<Comparator, GrouperJob>> grouperJobs) {
+      Supplier<Map<String, GrouperJob>> grouperJobs) {
     lifespanCountdowns.computeIfAbsent(
         suiteTestIdentifier, it -> newCountdown(suiteTestIdentifier, suiteComparatorsCount));
     return dispatchers.computeIfAbsent(
@@ -69,8 +68,8 @@ public class GrouperDispatcherFactory {
   private GrouperDispatcherImpl newDispatcher(
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
-      Map<Comparator, GrouperJob> grouperJobs) {
-    Map<Comparator, AtomicInteger> comparatorCountdowns =
+      Map<String, GrouperJob> grouperJobs) {
+    Map<String, AtomicInteger> comparatorCountdowns =
         suiteComparatorsCount.prepareCountdownsByComparatorTypes(suiteTestIdentifier.getTestName());
     return new GrouperDispatcherImpl(comparatorCountdowns, grouperJobs);
   }

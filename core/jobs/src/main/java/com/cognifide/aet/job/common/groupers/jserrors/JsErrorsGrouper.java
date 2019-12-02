@@ -19,7 +19,6 @@ package com.cognifide.aet.job.common.groupers.jserrors;
 import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
-import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.api.grouper.SimilarityValue;
@@ -56,8 +55,7 @@ public class JsErrorsGrouper implements GrouperJob {
 
   @Override
   public GrouperResultData group(GrouperJobData jobData) {
-    Comparator comparisonResult = jobData.getComparisonResult();
-    String inputArtifactId = comparisonResult.getStepResult().getArtifactId();
+    String inputArtifactId = jobData.getComparisonResult().getArtifactId();
     if (!Strings.isNullOrEmpty(inputArtifactId)) {
       loadJsErrors(inputArtifactId);
     }

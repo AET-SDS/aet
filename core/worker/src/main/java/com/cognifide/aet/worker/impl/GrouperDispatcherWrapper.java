@@ -60,19 +60,19 @@ public class GrouperDispatcherWrapper implements GrouperDispatcher {
     return resultData;
   }
 
-  private Map<Comparator, GrouperJob> prepareGrouperJobs(GrouperJobData grouperJobData) {
+  private Map<String, GrouperJob> prepareGrouperJobs(GrouperJobData grouperJobData) {
     final Set<Pair<Comparator, Integer>> allComparatorCountsForTest =
         grouperJobData
             .getSuiteComparatorsCount()
             .getAllComparatorCountsForTest(grouperJobData.getTestName());
     final DBKey dbKey = new SimpleDBKey(grouperJobData.getCompany(), grouperJobData.getProject());
-    final Map<Comparator, GrouperJob> grouperJobs = new HashMap<>();
+    final Map<String, GrouperJob> grouperJobs = new HashMap<>();
     for (Pair<Comparator, Integer> pair : allComparatorCountsForTest) {
       String comparatorTypeName = pair.getLeft().getType();
       Optional<GrouperFactory> grouperFactory = jobRegistry.getGrouperFactory(comparatorTypeName);
       if (grouperFactory.isPresent()) {
         GrouperJob grouperJob = grouperFactory.get().createInstance(dbKey, pair.getRight());
-        grouperJobs.put(pair.getLeft(), grouperJob);
+        grouperJobs.put(comparatorTypeName, grouperJob);
       } else {
         LOGGER.warn("GrouperJob not found for given type: {}", comparatorTypeName);
       }

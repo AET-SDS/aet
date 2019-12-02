@@ -15,9 +15,9 @@
  */
 package com.cognifide.aet.runner.processing.steps;
 
-import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
+import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.metadata.Comparator;
@@ -128,7 +128,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
             runIndexWrapper.get().getName(),
             comparatorResultData.getTestName(),
             suiteComparatorsCount, // todo too much data being sent?
-            comparatorResultData.getComparisonResult());
+            comparatorResultData.getComparisonResult().getStepResult(),
+            comparatorResultData.getComparisonResult().getType());
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);
     sender.send(message);
