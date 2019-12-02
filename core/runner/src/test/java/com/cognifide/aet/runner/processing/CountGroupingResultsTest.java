@@ -41,14 +41,14 @@ public class CountGroupingResultsTest {
   private CountGroupingResults f = CountGroupingResults.INSTANCE;
 
   @Test
-  public void apply_whenNoComparators_thenReturnZero() {
+  public void apply_whenNoComparators_expectReturnZero() {
     Step step = Step.newBuilder("", 0).build();
     when(suite.getTests()).thenReturn(Lists.newArrayList(getTest(step)));
     assertThat(f.apply(suite), is(0));
   }
 
   @Test
-  public void apply_whenOneComparator_thenReturnOne() {
+  public void apply_whenOneComparator_expectReturnOne() {
     Set<Comparator> comparators = getComparators(1);
     Step step = Step.newBuilder("", 0).withComparators(comparators).build();
     when(suite.getTests()).thenReturn(Lists.newArrayList(getTest(step)));
@@ -56,7 +56,7 @@ public class CountGroupingResultsTest {
   }
 
   @Test
-  public void apply_when57Comparators_thenReturn57() {
+  public void apply_when57Comparators_expectReturn57() {
     Set<Comparator> comparators = getComparators(57);
     Step step = Step.newBuilder("", 0).withComparators(comparators).build();
     when(suite.getTests()).thenReturn(Lists.newArrayList(getTest(step)));
@@ -64,7 +64,7 @@ public class CountGroupingResultsTest {
   }
 
   @Test
-  public void apply_whenOneComparatorInTwoSteps_thenReturnOne() {
+  public void apply_whenOneComparatorInTwoSteps_expectReturnOne() {
     Set<Comparator> comparators = getComparators(1);
     Step step1 = Step.newBuilder("", 0).withComparators(comparators).build();
     Step step2 = Step.newBuilder("", 1).withComparators(comparators).build();
@@ -73,7 +73,7 @@ public class CountGroupingResultsTest {
   }
 
   @Test
-  public void apply_whenOneComparatorInTwoUrls_thenReturnOne() {
+  public void apply_whenOneComparatorInTwoUrls_expectReturnOne() {
     Set<Comparator> comparators = getComparators(1);
     Step step = Step.newBuilder("", 0).withComparators(comparators).build();
     Url url1 = new Url("urlName1", "url1", "");
@@ -85,7 +85,7 @@ public class CountGroupingResultsTest {
   }
 
   @Test
-  public void apply_whenOneComparatorInTwoTests_thenReturnTwo() {
+  public void apply_whenOneComparatorInTwoTests_expectReturnTwo() {
     Set<Comparator> comparators = getComparators(1);
     Step step = Step.newBuilder("", 0).withComparators(comparators).build();
     when(suite.getTests()).thenReturn(Lists.newArrayList(getTest(step), getTest(step)));

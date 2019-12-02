@@ -20,7 +20,6 @@ import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
-import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
@@ -29,11 +28,8 @@ import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -109,18 +105,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
   }
 
   private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
-    //todo move
-    Map<String, Map<Comparator, Integer>> comparatorCounts = new HashMap<>();
-    for (Test test : runIndexWrapper.get().getRealSuite().getTests()) {
-      Map<Comparator, Integer> collect =
-          test.getUrls().stream()
-              .flatMap(url -> url.getSteps().stream())
-              .flatMap(step -> step.getComparators().stream())
-              .collect(Collectors
-                  .groupingBy(Function.identity(), Collectors.reducing(0, el -> 1, Integer::sum)));
-      comparatorCounts.put(test.getName(), collect);
-    }
-    SuiteComparatorsCount suiteComparatorsCount = new SuiteComparatorsCount(comparatorCounts);
+    List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
+    SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),

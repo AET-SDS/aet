@@ -17,10 +17,14 @@
 package com.cognifide.aet.communication.api;
 
 import com.cognifide.aet.communication.api.metadata.Comparator;
+import com.cognifide.aet.communication.api.metadata.Test;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -30,8 +34,23 @@ public class SuiteComparatorsCount implements Serializable {
 
   private final Map<String, Map<Comparator, Integer>> map;
 
-  public SuiteComparatorsCount(Map<String, Map<Comparator, Integer>> map) {
+  private SuiteComparatorsCount(Map<String, Map<Comparator, Integer>> map) {
     this.map = map;
+  }
+
+  public static SuiteComparatorsCount of(Collection<Test> tests) {
+    Map<String, Map<Comparator, Integer>> comparatorCounts = new HashMap<>();
+    for (Test test : tests) {
+      Map<Comparator, Integer> collect =
+          test.getUrls().stream()
+              .flatMap(url -> url.getSteps().stream())
+              .flatMap(step -> step.getComparators().stream())
+              .collect(
+                  Collectors.groupingBy(
+                      Function.identity(), Collectors.reducing(0, el -> 1, Integer::sum)));
+      comparatorCounts.put(test.getName(), collect);
+    }
+    return new SuiteComparatorsCount(comparatorCounts);
   }
 
   public int getDistinctComparatorsCountForTest(String testName) {
