@@ -112,9 +112,9 @@ public class WorkersListenersService {
     final String queueName =
         QueuesConstant.GROUPER.getJobsQueueName()
             + "?consumer.prefetchSize="
-            + "1"; // todo use config
+            + config.grouperPrefetchSize();
     return spawnListeners(
-        5, // todo use config
+        getenvOrDefault(WorkersListenersServiceConfig.GROUPERS_NO_ENV, config.grouperInstancesNo()),
         no ->
             new GrouperMessageListener(
                 "Grouper-" + no,
