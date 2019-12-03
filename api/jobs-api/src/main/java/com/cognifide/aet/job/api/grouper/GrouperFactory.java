@@ -23,5 +23,5 @@ public interface GrouperFactory {
 
   String getName();
 
-  GrouperJob createInstance(DBKey dbKey, long expectedInputCount);  //todo more params
+  GrouperJob createInstance(DBKey dbKey, long expectedInputCount);
 }

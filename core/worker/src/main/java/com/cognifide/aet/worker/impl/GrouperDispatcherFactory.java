@@ -54,7 +54,7 @@ public class GrouperDispatcherFactory {
   public void tick(SuiteTestIdentifier suiteTestIdentifier) {
     int lifespanRemaining = countDown(suiteTestIdentifier);
     if (lifespanRemaining == 0) {
-      LOGGER.error("DELETING DISPATCHER FOR ID: {}", suiteTestIdentifier); // todo
+      LOGGER.info("Removing GrouperDispatcher for id: {}", suiteTestIdentifier);
       dispatchers.remove(suiteTestIdentifier);
       lifespanCountdowns.remove(suiteTestIdentifier);
     }
@@ -69,6 +69,7 @@ public class GrouperDispatcherFactory {
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
       Map<String, GrouperJob> grouperJobs) {
+    LOGGER.info("Creating new GrouperDispatcher for id: {}", suiteComparatorsCount);
     Map<String, AtomicInteger> comparatorCountdowns =
         suiteComparatorsCount.prepareCountdownsByComparatorTypes(suiteTestIdentifier.getTestName());
     return new GrouperDispatcherImpl(comparatorCountdowns, grouperJobs);

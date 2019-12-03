@@ -18,6 +18,7 @@ package com.cognifide.aet.communication.api.job;
 import com.cognifide.aet.communication.api.JobStatus;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public final class GrouperResultData implements Serializable {
 
@@ -80,5 +81,16 @@ public final class GrouperResultData implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hash(jobStatus, grouperType, isFinished, testName, artifactId);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", GrouperResultData.class.getSimpleName() + "[", "]")
+        .add("jobStatus=" + jobStatus)
+        .add("grouperType='" + grouperType + "'")
+        .add("isFinished=" + isFinished)
+        .add("testName='" + testName + "'")
+        .add("artifactId='" + artifactId + "'")
+        .toString();
   }
 }

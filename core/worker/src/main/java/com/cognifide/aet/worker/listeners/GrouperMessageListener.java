@@ -50,17 +50,27 @@ class GrouperMessageListener extends WorkerMessageListener {
     try {
       grouperJobData = JmsUtils.getFromMessage(message, GrouperJobData.class);
     } catch (JMSException e) {
-      e.printStackTrace(); // todo
+      LOGGER.error("Invalid message obtained!", e);
     }
     String jmsCorrelationId = JmsUtils.getJMSCorrelationID(message);
 
     if (Objects.isNull(grouperJobData) || Strings.isNullOrEmpty(jmsCorrelationId)) {
       return;
     }
-    // todo artifactId null when comparatorstepresult.status = passed
-    // LOGGER.error(grouperJobData.getComparisonResult().getStepResult().getArtifactId());
+    LOGGER.info(
+        "[{}] GrouperJobData message arrived (type: {}). CorrelationId: {}, TestName: {}",
+        name,
+        grouperJobData.getComparatorType(),
+        jmsCorrelationId,
+        grouperJobData.getTestName());
     GrouperResultData resultData = dispatcher.run(jmsCorrelationId, grouperJobData);
-    if (resultData.isReady()) { // todo maybe when artifactid not null
+    if (resultData.isReady()) {
+      LOGGER.info(
+          "[{}] Grouping completed successfully. Type: {}, CorrelationId: {}, TestName: {}",
+          name,
+          grouperJobData.getComparatorType(),
+          jmsCorrelationId,
+          grouperJobData.getTestName());
       feedbackQueue.sendObjectMessageWithCorrelationID(resultData, jmsCorrelationId);
     }
   }

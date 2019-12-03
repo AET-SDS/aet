@@ -21,6 +21,5 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 
 public interface GrouperJob {
 
-  //todo add methods
   GrouperResultData group(GrouperJobData jobData);
 }

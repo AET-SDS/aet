@@ -63,10 +63,16 @@ public class JsErrorsGrouper implements GrouperJob {
     GrouperResultData result =
         new GrouperResultData(
             JobStatus.SUCCESS, NAME, currentMessagesRemaining == 0, jobData.getTestName());
+    LOGGER.debug(
+        "JsErrors grouping... {} remaining. Input artifactId: {}. Status: {}",
+        currentMessagesRemaining,
+        inputArtifactId,
+        result);
     if (currentMessagesRemaining == 0) {
       List<SimilarityValue<JsErrorLog>> similarityValues = calculateDistances(jsErrors);
       String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, similarityValues);
       result.setArtifactId(outputArtifactId);
+      LOGGER.debug("JsErrors grouped! Output artifactId: {}", outputArtifactId);
     }
     return result;
   }
