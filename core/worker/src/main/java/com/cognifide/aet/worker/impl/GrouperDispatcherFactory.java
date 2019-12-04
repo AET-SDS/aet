@@ -21,6 +21,7 @@ import com.cognifide.aet.communication.api.SuiteTestIdentifier;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,18 +52,25 @@ public class GrouperDispatcherFactory {
         it -> newDispatcher(suiteTestIdentifier, suiteComparatorsCount, grouperJobs.get()));
   }
 
-  public void tick(SuiteTestIdentifier suiteTestIdentifier) {
+  public int tick(SuiteTestIdentifier suiteTestIdentifier) {
     int lifespanRemaining = countDown(suiteTestIdentifier);
     if (lifespanRemaining == 0) {
       LOGGER.info("Removing GrouperDispatcher for id: {}", suiteTestIdentifier);
       dispatchers.remove(suiteTestIdentifier);
       lifespanCountdowns.remove(suiteTestIdentifier);
     }
+    return lifespanRemaining;
   }
 
   public void forceRemove(SuiteTestIdentifier suiteTestIdentifier) {
-    dispatchers.remove(suiteTestIdentifier);
-    lifespanCountdowns.remove(suiteTestIdentifier);
+    GrouperDispatcher dispatcher = dispatchers.remove(suiteTestIdentifier);
+    AtomicInteger countdown = lifespanCountdowns.remove(suiteTestIdentifier);
+    if (Objects.isNull(dispatcher) || Objects.isNull(countdown)) {
+      LOGGER.warn(
+          "Tried to force remove non-existing GrouperDispatcher: {}, countdown: {}",
+          dispatcher,
+          countdown);
+    }
   }
 
   private GrouperDispatcherImpl newDispatcher(
@@ -77,9 +85,12 @@ public class GrouperDispatcherFactory {
 
   private AtomicInteger newCountdown(
       SuiteTestIdentifier suiteTestIdentifier, SuiteComparatorsCount suiteComparatorsCount) {
-    return new AtomicInteger(
-        suiteComparatorsCount.getDistinctComparatorsCountForTest(
-            suiteTestIdentifier.getTestName()));
+    int distinctComparators =
+        suiteComparatorsCount.getDistinctComparatorsCountForTest(suiteTestIdentifier.getTestName());
+    if (distinctComparators == 0) {
+      throw new IllegalArgumentException("Countdown must be initialized with positive value");
+    }
+    return new AtomicInteger(distinctComparators);
   }
 
   private int countDown(SuiteTestIdentifier suiteTestIdentifier) {
