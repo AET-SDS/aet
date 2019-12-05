@@ -21,5 +21,11 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 
 public interface GrouperJob {
 
+  /**
+   * Method executed during grouping phase.
+   *
+   * @param jobData grouping job order
+   * @return grouping result
+   */
   GrouperResultData group(GrouperJobData jobData);
 }

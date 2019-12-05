@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Represents result of grouping job.
+ *
+ * <p>Implements {@link Serializable} as instances of this class are being sent through JMS.
+ */
 public final class GrouperResultData implements Serializable {
 
   private static final long serialVersionUID = -692080374675249201L;

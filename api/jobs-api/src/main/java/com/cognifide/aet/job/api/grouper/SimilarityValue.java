@@ -19,7 +19,11 @@ package com.cognifide.aet.job.api.grouper;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-// todo javadoc
+/**
+ * Value object representing numerical similarity between two instances of the same class.
+ *
+ * @param <T> class of the two compared objects
+ */
 public class SimilarityValue<T> {
 
   private final T error1;

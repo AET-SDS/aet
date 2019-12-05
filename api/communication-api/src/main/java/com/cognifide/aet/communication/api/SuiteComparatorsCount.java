@@ -28,6 +28,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Provides useful methods for obtaining some specific data regarding counting comparator types
+ * within the suite object.
+ *
+ * @see com.cognifide.aet.communication.api.metadata.Suite
+ */
 public class SuiteComparatorsCount implements Serializable {
 
   private static final long serialVersionUID = -2745599996925319741L;
@@ -38,6 +44,11 @@ public class SuiteComparatorsCount implements Serializable {
     this.map = map;
   }
 
+  /**
+   * @param tests collection of test objects that will be considered when counting comparators
+   * @return instance of this class
+   * @see Test
+   */
   public static SuiteComparatorsCount of(Collection<Test> tests) {
     Map<String, Map<Comparator, Integer>> comparatorCounts = new HashMap<>();
     for (Test test : tests) {
@@ -53,16 +64,33 @@ public class SuiteComparatorsCount implements Serializable {
     return new SuiteComparatorsCount(comparatorCounts);
   }
 
+  /**
+   * @param testName test name
+   * @return number of distinct comparator types for given test name
+   * @throws NullPointerException when test name not found
+   */
   public int getDistinctComparatorsCountForTest(String testName) {
     return map.get(testName).keySet().size();
   }
 
+  /**
+   * @param testName test name
+   * @return set of all the comparatorType-count pairs for given test name
+   * @throws NullPointerException when test name not found
+   * @see Pair
+   */
   public Set<Pair<Comparator, Integer>> getAllComparatorCountsForTest(String testName) {
     return map.get(testName).entrySet().stream()
         .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
         .collect(Collectors.toSet());
   }
 
+  /**
+   * @param testName test name
+   * @return map, where key is a type of the comparator and value is an AtomicInteger object
+   * instantiated with the number of this comparator type usages within the test
+   * @throws NullPointerException when test name not found
+   */
   public Map<String, AtomicInteger> prepareCountdownsByComparatorTypes(String testName) {
     // todo enum as key
     return map.get(testName).entrySet().stream()

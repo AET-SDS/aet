@@ -71,7 +71,12 @@ public class Test implements Serializable, Commentable, Named {
     return urls.add(url);
   }
 
-  // todo javadoc
+  /**
+   * Adds link to the grouping result by specific grouper type.
+   *
+   * @param grouperType grouper type
+   * @param artifactId  identifier of the grouping result
+   */
   public void addGrouperResult(String grouperType, String artifactId) {
     grouperResults.put(grouperType, artifactId);
   }

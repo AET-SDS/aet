@@ -20,13 +20,22 @@ import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.metadata.Test;
 import java.util.function.Function;
 
-// todo javadoc
+/**
+ * First class function, used for counting expected grouping-stage results in a certain suite.
+ *
+ * @see Suite
+ */
 public class CountGroupingResults implements Function<Suite, Integer> {
 
   public static final CountGroupingResults INSTANCE = new CountGroupingResults();
 
-  private CountGroupingResults() {}
+  private CountGroupingResults() {
+  }
 
+  /**
+   * @param suite suite object
+   * @return number of distinct comparator types within the suite
+   */
   @Override
   public Integer apply(Suite suite) {
     return suite.getTests().stream()

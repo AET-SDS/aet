@@ -30,7 +30,15 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// todo javadoc
+/**
+ * Used to create {@link GrouperDispatcher} objects and manage their lifespan by counting down
+ * through ticks.
+ *
+ * <p>References to {@link GrouperDispatcher} objects are being kept until their life ends or they
+ * are force-removed.
+ *
+ * <p>Ensures thread-safety by using concurrent maps internally.
+ */
 @Component(immediate = true, service = GrouperDispatcherFactory.class)
 public class GrouperDispatcherFactory {
 
@@ -41,6 +49,17 @@ public class GrouperDispatcherFactory {
   private final ConcurrentMap<SuiteTestIdentifier, GrouperDispatcher> dispatchers =
       new ConcurrentHashMap<>();
 
+  /**
+   * Used to obtain grouper dispatcher instance. Will return existing object if there's already been
+   * a call with the same test identifier and the then returned object hasn't been force-removed and
+   * its life didn't end yet. In other case, will create new grouper dispatcher object.
+   *
+   * @param suiteTestIdentifier   unique identifier of test within suite run
+   * @param suiteComparatorsCount comparator type counts provider
+   * @param grouperJobs           grouper jobs map supplier
+   * @return instance of grouper dispatcher
+   * @throws IllegalArgumentException when there are no comparators in the suite
+   */
   public GrouperDispatcher getDispatcher(
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
@@ -52,6 +71,13 @@ public class GrouperDispatcherFactory {
         it -> newDispatcher(suiteTestIdentifier, suiteComparatorsCount, grouperJobs.get()));
   }
 
+  /**
+   * Counts down the remaining life of the grouper dispatcher with given identifier.
+   *
+   * @param suiteTestIdentifier unique identifier of test within suite run
+   * @return remaining lifespan in ticks
+   * @throws NullPointerException when there's no grouper dispatcher for given identifier
+   */
   public int tick(SuiteTestIdentifier suiteTestIdentifier) {
     int lifespanRemaining = countDown(suiteTestIdentifier);
     if (lifespanRemaining == 0) {
@@ -62,6 +88,11 @@ public class GrouperDispatcherFactory {
     return lifespanRemaining;
   }
 
+  /**
+   * Provides ability to force-remove grouper dispatcher from the factory's container.
+   *
+   * @param suiteTestIdentifier unique identifier of test within suite run
+   */
   public void forceRemove(SuiteTestIdentifier suiteTestIdentifier) {
     GrouperDispatcher dispatcher = dispatchers.remove(suiteTestIdentifier);
     AtomicInteger countdown = lifespanCountdowns.remove(suiteTestIdentifier);

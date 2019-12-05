@@ -18,7 +18,11 @@ package com.cognifide.aet.communication.api.job;
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.metadata.ComparatorStepResult;
 
-// todo javadoc
+/**
+ * Immutable object representing the grouping job order.
+ *
+ * <p>Implements {@link java.io.Serializable} as objects of this class are being sent through JMS.
+ */
 public class GrouperJobData extends JobData {
 
   private static final long serialVersionUID = -3814742820402766119L;
@@ -27,13 +31,6 @@ public class GrouperJobData extends JobData {
   private final SuiteComparatorsCount suiteComparatorsCount;
   private final String comparatorType; // todo enum
 
-  /**
-   * @param company - company name.
-   * @param project - project name.
-   * @param suiteName - suite name.
-   * @param testName - test name.
-   * @param comparisonResult - result of the comparison.
-   */
   public GrouperJobData(
       String company,
       String project,

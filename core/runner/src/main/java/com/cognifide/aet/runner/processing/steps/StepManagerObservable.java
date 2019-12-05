@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.jms.JMSException;
 
+/**
+ * Is a {@link StepManager} extension, implementing observable-like methods serving the {@link
+ * ChangeObserver} class.
+ */
 public abstract class StepManagerObservable extends StepManager {
 
   private final List<ChangeObserver> changeObservers;

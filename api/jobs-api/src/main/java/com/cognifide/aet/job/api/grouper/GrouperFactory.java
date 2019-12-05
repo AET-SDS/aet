@@ -18,10 +18,27 @@ package com.cognifide.aet.job.api.grouper;
 
 import com.cognifide.aet.vs.DBKey;
 
-//todo javadoc
+/**
+ * This factory is used to instantiate Grouper instance with given name.
+ *
+ * <p>Implementation of this interface should be a OSGI service so each implementation requires to
+ * have * {@literal @}Service and {@literal @}Component annotation to work and register properly.
+ */
 public interface GrouperFactory {
 
+  /**
+   * @return name, which the grouper factory will be registered on. It has to be unique for all
+   * modules in the grouping phase.
+   */
   String getName();
 
+  /**
+   * Each call returns new grouper job instance.
+   *
+   * @param dbKey              database connection properties
+   * @param expectedInputCount expected number of input messages before result generation
+   * @return new grouper job instance
+   * @see GrouperJob
+   */
   GrouperJob createInstance(DBKey dbKey, long expectedInputCount);
 }

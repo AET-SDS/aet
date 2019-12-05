@@ -19,6 +19,12 @@ package com.cognifide.aet.communication.api;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Value object, which uniquely identifies the test within certain suite run.
+ *
+ * @see com.cognifide.aet.communication.api.metadata.Test
+ * @see com.cognifide.aet.communication.api.metadata.Suite
+ */
 public class SuiteTestIdentifier {
 
   private final String correlationId;
