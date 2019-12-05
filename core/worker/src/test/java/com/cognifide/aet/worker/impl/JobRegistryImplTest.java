@@ -19,6 +19,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.when;
 import com.cognifide.aet.job.api.collector.CollectorFactory;
 import com.cognifide.aet.job.api.comparator.ComparatorFactory;
 import com.cognifide.aet.job.api.datafilter.DataFilterFactory;
+import com.cognifide.aet.job.api.grouper.GrouperFactory;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -60,6 +63,25 @@ public class JobRegistryImplTest {
     tested.unbindCollectorFactory(collectorFactory);
     assertNull(tested.getCollectorFactory("collectorA"));
     assertFalse(tested.hasJob("collectorA"));
+  }
+
+  @Test
+  public void bindGrouperFactory_expectGrouperInJobRegistry() {
+    GrouperFactory grouperFactory = mockGrouperFactory("grouperA");
+    tested.bindGrouperFactory(grouperFactory);
+    Optional<GrouperFactory> grouperA = tested.getGrouperFactory("grouperA");
+    assertThat(grouperA, not(Optional.empty()));
+  }
+
+  @Test
+  public void unbindGrouperFactory_expectGrouperRemovedFromJobRegistry() {
+    GrouperFactory grouperFactory = mockGrouperFactory("grouperA");
+    tested.bindGrouperFactory(grouperFactory);
+    Optional<GrouperFactory> grouper1 = tested.getGrouperFactory("grouperA");
+    tested.unbindGrouperFactory(grouperFactory);
+    Optional<GrouperFactory> grouper2 = tested.getGrouperFactory("grouperA");
+    assertThat(grouper1, not(Optional.empty()));
+    assertThat(grouper2, is(Optional.empty()));
   }
 
   @Test
@@ -130,6 +152,12 @@ public class JobRegistryImplTest {
     CollectorFactory collectorFactory = Mockito.mock(CollectorFactory.class);
     when(collectorFactory.getName()).thenReturn(name);
     return collectorFactory;
+  }
+
+  private static GrouperFactory mockGrouperFactory(String name) {
+    GrouperFactory grouperFactory = Mockito.mock(GrouperFactory.class);
+    when(grouperFactory.getName()).thenReturn(name);
+    return grouperFactory;
   }
 
   private static DataFilterFactory mockDataModifierFactory(String name) {

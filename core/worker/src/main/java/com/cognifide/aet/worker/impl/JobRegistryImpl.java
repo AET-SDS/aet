@@ -133,7 +133,7 @@ public class JobRegistryImpl implements JobRegistry {
       service = GrouperFactory.class,
       policy = ReferencePolicy.DYNAMIC,
       cardinality = ReferenceCardinality.MULTIPLE)
-  protected void bindGrouperFactory(GrouperFactory grouperFactory) { //todo test
+  protected void bindGrouperFactory(GrouperFactory grouperFactory) {
     LOGGER.info("Binding grouper: {}", grouperFactory.getName());
     grouperFactoryMap.put(grouperFactory.getName(), grouperFactory);
   }
