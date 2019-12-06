@@ -46,10 +46,6 @@
       <groupId>com.cognifide.aet</groupId>
       <artifactId>jobs-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.cognifide.aet</groupId>
-      <artifactId>jobs</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -107,7 +103,6 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -141,8 +136,7 @@
             <configuration>
               <instructions>
                 <Bundle-Vendor>Cognifide Ltd.</Bundle-Vendor>
-                <Export-Package>com.cognifide.aet.rest.*;version="${project.version}"
-                </Export-Package>
+                <Export-Package>com.cognifide.aet.rest.*;version="${project.version}"</Export-Package>
               </instructions>
             </configuration>
           </execution>

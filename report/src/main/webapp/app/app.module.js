@@ -201,6 +201,42 @@ define(['angularAMD',
           })
         }
       }))
+      .state('errorsView', angularAMD.route({
+        url: '/test/:test/errors',
+        parent: 'root',
+        views: {
+          'content@': angularAMD.route({
+            templateUrl: 'app/layout/main/test/errorsView.test.view.html',
+            controllerUrl: 'layout/main/test/errorsView.test.controller',
+            controllerAs: 'errorsView',
+            resolve: {
+              metadataReady: function (metadataLoaderService) {
+                return metadataLoaderService.setup();
+              }
+            }
+          }),
+          'toolbarTop@': angularAMD.route({
+            templateUrl: 'app/layout/toolbar/toolbarTop.view.html',
+            controllerUrl: 'layout/toolbar/toolbarTop.controller',
+            controllerAs: 'toolbarTop',
+            resolve: {
+              metadataReady: function (metadataLoaderService) {
+                return metadataLoaderService.setup();
+              }
+            }
+          }),
+          'toolbarBottom@': angularAMD.route({
+            templateUrl: 'app/layout/toolbar/toolbarBottom.view.html',
+            controllerUrl: 'layout/toolbar/toolbarBottom.controller',
+            controllerAs: 'toolbarBottom',
+            resolve: {
+              metadataReady: function (metadataLoaderService) {
+                return metadataLoaderService.setup();
+              }
+            }
+          })
+        }
+      }))
       .state('url', angularAMD.route({
         url: '/url/:test/:url',
         parent: 'root',
