@@ -17,13 +17,13 @@
  */
 define([], function () {
   'use strict';
-  return ['$scope', '$rootScope', '$uibModal', '$stateParams',
+  return ['$scope', '$rootScope', '$uibModal', '$stateParams', '$location',
     'patternsService', 'metadataAccessService', 'notesService',
     'viewModeService', 'suiteInfoService', 'rerunService', 'historyService',
     ToolbarBottomController
   ];
 
-  function ToolbarBottomController($scope, $rootScope, $uibModal, $stateParams,
+  function ToolbarBottomController($scope, $rootScope, $uibModal, $stateParams, $location,
     patternsService, metadataAccessService, notesService, viewModeService,
     suiteInfoService, rerunService, historyService) {
     var vm = this;
@@ -32,7 +32,6 @@ define([], function () {
     if (suiteInfoService.getInfo().patternCorrelationId) {
       vm.usesCrossSuitePattern = true;
     }
-
     vm.showAcceptButton = patternsMayBeUpdated;
     vm.showRevertButton = patternsMarkedForUpdateMayBeReverted;
     vm.displayCommentModal = displayCommentModal;
@@ -70,6 +69,7 @@ define([], function () {
 
     function updateToolbar() {
       vm.viewMode = viewModeService.get();
+      console.log(vm.viewMode)
       switch (vm.viewMode) {
         case viewModeService.SUITE:
           setupSuiteToolbarModel();
@@ -198,6 +198,9 @@ define([], function () {
       if (localStorage.getItem('currentRerunEndpointUrl')) {
         vm.checkRerunStatus(localStorage.getItem('currentRerunEndpointUrl'));
       }
+      const url = $location.path();
+      const urlParts = url.split("/")
+      urlParts.length === 3 ? vm.errorsView = true : vm.errorsView = false
       var testName = $stateParams.test;
       vm.model = metadataAccessService.getTest(testName);
       vm.updatePatterns = function () {
@@ -228,3 +231,4 @@ define([], function () {
     }
   }
 });
+

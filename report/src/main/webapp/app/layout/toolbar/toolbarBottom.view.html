@@ -71,6 +71,7 @@
         <h5>Last rerun: {{toolbarBottom.model.rerunTimestamp | date:'yyyy-MM-dd HH:mm' }}</h5>
       </span>
     </h4>
+
     <h5 ng-if="toolbarBottom.viewMode == 'url'">
       <div class="fontawesome-link"
          data-toggle="popover"
@@ -96,6 +97,15 @@
     <p class="suite-rerun-msg">Status: {{rerunMsg}}</p>
     <p class="suite-rerun-msg" ng-if="rerunInProgressSuccessful">Progress: {{rerunProgress | number: 2}}%</p>
   </div>
+  <div class="toolbar-testViewMode"> 
+      <a ng-if="toolbarBottom.viewMode == 'test'" ui-sref="test({'suite':data.project,'test': toolbarBottom.model.name})">
+          <span ng-click="urlsView = true" ng-class="{'button-active' : toolbarBottom.errorsView, 'button-inactive' : !toolbarBottom.errorsView}">URLs view</span>
+      </a>
+      <a ng-if="toolbarBottom.viewMode == 'test'" ui-sref="errorsView({'suite':data.project,'test': toolbarBottom.model.name })">
+          <span ng-click="urlsView = false" ng-class="{'button-active' : !toolbarBottom.errorsView, 'button-inactive' : toolbarBottom.errorsView}">Errors view</span>
+      </a>
+  </div>
+
   <div class="toolbar-blocks">
     <div class="toolbar-btns is-absolute">
 
