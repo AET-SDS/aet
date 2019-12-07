@@ -108,7 +108,7 @@ public class GrouperDispatcherFactory {
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
       Map<String, GrouperJob> grouperJobs) {
-    LOGGER.info("Creating new GrouperDispatcher for id: {}", suiteComparatorsCount);
+    LOGGER.info("Creating new GrouperDispatcher for id: {}", suiteTestIdentifier);
     Map<String, AtomicInteger> comparatorCountdowns =
         suiteComparatorsCount.prepareCountdownsByComparatorTypes(suiteTestIdentifier.getTestName());
     return new GrouperDispatcherImpl(comparatorCountdowns, grouperJobs);
