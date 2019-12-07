@@ -24,25 +24,30 @@ import java.util.List;
 
 public class AccessibilityErrorWrapper extends AccessibilityReport {
 
-  public static final String ERROR_TYPE = "accessibility";
-  public static final Type ARTIFACT_TYPE = new TypeToken<AccessibilityErrorWrapper>() {
+  private static final long serialVersionUID = 2583336509751289184L;
+
+  public static final Type ARTIFACT_TYPE = new TypeToken<AccessibilityReport>() {
   }.getType();
 
-  private String urlName;
+  private final String urlName;
 
-  public AccessibilityErrorWrapper(
+  public AccessibilityErrorWrapper(AccessibilityReport report,
+      AccessibilityReportConfiguration config,
+      String urlName) {
+    this(report.getNonExcludedIssues(), report.getExcludedIssues(), report.getErrorCount(),
+        report.getWarningCount(), report.getNoticeCount(), config, urlName);
+  }
+
+  private AccessibilityErrorWrapper(
       List<AccessibilityIssue> nonExcludedIssues,
       List<AccessibilityIssue> excludedIssues,
       int errorCount, int warningCount, int noticeCount,
-      AccessibilityReportConfiguration configuration) {
+      AccessibilityReportConfiguration configuration, String urlName) {
     super(nonExcludedIssues, excludedIssues, errorCount, warningCount, noticeCount, configuration);
+    this.urlName = urlName;
   }
 
   public String getUrlName() {
     return urlName;
-  }
-
-  public void setUrlName(String urlName) {
-    this.urlName = urlName;
   }
 }

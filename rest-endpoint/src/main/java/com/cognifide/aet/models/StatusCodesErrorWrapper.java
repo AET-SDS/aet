@@ -23,24 +23,26 @@ import java.util.List;
 
 public class StatusCodesErrorWrapper extends StatusCodesComparatorResult {
 
-  public static final String ERROR_TYPE = "status-codes";
-  public static final Type ARTIFACT_TYPE = new TypeToken<StatusCodesErrorWrapper>() {
+  private static final long serialVersionUID = -6582956951044747903L;
+
+  public static final Type ARTIFACT_TYPE = new TypeToken<StatusCodesComparatorResult>() {
   }.getType();
 
-  private String urlName;
+  private final String urlName;
 
-  public StatusCodesErrorWrapper(
-      List<StatusCode> statusCodes,
-      List<StatusCode> filteredStatusCodes,
-      List<StatusCode> excludedStatusCodes) {
+  public StatusCodesErrorWrapper(StatusCodesComparatorResult result, String urlName) {
+    this(result.getStatusCodes(), result.getFilteredStatusCodes(), result.getExcludedStatusCodes(),
+        urlName);
+  }
+
+  private StatusCodesErrorWrapper(
+      List<StatusCode> statusCodes, List<StatusCode> filteredStatusCodes,
+      List<StatusCode> excludedStatusCodes, String urlName) {
     super(statusCodes, filteredStatusCodes, excludedStatusCodes);
+    this.urlName = urlName;
   }
 
   public String getUrlName() {
     return urlName;
-  }
-
-  public void setUrlName(String urlName) {
-    this.urlName = urlName;
   }
 }

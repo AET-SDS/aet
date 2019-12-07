@@ -23,24 +23,26 @@ import java.util.List;
 
 public class W3cHtml5ErrorWrapper extends W3cHtml5ComparatorResult {
 
+  private static final long serialVersionUID = 8780994408203761214L;
+
   public static final String COMPARATOR_TYPE = "w3c-html5";
-  public static final String RESULT_KEY = "source_w3c-html5";
-  public static final Type ARTIFACT_TYPE = new TypeToken<W3cHtml5ErrorWrapper>() {
+  public static final Type ARTIFACT_TYPE = new TypeToken<W3cHtml5ComparatorResult>() {
   }.getType();
 
-  private String urlName;
+  private final String urlName;
 
-  public W3cHtml5ErrorWrapper(int errorCount, int warningCount,
-      List<W3cHtml5Issue> issues,
-      List<W3cHtml5Issue> excludedIssues) {
+  public W3cHtml5ErrorWrapper(W3cHtml5ComparatorResult result, String urlName) {
+    this(result.getErrorsCount(), result.getWarningsCount(), result.getIssues(),
+        result.getExcludedIssues(), urlName);
+  }
+
+  private W3cHtml5ErrorWrapper(int errorCount, int warningCount, List<W3cHtml5Issue> issues,
+      List<W3cHtml5Issue> excludedIssues, String urlName) {
     super(errorCount, warningCount, issues, excludedIssues);
+    this.urlName = urlName;
   }
 
   public String getUrlName() {
     return urlName;
-  }
-
-  public void setUrlName(String urlName) {
-    this.urlName = urlName;
   }
 }

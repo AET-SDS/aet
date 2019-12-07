@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 
 public class CookieErrorWrapper {
 
-  public static final String ERROR_TYPE = "cookie";
   public static final String ACTION_PARAM = "action";
   public static final String ACTION_COMPARE = "compare";
   public static final String ACTION_TEST = "test";

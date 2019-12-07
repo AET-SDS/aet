@@ -22,7 +22,6 @@ import java.util.Set;
 
 public class JsErrorWrapper {
 
-  public static final String ERROR_TYPE = "js-errors";
   public static final Type ARTIFACT_TYPE = new TypeToken<Set<JsErrorLog>>() {
   }.getType();
 

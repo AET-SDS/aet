@@ -25,8 +25,8 @@ public class ErrorsMap {
 
   private Map<String, List<Object>> map = new HashMap<>();
 
-  public void mergeMap(String errorType, Object object) {
-    map.merge(errorType, new ArrayList<>(Collections.singletonList(object)),
+  public void mergeMap(ErrorType errorType, Object object) {
+    map.merge(errorType.getErrorType(), new ArrayList<>(Collections.singletonList(object)),
         (old, error) -> {
           old.addAll(error);
           return old;

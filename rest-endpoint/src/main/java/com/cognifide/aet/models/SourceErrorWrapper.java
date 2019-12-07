@@ -23,8 +23,6 @@ import java.util.Map;
 
 public class SourceErrorWrapper {
 
-  public static final String ERROR_TYPE = "source";
-  public static final String COMPARATOR_PARAM = "comparator";
   public static final String COMPARATOR_TYPE = "source";
   public static final Type ARTIFACT_TYPE = new TypeToken<Map<String, List<ResultDelta>>>() {
   }.getType();

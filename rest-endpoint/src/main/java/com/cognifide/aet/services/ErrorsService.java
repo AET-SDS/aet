@@ -21,11 +21,16 @@ import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
+import com.cognifide.aet.job.common.comparators.accessibility.report.AccessibilityReport;
+import com.cognifide.aet.job.common.comparators.accessibility.report.AccessibilityReportConfiguration;
 import com.cognifide.aet.job.common.comparators.cookie.CookieCompareComparatorResult;
 import com.cognifide.aet.job.common.comparators.cookie.CookieTestComparatorResult;
 import com.cognifide.aet.job.common.comparators.source.diff.ResultDelta;
+import com.cognifide.aet.job.common.comparators.statuscodes.StatusCodesComparatorResult;
+import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5ComparatorResult;
 import com.cognifide.aet.models.AccessibilityErrorWrapper;
 import com.cognifide.aet.models.CookieErrorWrapper;
+import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorsMap;
 import com.cognifide.aet.models.JsErrorWrapper;
 import com.cognifide.aet.models.ScreenErrorWrapper;
@@ -34,16 +39,21 @@ import com.cognifide.aet.models.StatusCodesErrorWrapper;
 import com.cognifide.aet.models.W3cHtml5ErrorWrapper;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
+import com.google.common.base.Strings;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(service = ErrorsService.class, immediate = true)
-public class ErrorsService {
+public class ErrorsService implements Serializable {
+
+  private static final long serialVersionUID = 4620465433359434447L;
 
   @Reference
   private ArtifactsDAO artifactsDAO;
@@ -59,9 +69,14 @@ public class ErrorsService {
 
   private void processUrl(Url url, DBKey dbKey, ErrorsMap errorsMap, String errorType)
       throws IOException {
-    if (errorType != null) {
-      List<Step> steps = url.getSteps().stream()
-          .filter(s -> s.getType().equals(errorType)).collect(Collectors.toList());
+    if (!Strings.isNullOrEmpty(errorType)) {
+      List<Step> steps = new ArrayList<>();
+      for (Step step : url.getSteps()) {
+        if (step.getType().equals(errorType)) {
+          steps.add(step);
+        }
+      }
+
       if (steps.isEmpty()) {
         return;
       }
@@ -85,26 +100,27 @@ public class ErrorsService {
       if (comparator.getStepResult().getStatus() == Status.PASSED) {
         continue;
       }
-      switch (errorType) {
-        case JsErrorWrapper.ERROR_TYPE:
+      ErrorType type = ErrorType.byStringType(errorType);
+      switch (type) {
+        case JS_ERRORS:
           processJsErrors(comparator, dbKey, urlName, errorsMap);
           break;
-        case StatusCodesErrorWrapper.ERROR_TYPE:
+        case STATUS_CODES:
           processStatusCodesErrors(comparator, dbKey, urlName, errorsMap);
           break;
-        case AccessibilityErrorWrapper.ERROR_TYPE:
+        case ACCESSIBILITY:
           processAccessibilityErrors(comparator, dbKey, urlName, errorsMap);
           break;
 
-        case ScreenErrorWrapper.ERROR_TYPE:
+        case SCREEN:
           processScreenErrors(comparator, step, urlName, errorsMap);
           break;
 
-        case CookieErrorWrapper.ERROR_TYPE:
+        case COOKIE:
           processCookieErrors(comparator, dbKey, urlName, errorsMap);
           break;
 
-        case SourceErrorWrapper.ERROR_TYPE:
+        case SOURCE:
           processSourceErrors(comparator, dbKey, urlName, errorsMap);
           break;
       }
@@ -117,25 +133,29 @@ public class ErrorsService {
         comparator.getStepResult().getArtifactId(), JsErrorWrapper.ARTIFACT_TYPE);
     JsErrorWrapper jsErrorWrapper = new JsErrorWrapper(jsErrors, urlName);
 
-    errorsMap.mergeMap(JsErrorWrapper.ERROR_TYPE, jsErrorWrapper);
+    errorsMap.mergeMap(ErrorType.JS_ERRORS, jsErrorWrapper);
   }
 
   private void processStatusCodesErrors(Comparator comparator, DBKey dbKey, String urlName,
       ErrorsMap errorsMap) throws IOException {
-    StatusCodesErrorWrapper statusCodesErrors = artifactsDAO.getJsonFormatArtifact(dbKey,
+    StatusCodesComparatorResult comparatorResult = artifactsDAO.getJsonFormatArtifact(dbKey,
         comparator.getStepResult().getArtifactId(), StatusCodesErrorWrapper.ARTIFACT_TYPE);
-    statusCodesErrors.setUrlName(urlName);
+    StatusCodesErrorWrapper statusCodesErrors = new StatusCodesErrorWrapper(comparatorResult,
+        urlName);
 
-    errorsMap.mergeMap(StatusCodesErrorWrapper.ERROR_TYPE, statusCodesErrors);
+    errorsMap.mergeMap(ErrorType.STATUS_CODES, statusCodesErrors);
   }
 
   private void processAccessibilityErrors(Comparator comparator, DBKey dbKey, String urlName,
       ErrorsMap errorsMap) throws IOException {
-    AccessibilityErrorWrapper accessibilityErrors = artifactsDAO.getJsonFormatArtifact(dbKey,
+    AccessibilityReport accessibilityReport = artifactsDAO.getJsonFormatArtifact(dbKey,
         comparator.getStepResult().getArtifactId(), AccessibilityErrorWrapper.ARTIFACT_TYPE);
-    accessibilityErrors.setUrlName(urlName);
+    Map<String, String> params = new HashMap<>();
+    AccessibilityReportConfiguration config = new AccessibilityReportConfiguration(params);
+    AccessibilityErrorWrapper accessibilityErrors = new AccessibilityErrorWrapper(
+        accessibilityReport, config, urlName);
 
-    errorsMap.mergeMap(AccessibilityErrorWrapper.ERROR_TYPE, accessibilityErrors);
+    errorsMap.mergeMap(ErrorType.ACCESSIBILITY, accessibilityErrors);
   }
 
   private void processScreenErrors(Comparator comparator, Step step, String urlName,
@@ -143,7 +163,7 @@ public class ErrorsService {
     ScreenErrorWrapper screenError = new ScreenErrorWrapper(step.getName(),
         comparator.getStepResult().getData(), urlName);
 
-    errorsMap.mergeMap(ScreenErrorWrapper.ERROR_TYPE, screenError);
+    errorsMap.mergeMap(ErrorType.SCREEN, screenError);
   }
 
   private void processCookieErrors(Comparator comparator, DBKey dbKey, String urlName,
@@ -155,33 +175,33 @@ public class ErrorsService {
           comparator.getStepResult().getArtifactId(),
           CookieErrorWrapper.ARTIFACT_COOKIE_COMPARE_TYPE);
       cookieError = new CookieErrorWrapper(result, urlName);
-    } else if (action.equals("test")) {
+    } else if (action.equals(CookieErrorWrapper.ACTION_TEST)) {
       CookieTestComparatorResult result = artifactsDAO.getJsonFormatArtifact(dbKey,
           comparator.getStepResult().getArtifactId(), CookieErrorWrapper.ARTIFACT_COOKIE_TEST_TYPE);
       cookieError = new CookieErrorWrapper(result, urlName);
     }
 
     if (cookieError != null) {
-      errorsMap.mergeMap(CookieErrorWrapper.ERROR_TYPE, cookieError);
+      errorsMap.mergeMap(ErrorType.COOKIE, cookieError);
     }
   }
 
   private void processSourceErrors(Comparator comparator, DBKey dbKey, String urlName,
       ErrorsMap errorsMap) throws IOException {
-    String comparatorType = comparator.getParameters().get(SourceErrorWrapper.COMPARATOR_PARAM);
+    String comparatorType = comparator.getParameters().get(Comparator.COMPARATOR_PARAMETER);
     if (comparatorType.equals(W3cHtml5ErrorWrapper.COMPARATOR_TYPE)) {
-      W3cHtml5ErrorWrapper error = artifactsDAO.getJsonFormatArtifact(dbKey,
+      W3cHtml5ComparatorResult result = artifactsDAO.getJsonFormatArtifact(dbKey,
           comparator.getStepResult().getArtifactId(), W3cHtml5ErrorWrapper.ARTIFACT_TYPE);
-      error.setUrlName(urlName);
+      W3cHtml5ErrorWrapper error = new W3cHtml5ErrorWrapper(result, urlName);
 
-      errorsMap.mergeMap(W3cHtml5ErrorWrapper.RESULT_KEY, error);
+      errorsMap.mergeMap(ErrorType.SOURCE_W3CHTML5, error);
     } else if (comparatorType.equals(SourceErrorWrapper.COMPARATOR_TYPE)) {
       Map<String, List<ResultDelta>> result = artifactsDAO.getJsonFormatArtifact(dbKey,
           comparator.getStepResult().getArtifactId(), SourceErrorWrapper.ARTIFACT_TYPE);
       SourceErrorWrapper error = new SourceErrorWrapper(result, urlName,
           comparator.getStepResult().getData());
 
-      errorsMap.mergeMap(SourceErrorWrapper.ERROR_TYPE, error);
+      errorsMap.mergeMap(ErrorType.SOURCE, error);
     }
   }
 }

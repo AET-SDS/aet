@@ -15,29 +15,33 @@
  */
 package com.cognifide.aet.models;
 
-import java.util.Map;
+public enum ErrorType {
+  JS_ERRORS("js-errors"),
+  STATUS_CODES("status-codes"),
+  ACCESSIBILITY("accessibility"),
+  SCREEN("screen"),
+  COOKIE("cookie"),
+  SOURCE("source"),
+  SOURCE_W3CHTML5("source_w3c-html5"),
+  UNKNOWN("");
 
-public class ScreenErrorWrapper {
+  private String errorType;
 
-  private final String name;
-  private final Map<String, String> data;
-  private final String urlName;
-
-  public ScreenErrorWrapper(String name, Map<String, String> data, String urlName) {
-    this.name = name;
-    this.data = data;
-    this.urlName = urlName;
+  ErrorType(String errorType) {
+    this.errorType = errorType;
   }
 
-  public String getName() {
-    return name;
+  public String getErrorType() {
+    return errorType;
   }
 
-  public Map<String, String> getData() {
-    return data;
-  }
+  public static ErrorType byStringType(String errorType) {
+    for (ErrorType type : ErrorType.values()) {
+      if (type.errorType.equalsIgnoreCase(errorType)) {
+        return type;
+      }
+    }
 
-  public String getUrlName() {
-    return urlName;
+    return UNKNOWN;
   }
 }
