@@ -20,7 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-public class JsErrorWrapper {
+public class JsErrorWrapper implements ErrorWrapper {
 
   public static final Type ARTIFACT_TYPE = new TypeToken<Set<JsErrorLog>>() {
   }.getType();
@@ -37,7 +37,8 @@ public class JsErrorWrapper {
     return jsErrors;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }

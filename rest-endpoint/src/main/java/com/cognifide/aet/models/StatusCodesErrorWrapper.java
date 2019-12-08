@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class StatusCodesErrorWrapper extends StatusCodesComparatorResult {
+public class StatusCodesErrorWrapper extends StatusCodesComparatorResult implements ErrorWrapper {
 
   private static final long serialVersionUID = -6582956951044747903L;
 
@@ -42,7 +42,8 @@ public class StatusCodesErrorWrapper extends StatusCodesComparatorResult {
     this.urlName = urlName;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }

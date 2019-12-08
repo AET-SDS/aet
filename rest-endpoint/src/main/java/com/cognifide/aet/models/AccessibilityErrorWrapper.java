@@ -22,7 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class AccessibilityErrorWrapper extends AccessibilityReport {
+public class AccessibilityErrorWrapper extends AccessibilityReport implements ErrorWrapper {
 
   private static final long serialVersionUID = 2583336509751289184L;
 
@@ -47,7 +47,8 @@ public class AccessibilityErrorWrapper extends AccessibilityReport {
     this.urlName = urlName;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }

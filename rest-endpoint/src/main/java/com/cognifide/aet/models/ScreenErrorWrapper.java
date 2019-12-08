@@ -17,7 +17,7 @@ package com.cognifide.aet.models;
 
 import java.util.Map;
 
-public class ScreenErrorWrapper {
+public class ScreenErrorWrapper implements ErrorWrapper {
 
   private final String name;
   private final Map<String, String> data;
@@ -37,7 +37,8 @@ public class ScreenErrorWrapper {
     return data;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }

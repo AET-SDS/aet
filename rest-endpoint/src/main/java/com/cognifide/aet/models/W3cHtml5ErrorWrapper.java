@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class W3cHtml5ErrorWrapper extends W3cHtml5ComparatorResult {
+public class W3cHtml5ErrorWrapper extends W3cHtml5ComparatorResult implements ErrorWrapper {
 
   private static final long serialVersionUID = 8780994408203761214L;
 
@@ -42,7 +42,8 @@ public class W3cHtml5ErrorWrapper extends W3cHtml5ComparatorResult {
     this.urlName = urlName;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }

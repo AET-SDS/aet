@@ -25,7 +25,7 @@ public enum ErrorType {
   SOURCE_W3CHTML5("source_w3c-html5"),
   UNKNOWN("");
 
-  private String errorType;
+  private final String errorType;
 
   ErrorType(String errorType) {
     this.errorType = errorType;
@@ -43,5 +43,11 @@ public enum ErrorType {
     }
 
     return UNKNOWN;
+  }
+
+
+  @Override
+  public String toString() {
+    return errorType;
   }
 }

@@ -20,7 +20,8 @@ import static com.cognifide.aet.rest.Helper.responseAsJson;
 
 import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.metadata.Test;
-import com.cognifide.aet.models.ErrorsMap;
+import com.cognifide.aet.models.ErrorType;
+import com.cognifide.aet.models.ErrorWrapper;
 import com.cognifide.aet.services.ErrorsService;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
@@ -28,6 +29,8 @@ import com.cognifide.aet.vs.MetadataDAO;
 import com.cognifide.aet.vs.StorageException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,8 +51,6 @@ public class ErrorsServlet extends BasicDataServlet {
 
   @Reference
   private MetadataDAO metadataDAO;
-  @Reference
-  private ArtifactsDAO artifactsDAO;
   @Reference
   private ErrorsService errorsService;
 
@@ -84,11 +85,11 @@ public class ErrorsServlet extends BasicDataServlet {
           .filter(t -> t.getName().equals(testName)).findFirst();
       if (test.isPresent()) {
         String errorType = Helper.getErrorTypeFromRequest(req);
-        ErrorsMap errorsMap = errorsService
+        Map<ErrorType, List<ErrorWrapper>> errorsMap = errorsService
             .getErrorsFromTest(test.get(), dbKey, errorType);
 
         resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
-        resp.getWriter().write(GSON.toJson(errorsMap.getMap()));
+        resp.getWriter().write(GSON.toJson(errorsMap));
       } else {
         createNotFoundTestResponse(resp, testName, dbKey);
       }

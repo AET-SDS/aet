@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-public class SourceErrorWrapper {
+public class SourceErrorWrapper implements ErrorWrapper {
 
   public static final String COMPARATOR_TYPE = "source";
   public static final Type ARTIFACT_TYPE = new TypeToken<Map<String, List<ResultDelta>>>() {
@@ -42,11 +42,12 @@ public class SourceErrorWrapper {
     return result;
   }
 
-  public String getUrlName() {
-    return urlName;
-  }
-
   public Map<String, String> getData() {
     return data;
+  }
+
+  @Override
+  public String getUrl() {
+    return urlName;
   }
 }

@@ -21,7 +21,7 @@ import com.cognifide.aet.job.common.comparators.cookie.CookieTestComparatorResul
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
-public class CookieErrorWrapper {
+public class CookieErrorWrapper implements ErrorWrapper {
 
   public static final String ACTION_PARAM = "action";
   public static final String ACTION_COMPARE = "compare";
@@ -44,7 +44,8 @@ public class CookieErrorWrapper {
     return result;
   }
 
-  public String getUrlName() {
+  @Override
+  public String getUrl() {
     return urlName;
   }
 }
