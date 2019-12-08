@@ -38,57 +38,13 @@ define([], function () {
       errorsService.getErrors($stateParams.test).then(function(data) {
         console.log('errors', data);
           vm.errors = data;
-          vm.fakeErrors = [
-            {
-              code: "403",
-              text: "Error refactor za gruby znowu",
-              url: "URL: url1"
-            },
-            {
-              code: "403",
-              text: "Error refactor za gruby znowu",
-              url: "URL: url2"
-            },
-            {
-              code: "403",
-              text: "Error refactor za gruby znowu",
-              url: "URL: url3"
-            },
-            {
-              code: "403",
-              text: "Error refactor za gruby znowu",
-              url: "URL: url2"
-            },
-            {
-              code: "404",
-              text: "Brak obrazka, mocny error",
-              url: "URL: url3"
-            },
-            {
-              code: "404",
-              text: "Brak obrazka, mocny error",
-              url: "URL: url1"
-            },
-            {
-              code: "404",
-              text: "Brak obrazka, mocny error",
-              url: "URL: url1"
-            },
-            {
-              code: "403",
-              text: "Error patryk znowu pił error",
-              url: "URL: url2"
-            },
-            {
-              code: "401",
-              text: "Error mocny error",
-              url: "URL: url3"
-            }
-          ]
       });
       vm.urls = metadataAccessService.getTestUrls($stateParams.test);
       vm.testName = $stateParams.test;
-
+      vm.formatDifference = formatDifference
+    }
+    function formatDifference (difference){
+      return Number(difference).toFixed(2)
     }
   }
 });
