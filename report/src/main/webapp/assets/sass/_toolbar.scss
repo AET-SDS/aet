@@ -50,11 +50,7 @@
 
   &-link {
     @include transition(width, 0.3s);
-<<<<<<< HEAD
     width: calc(100% - 800px);
-=======
-    width: calc(100% - 600px);
->>>>>>> 109bfa655ce3bc02711e79c21100955f0ef67c29
     background: $white;
 
     > {
