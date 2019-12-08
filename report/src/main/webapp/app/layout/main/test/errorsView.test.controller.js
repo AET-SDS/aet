@@ -16,29 +16,79 @@
  * limitations under the License.
  */
 define([], function () {
-    'use strict';
-    return ['$rootScope', '$stateParams', 'metadataAccessService',
-      ErrorsViewTestController];
-  
-    function ErrorsViewTestController($rootScope, $stateParams,
-        metadataAccessService) {
-      var vm = this;
-  
-      $rootScope.$on('metadata:changed', updateTestView);
-      $('[data-toggle="popover"]').popover({
-        placement: 'bottom'
+  'use strict';
+  return ['$rootScope', '$stateParams', 'metadataAccessService', 'errorsService',
+    ErrorsViewTestController];
+
+  function ErrorsViewTestController($rootScope, $stateParams,
+      metadataAccessService,errorsService) {
+    var vm = this;
+
+    $rootScope.$on('metadata:changed', updateErrorsView);
+    $('[data-toggle="popover"]').popover({
+      placement: 'bottom'
+    });
+
+    updateErrorsView();
+    /***************************************
+     ***********  Private methods  *********
+     ***************************************/
+
+    function updateErrorsView() {
+      errorsService.getErrors($stateParams.test).then(function(data) {
+        console.log('errors', data);
+          vm.errors = data;
+          vm.fakeErrors = [
+            {
+              code: "403",
+              text: "Error refactor za gruby znowu",
+              url: "URL: url1"
+            },
+            {
+              code: "403",
+              text: "Error refactor za gruby znowu",
+              url: "URL: url2"
+            },
+            {
+              code: "403",
+              text: "Error refactor za gruby znowu",
+              url: "URL: url3"
+            },
+            {
+              code: "403",
+              text: "Error refactor za gruby znowu",
+              url: "URL: url2"
+            },
+            {
+              code: "404",
+              text: "Brak obrazka, mocny error",
+              url: "URL: url3"
+            },
+            {
+              code: "404",
+              text: "Brak obrazka, mocny error",
+              url: "URL: url1"
+            },
+            {
+              code: "404",
+              text: "Brak obrazka, mocny error",
+              url: "URL: url1"
+            },
+            {
+              code: "403",
+              text: "Error patryk znowu pił error",
+              url: "URL: url2"
+            },
+            {
+              code: "401",
+              text: "Error mocny error",
+              url: "URL: url3"
+            }
+          ]
       });
-  
-      updateTestView();
-  
-      /***************************************
-       ***********  Private methods  *********
-       ***************************************/
-  
-      function updateTestView() {
-        vm.urls = metadataAccessService.getTestUrls($stateParams.test);
-        vm.testName = $stateParams.test;
-      }
+      vm.urls = metadataAccessService.getTestUrls($stateParams.test);
+      vm.testName = $stateParams.test;
+
     }
-  });
-  
+  }
+});

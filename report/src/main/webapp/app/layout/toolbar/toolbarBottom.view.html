@@ -97,12 +97,18 @@
     <p class="suite-rerun-msg">Status: {{rerunMsg}}</p>
     <p class="suite-rerun-msg" ng-if="rerunInProgressSuccessful">Progress: {{rerunProgress | number: 2}}%</p>
   </div>
-  <div class="toolbar-testViewMode"> 
-      <a ng-if="toolbarBottom.viewMode == 'test'" ui-sref="test({'suite':data.project,'test': toolbarBottom.model.name})">
-          <span ng-click="urlsView = true" ng-class="{'button-active' : toolbarBottom.errorsView, 'button-inactive' : !toolbarBottom.errorsView}">URLs view</span>
+
+  <div class="toolbar-testViewMode" ng-if="toolbarBottom.viewMode == 'test'">
+      <div ng-if="toolbarBottom.errorsView" class="marginRight" > 
+        <input type="checkbox">
+        <span > Grouping</span>
+      </div>
+
+      <a ui-sref="test({'suite':data.project,'test': toolbarBottom.model.name})">
+          <span ng-click="urlsView = true" ng-class="{'button-active' : !toolbarBottom.errorsView, 'button-inactive' : toolbarBottom.errorsView}">URLs view</span>
       </a>
-      <a ng-if="toolbarBottom.viewMode == 'test'" ui-sref="errorsView({'suite':data.project,'test': toolbarBottom.model.name })">
-          <span ng-click="urlsView = false" ng-class="{'button-active' : !toolbarBottom.errorsView, 'button-inactive' : toolbarBottom.errorsView}">Errors view</span>
+      <a ui-sref="errorsView({'suite':data.project,'test': toolbarBottom.model.name })">
+          <span ng-click="urlsView = false" ng-class="{'button-active' : toolbarBottom.errorsView, 'button-inactive' : !toolbarBottom.errorsView}">Errors view</span>
       </a>
   </div>
 

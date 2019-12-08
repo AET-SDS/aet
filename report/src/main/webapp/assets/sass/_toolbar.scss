@@ -50,12 +50,15 @@
 
   &-link {
     @include transition(width, 0.3s);
-    width: calc(100% - 600px);
+    width: calc(100% - 800px);
     background: $white;
 
     > {
       float: right;
     }
+  }
+  .marginRight{ 
+    margin-right: 50px;
   }
 
   &-block {
