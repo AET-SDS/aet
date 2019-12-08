@@ -52,6 +52,7 @@ define(['angularAMD',
   'caseFactory',
   'userSettingsService',
   'viewModeService',
+  'errorsService',
 
   // sidepanel
   'sidepanelDirective',
