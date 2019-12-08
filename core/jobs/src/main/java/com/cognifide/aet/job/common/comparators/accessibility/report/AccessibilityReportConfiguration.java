@@ -22,11 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AccessibilityReportConfiguration {
 
-  private static final String PARAM_SHOW_EXCLUDED = "showExcluded";
+  public static final String PARAM_SHOW_EXCLUDED = "showExcluded";
 
-  private static final String PARAM_IGNORE_NOTICE = "ignore-notice";
+  public static final String PARAM_IGNORE_NOTICE = "ignore-notice";
 
-  private static final String PARAM_REPORT_LEVEL = "report-level";
+  public static final String PARAM_REPORT_LEVEL = "report-level";
 
   private static final String DEFAULT_REPORT_LEVEL = "error";
 

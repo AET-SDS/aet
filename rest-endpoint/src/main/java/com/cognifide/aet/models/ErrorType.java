@@ -13,37 +13,41 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.rest.helpers;
-
-import com.cognifide.aet.job.api.collector.JsErrorLog;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+package com.cognifide.aet.models;
 
 public enum ErrorType {
-  JS_ERRORS("js-errors", new TypeToken<Set<JsErrorLog>>() {
-  }.getType());
+  JS_ERRORS("js-errors"),
+  STATUS_CODES("status-codes"),
+  ACCESSIBILITY("accessibility"),
+  SCREEN("screen"),
+  COOKIE("cookie"),
+  SOURCE("source"),
+  SOURCE_W3CHTML5("source_w3c-html5"),
+  UNKNOWN("");
 
-  private final String errorName;
-  private final Type type;
+  private final String errorType;
 
-  ErrorType(String errorName, Type type) {
-    this.errorName = errorName;
-    this.type = type;
+  ErrorType(String errorType) {
+    this.errorType = errorType;
   }
 
-  private static final Map<String, Type> map;
+  public String getErrorType() {
+    return errorType;
+  }
 
-  static {
-    map = new HashMap<>();
+  public static ErrorType byStringType(String errorType) {
     for (ErrorType type : ErrorType.values()) {
-      map.put(type.errorName, type.type);
+      if (type.errorType.equalsIgnoreCase(errorType)) {
+        return type;
+      }
     }
+
+    return UNKNOWN;
   }
 
-  public static Type getTypeByName(String name) {
-    return map.get(name);
+
+  @Override
+  public String toString() {
+    return errorType;
   }
 }
