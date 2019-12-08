@@ -67,7 +67,7 @@ public class ErrorsService implements Serializable {
     }
 
     return stepsToProcess
-        .flatMap(step -> processStep(step, dbKey, errorType, url.getName()).stream())
+        .flatMap(step -> processStep(step, dbKey, step.getType(), url.getName()).stream())
         .collect(Collectors
             .groupingBy(Pair::getLeft, Collectors.mapping(Pair::getRight, Collectors.toList())));
 
