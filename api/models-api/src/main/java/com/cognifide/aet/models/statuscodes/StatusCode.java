@@ -1,4 +1,4 @@
-/**
+/*
  * AET
  *
  * Copyright (C) 2013 Cognifide Limited
@@ -13,7 +13,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.collectors.statuscodes;
+package com.cognifide.aet.models.statuscodes;
 
 import com.cognifide.aet.models.Excludable;
 import java.io.Serializable;
@@ -54,5 +54,4 @@ public class StatusCode implements Serializable, Excludable {
   public void exclude() {
     this.excluded = true;
   }
-
 }

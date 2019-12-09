@@ -20,8 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.cognifide.aet.job.api.exceptions.ParametersException;
-import com.cognifide.aet.job.common.collectors.statuscodes.StatusCode;
 import com.cognifide.aet.job.common.collectors.statuscodes.StatusCodesCollectorResult;
+import com.cognifide.aet.models.statuscodes.StatusCode;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;

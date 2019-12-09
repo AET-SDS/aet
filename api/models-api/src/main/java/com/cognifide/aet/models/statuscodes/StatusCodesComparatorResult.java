@@ -1,4 +1,4 @@
-/**
+/*
  * AET
  *
  * Copyright (C) 2013 Cognifide Limited
@@ -13,9 +13,8 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.comparators.statuscodes;
+package com.cognifide.aet.models.statuscodes;
 
-import com.cognifide.aet.job.common.collectors.statuscodes.StatusCode;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,7 +29,8 @@ public class StatusCodesComparatorResult implements Serializable {
   private final List<StatusCode> excludedStatusCodes;
 
   public StatusCodesComparatorResult(
-      List<StatusCode> statusCodes, List<StatusCode> filteredStatusCodes,
+      List<StatusCode> statusCodes,
+      List<StatusCode> filteredStatusCodes,
       List<StatusCode> excludedStatusCodes) {
     this.statusCodes = statusCodes;
     this.filteredStatusCodes = filteredStatusCodes;
@@ -48,5 +48,4 @@ public class StatusCodesComparatorResult implements Serializable {
   public List<StatusCode> getExcludedStatusCodes() {
     return excludedStatusCodes;
   }
-
 }
