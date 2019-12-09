@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
-import com.cognifide.aet.job.common.collectors.accessibility.AccessibilityIssue;
+import com.cognifide.aet.models.AccessibilityIssue;
 import com.google.common.collect.ImmutableMap;
 import com.googlecode.zohhak.api.Configure;
 import com.googlecode.zohhak.api.TestWith;

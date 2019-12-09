@@ -61,6 +61,10 @@
     </dependency>
     <dependency>
       <groupId>com.cognifide.aet</groupId>
+      <artifactId>models-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cognifide.aet</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
     <dependency>

@@ -15,7 +15,7 @@
  */
 package com.cognifide.aet.job.common.collectors.statuscodes;
 
-import com.cognifide.aet.job.common.Excludable;
+import com.cognifide.aet.models.Excludable;
 import java.io.Serializable;
 
 public class StatusCode implements Serializable, Excludable {

@@ -400,6 +400,12 @@
       </dependency>
       <dependency>
         <groupId>com.cognifide.aet</groupId>
+        <artifactId>models-api</artifactId>
+        <version>${project.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.cognifide.aet</groupId>
         <artifactId>validation-api</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>

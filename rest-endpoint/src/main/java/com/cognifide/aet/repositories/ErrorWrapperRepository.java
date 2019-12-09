@@ -17,14 +17,14 @@ package com.cognifide.aet.repositories;
 
 import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
-import com.cognifide.aet.job.common.comparators.accessibility.report.AccessibilityReport;
-import com.cognifide.aet.job.common.comparators.accessibility.report.AccessibilityReportConfiguration;
 import com.cognifide.aet.job.common.comparators.cookie.CookieCompareComparatorResult;
 import com.cognifide.aet.job.common.comparators.cookie.CookieTestComparatorResult;
 import com.cognifide.aet.job.common.comparators.source.diff.ResultDelta;
 import com.cognifide.aet.job.common.comparators.statuscodes.StatusCodesComparatorResult;
 import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5ComparatorResult;
 import com.cognifide.aet.models.AccessibilityErrorWrapper;
+import com.cognifide.aet.models.AccessibilityReport;
+import com.cognifide.aet.models.AccessibilityReportConfiguration;
 import com.cognifide.aet.models.CookieErrorWrapper;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorWrapper;

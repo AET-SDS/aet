@@ -48,6 +48,10 @@
     </dependency>
     <dependency>
       <groupId>com.cognifide.aet</groupId>
+      <artifactId>models-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cognifide.aet</groupId>
       <artifactId>jobs</artifactId>
     </dependency>
 
@@ -140,6 +144,7 @@
             <configuration>
               <instructions>
                 <Bundle-Vendor>Cognifide Ltd.</Bundle-Vendor>
+                <Import-Package>javax.annotation;resolution:=optional,*</Import-Package>
                 <Export-Package>com.cognifide.aet.rest.*;version="${project.version}"
                 </Export-Package>
               </instructions>

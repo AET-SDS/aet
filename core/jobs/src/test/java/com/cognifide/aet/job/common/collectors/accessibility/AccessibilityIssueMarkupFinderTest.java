@@ -17,6 +17,7 @@ package com.cognifide.aet.job.common.collectors.accessibility;
 
 import static org.junit.Assert.assertEquals;
 
+import com.cognifide.aet.models.AccessibilityIssue;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;

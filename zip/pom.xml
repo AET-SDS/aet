@@ -258,6 +258,10 @@
                     </artifactItem>
                     <artifactItem>
                       <groupId>${project.groupId}</groupId>
+                      <artifactId>models-api</artifactId>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>${project.groupId}</groupId>
                       <artifactId>validation-api</artifactId>
                     </artifactItem>
                     <!-- core bundles -->
@@ -370,6 +374,7 @@
                       <include>${project.groupId}.communication-api.jar</include>
                       <include>${project.groupId}.datastorage-api.jar</include>
                       <include>${project.groupId}.jobs-api.jar</include>
+                      <include>${project.groupId}.models-api.jar</include>
                       <include>${project.groupId}.validation-api.jar</include>
                       <!-- core bundles -->
                       <include>${project.groupId}.cleaner.jar</include>
