@@ -19,7 +19,7 @@ import com.cognifide.aet.job.api.datafilter.AbstractDataModifierJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
 import com.cognifide.aet.job.common.utils.ParamsHelper;
-import com.cognifide.aet.models.AccessibilityIssue;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;

@@ -21,7 +21,7 @@ import com.cognifide.aet.job.api.collector.CollectorProperties;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
 import com.cognifide.aet.job.common.utils.javascript.JavaScriptJobExecutor;
-import com.cognifide.aet.models.AccessibilityIssue;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;

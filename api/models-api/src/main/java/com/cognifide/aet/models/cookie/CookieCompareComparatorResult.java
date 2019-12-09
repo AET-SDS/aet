@@ -1,4 +1,4 @@
-/**
+/*
  * AET
  *
  * Copyright (C) 2013 Cognifide Limited
@@ -13,7 +13,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.comparators.cookie;
+package com.cognifide.aet.models.cookie;
 
 import java.util.Set;
 import org.openqa.selenium.Cookie;

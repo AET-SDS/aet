@@ -15,8 +15,8 @@
  */
 package com.cognifide.aet.job.common.collectors.accessibility;
 
-import com.cognifide.aet.models.AccessibilityIssue;
-import com.cognifide.aet.models.AccessibilityIssue.IssueType;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue.IssueType;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
