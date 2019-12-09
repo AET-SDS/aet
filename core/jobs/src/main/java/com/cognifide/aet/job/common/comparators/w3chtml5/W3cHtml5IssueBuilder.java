@@ -15,6 +15,8 @@
  */
 package com.cognifide.aet.job.common.comparators.w3chtml5;
 
+import com.cognifide.aet.models.w3chtml5.W3cHtml5Issue;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5IssueType;
 import org.apache.commons.lang3.StringUtils;
 
 public final class W3cHtml5IssueBuilder {

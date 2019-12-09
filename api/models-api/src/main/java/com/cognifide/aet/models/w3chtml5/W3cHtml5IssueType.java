@@ -1,4 +1,4 @@
-/**
+/*
  * AET
  *
  * Copyright (C) 2013 Cognifide Limited
@@ -13,10 +13,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.comparators.w3chtml5;
+package com.cognifide.aet.models.w3chtml5;
 
 public enum W3cHtml5IssueType {
-  ERR, WARN, INFO, OTHER;
+  ERR,
+  WARN,
+  INFO,
+  OTHER;
 
   public static W3cHtml5IssueType getType(String type, String subType) {
     switch (type) {

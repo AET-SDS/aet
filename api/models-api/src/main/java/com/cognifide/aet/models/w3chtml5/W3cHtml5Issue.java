@@ -1,4 +1,4 @@
-/**
+/*
  * AET
  *
  * Copyright (C) 2013 Cognifide Limited
@@ -13,7 +13,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.comparators.w3chtml5;
+package com.cognifide.aet.models.w3chtml5;
 
 import java.io.Serializable;
 
@@ -37,9 +37,15 @@ public class W3cHtml5Issue implements Serializable {
 
   protected W3cHtml5IssueType issueType;
 
-  public W3cHtml5Issue(int line, int column, String message, String code1, String code2,
+  public W3cHtml5Issue(
+      int line,
+      int column,
+      String message,
+      String code1,
+      String code2,
       String errorPosition,
-      String additionalInfo, W3cHtml5IssueType issueType) {
+      String additionalInfo,
+      W3cHtml5IssueType issueType) {
     this.line = line;
     this.column = column;
     this.message = message;
@@ -81,5 +87,4 @@ public class W3cHtml5Issue implements Serializable {
   public String getAdditionalInfo() {
     return additionalInfo;
   }
-
 }

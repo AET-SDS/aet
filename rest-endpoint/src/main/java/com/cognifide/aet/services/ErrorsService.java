@@ -23,7 +23,7 @@ import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.repositories.ErrorWrapperRepository;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorWrapper;
-import com.cognifide.aet.models.W3cHtml5ErrorWrapper;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5ErrorWrapper;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
 import java.io.Serializable;

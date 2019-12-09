@@ -15,6 +15,8 @@
  */
 package com.cognifide.aet.job.common.comparators.w3chtml5;
 
+import com.cognifide.aet.models.w3chtml5.W3cHtml5Issue;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5IssueType;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;

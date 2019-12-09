@@ -20,10 +20,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5ComparatorResult;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5Issue;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5IssueType;
 import com.cognifide.aet.job.common.datafilters.w3chtmlfilter.W3cHtml5IssuesFilter;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5ComparatorResult;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5Issue;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5IssueType;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -21,6 +21,7 @@ import com.cognifide.aet.job.api.comparator.ComparatorProperties;
 import com.cognifide.aet.job.api.datafilter.DataFilterJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5ComparatorResult;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import java.util.List;
 import java.util.Map;

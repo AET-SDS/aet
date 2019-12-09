@@ -15,6 +15,7 @@
  */
 package com.cognifide.aet.job.common.comparators.w3chtml5;
 
+import com.cognifide.aet.models.w3chtml5.W3cHtml5Issue;
 import java.io.Serializable;
 import java.util.Comparator;
 

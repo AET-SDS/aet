@@ -15,9 +15,9 @@
  */
 package com.cognifide.aet.job.common.comparators.w3chtml5.parser;
 
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5ComparatorResult;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5Issue;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5IssueType;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5ComparatorResult;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5Issue;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5IssueType;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.TypeToken;

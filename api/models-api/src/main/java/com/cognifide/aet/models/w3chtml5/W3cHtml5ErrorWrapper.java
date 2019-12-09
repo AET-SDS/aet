@@ -1,22 +1,21 @@
-/**
+/*
  * AET
- * <p>
+ *
  * Copyright (C) 2013 Cognifide Limited
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.models;
+package com.cognifide.aet.models.w3chtml5;
 
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5ComparatorResult;
-import com.cognifide.aet.job.common.comparators.w3chtml5.W3cHtml5Issue;
+import com.cognifide.aet.models.ErrorWrapper;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -32,12 +31,20 @@ public class W3cHtml5ErrorWrapper extends W3cHtml5ComparatorResult implements Er
   private final String urlName;
 
   public W3cHtml5ErrorWrapper(W3cHtml5ComparatorResult result, String urlName) {
-    this(result.getErrorsCount(), result.getWarningsCount(), result.getIssues(),
-        result.getExcludedIssues(), urlName);
+    this(
+        result.getErrorsCount(),
+        result.getWarningsCount(),
+        result.getIssues(),
+        result.getExcludedIssues(),
+        urlName);
   }
 
-  private W3cHtml5ErrorWrapper(int errorCount, int warningCount, List<W3cHtml5Issue> issues,
-      List<W3cHtml5Issue> excludedIssues, String urlName) {
+  private W3cHtml5ErrorWrapper(
+      int errorCount,
+      int warningCount,
+      List<W3cHtml5Issue> issues,
+      List<W3cHtml5Issue> excludedIssues,
+      String urlName) {
     super(errorCount, warningCount, issues, excludedIssues);
     this.urlName = urlName;
   }
