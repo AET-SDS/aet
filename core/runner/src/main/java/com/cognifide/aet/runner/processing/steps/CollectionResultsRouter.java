@@ -24,15 +24,12 @@ import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
-import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import com.cognifide.aet.runner.scheduler.CollectorJobSchedulerService;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -44,19 +41,17 @@ import org.slf4j.LoggerFactory;
  * CollectionResultsRouter - collects work from collector-workers, divides and schedules compare
  * work among compare-workers
  */
-public class CollectionResultsRouter extends StepManager implements TaskFinishPoint {
+public class CollectionResultsRouter extends StepManagerObservable implements TaskFinishPoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CollectionResultsRouter.class);
 
   private static final String STEP_NAME = "COLLECTED";
 
-  private final List<ChangeObserver> changeListeners;
+  private static final String MODULE_NAME = "collection";
 
   private final CollectorJobSchedulerService collectorJobScheduler;
 
   private RunIndexWrapper runIndexWrapper;
-
-  private final ExecutionTimer timer;
 
   public CollectionResultsRouter(TimeoutWatch timeoutWatch, JmsConnection jmsConnection,
       RunnerConfiguration runnerConfiguration,
@@ -67,8 +62,6 @@ public class CollectionResultsRouter extends StepManager implements TaskFinishPo
     this.collectorJobScheduler = collectorJobScheduler;
     this.runIndexWrapper = runIndexWrapper;
     this.messagesToReceive.getAndSet(runIndexWrapper.countUrls());
-    this.changeListeners = new CopyOnWriteArrayList<>();
-    timer = ExecutionTimer.createAndRun("collection");
   }
 
   @Override
@@ -114,9 +107,7 @@ public class CollectionResultsRouter extends StepManager implements TaskFinishPo
   }
 
   private void finishTask() throws JMSException {
-    for (ChangeObserver changeListener : changeListeners) {
-      changeListener.informChangesCompleted();
-    }
+    notifyCompleted();
     timer.finishAndLog(runIndexWrapper.get().getName());
     LOGGER.debug("Closing consumer!");
     consumer.close();
@@ -138,9 +129,7 @@ public class CollectionResultsRouter extends StepManager implements TaskFinishPo
         LOGGER
             .info("{} ComparatorJobData messages send to queue {}. CorrelationId: {} TestName: {}",
                 scheduledMessagesNo, getQueueOutName(), correlationId, testName);
-        for (ChangeObserver changeListener : changeListeners) {
-          changeListener.updateAmountToReceive(scheduledMessagesNo);
-        }
+        notifyMessagesCount(scheduledMessagesNo);
       }
     }
   }
@@ -173,10 +162,6 @@ public class CollectionResultsRouter extends StepManager implements TaskFinishPo
     test.get().addUrl(processedUrl);
   }
 
-  public void addChangeObserver(ChangeObserver observer) {
-    changeListeners.add(observer);
-  }
-
   @Override
   public boolean isFinished() {
     return messagesReceivedSuccess.get() + messagesReceivedFailed.get() == messagesToReceive.get();
@@ -195,5 +180,10 @@ public class CollectionResultsRouter extends StepManager implements TaskFinishPo
   @Override
   protected String getStepName() {
     return STEP_NAME;
+  }
+
+  @Override
+  protected String getModuleNameForTimer() {
+    return MODULE_NAME;
   }
 }

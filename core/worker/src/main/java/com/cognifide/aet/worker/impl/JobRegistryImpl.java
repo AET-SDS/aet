@@ -18,8 +18,10 @@ package com.cognifide.aet.worker.impl;
 import com.cognifide.aet.job.api.collector.CollectorFactory;
 import com.cognifide.aet.job.api.comparator.ComparatorFactory;
 import com.cognifide.aet.job.api.datafilter.DataFilterFactory;
+import com.cognifide.aet.job.api.grouper.GrouperFactory;
 import com.cognifide.aet.worker.api.JobRegistry;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
@@ -41,6 +43,8 @@ public class JobRegistryImpl implements JobRegistry {
 
   private Map<String, ComparatorFactory> comparatorFactoryMap = new ConcurrentHashMap<>();
 
+  private Map<String, GrouperFactory> grouperFactoryMap = new ConcurrentHashMap<>();
+
   private Map<String, DataFilterFactory> dataModifierFactoryMap = new ConcurrentHashMap<>();
 
   private Map<String, ComparatorFactory> defaultComparatorMap = new ConcurrentHashMap<>();
@@ -58,6 +62,11 @@ public class JobRegistryImpl implements JobRegistry {
   @Override
   public ComparatorFactory getComparatorFactory(String name) {
     return comparatorFactoryMap.get(name);
+  }
+
+  @Override
+  public Optional<GrouperFactory> getGrouperFactory(String typeName) {
+    return Optional.ofNullable(grouperFactoryMap.get(typeName));
   }
 
   @Override
@@ -118,6 +127,20 @@ public class JobRegistryImpl implements JobRegistry {
         defaultComparatorMap.put(comparatorFactory.getType(), winner);
       }
     }
+  }
+
+  @Reference(
+      service = GrouperFactory.class,
+      policy = ReferencePolicy.DYNAMIC,
+      cardinality = ReferenceCardinality.MULTIPLE)
+  protected void bindGrouperFactory(GrouperFactory grouperFactory) {
+    LOGGER.info("Binding grouper: {}", grouperFactory.getName());
+    grouperFactoryMap.put(grouperFactory.getName(), grouperFactory);
+  }
+
+  protected void unbindGrouperFactory(GrouperFactory grouperFactory) {
+    LOGGER.info("Unbinding grouper: {}", grouperFactory.getName());
+    grouperFactoryMap.remove(grouperFactory.getName());
   }
 
   @Reference(

@@ -25,10 +25,12 @@ public class FullProgressLog implements Serializable {
 
   private ProgressLog compareLog;
   private ProgressLog collectLog;
+  private ProgressLog groupingLog;
 
-  public FullProgressLog(ProgressLog collectLog, ProgressLog compareLog) {
+  public FullProgressLog(ProgressLog collectLog, ProgressLog compareLog, ProgressLog groupingLog) {
     this.collectLog = collectLog;
     this.compareLog = compareLog;
+    this.groupingLog = groupingLog;
   }
 
   public ProgressLog getCompareLog() {
@@ -39,8 +41,12 @@ public class FullProgressLog implements Serializable {
     return collectLog;
   }
 
+  public ProgressLog getGroupingLog() {
+    return groupingLog;
+  }
+
   @Override
   public String toString() {
-    return StringUtils.join(Arrays.asList(compareLog, collectLog), " ::: ");
+    return StringUtils.join(Arrays.asList(groupingLog, compareLog, collectLog), " ::: ");
   }
 }

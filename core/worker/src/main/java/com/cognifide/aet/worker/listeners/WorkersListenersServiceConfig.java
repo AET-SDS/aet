@@ -24,6 +24,7 @@ public @interface WorkersListenersServiceConfig {
 
   String COLLECTORS_NO_ENV = "COLLECTORS_NO";
   String COMPARATORS_NO_ENV = "COMPARATORS_NO";
+  String GROUPERS_NO_ENV = "GROUPERS_NO";
 
   String COLLECTOR_PREFETCH_SIZE_LABEL = "Collectors prefetch size";
   String COLLECTOR_PREFETCH_SIZE_DESC = "http://activemq.apache.org/what-is-the-prefetch-limit-for.html";
@@ -40,6 +41,14 @@ public @interface WorkersListenersServiceConfig {
   String COMPARATOR_INSTANCES_NO_LABEL = "Number of comparator instances";
   String COMPARATOR_INSTANCES_NO_DESC = "Might be overwritten by env variable" + COMPARATORS_NO_ENV;
   int COMPARATOR_INSTANCES_NO_DEFAULT_VALUE = 5;
+
+  String GROUPER_PREFETCH_SIZE_LABEL = "Groupers prefetch size";
+  String GROUPER_PREFETCH_SIZE_DESC = "http://activemq.apache.org/what-is-the-prefetch-limit-for.html";
+  String GROUPER_PREFETCH_SIZE_DEFAULT_VALUE = "1";
+
+  String GROUPER_INSTANCES_NO_LABEL = "Number of grouper instances";
+  String GROUPER_INSTANCES_NO_DESC = "Might be overwritten by env variable" + GROUPERS_NO_ENV;
+  int GROUPER_INSTANCES_NO_DEFAULT_VALUE = 5;
 
   @AttributeDefinition(
       name = COLLECTOR_PREFETCH_SIZE_LABEL,
@@ -60,5 +69,15 @@ public @interface WorkersListenersServiceConfig {
       description = COMPARATOR_INSTANCES_NO_DESC,
       type = AttributeType.INTEGER)
   int comparatorInstancesNo() default COMPARATOR_INSTANCES_NO_DEFAULT_VALUE;
+
+  @AttributeDefinition(
+      name = GROUPER_PREFETCH_SIZE_LABEL,
+      description = GROUPER_PREFETCH_SIZE_DESC)
+  String grouperPrefetchSize() default GROUPER_PREFETCH_SIZE_DEFAULT_VALUE;
+
+  @AttributeDefinition(name = GROUPER_INSTANCES_NO_LABEL,
+      description = GROUPER_INSTANCES_NO_DESC,
+      type = AttributeType.INTEGER)
+  int grouperInstancesNo() default GROUPER_INSTANCES_NO_DEFAULT_VALUE;
 
 }

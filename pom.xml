@@ -168,6 +168,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.8</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-osgi</artifactId>
         <version>5.15.2</version>

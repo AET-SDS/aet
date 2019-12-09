@@ -17,7 +17,9 @@ package com.cognifide.aet.communication.api.metadata;
 
 import com.google.common.base.MoreObjects;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.Valid;
@@ -40,6 +42,9 @@ public class Test implements Serializable, Commentable, Named {
   @Valid
   @NotNull(message = "Test must have at least one url")
   private Set<Url> urls = new HashSet<>();
+
+  @Valid //todo key as enum
+  private Map<String, String> grouperResults = new HashMap<>();
 
   /**
    * @param name - name of a test
@@ -64,6 +69,16 @@ public class Test implements Serializable, Commentable, Named {
       urls.remove(url);
     }
     return urls.add(url);
+  }
+
+  /**
+   * Adds link to the grouping result by specific grouper type.
+   *
+   * @param grouperType grouper type
+   * @param artifactId  identifier of the grouping result
+   */
+  public void addGrouperResult(String grouperType, String artifactId) {
+    grouperResults.put(grouperType, artifactId);
   }
 
   @Override

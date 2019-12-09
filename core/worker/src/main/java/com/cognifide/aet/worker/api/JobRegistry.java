@@ -18,6 +18,8 @@ package com.cognifide.aet.worker.api;
 import com.cognifide.aet.job.api.collector.CollectorFactory;
 import com.cognifide.aet.job.api.comparator.ComparatorFactory;
 import com.cognifide.aet.job.api.datafilter.DataFilterFactory;
+import com.cognifide.aet.job.api.grouper.GrouperFactory;
+import java.util.Optional;
 
 public interface JobRegistry {
 
@@ -26,6 +28,8 @@ public interface JobRegistry {
   ComparatorFactory getComparatorFactoryForType(String type);
 
   ComparatorFactory getComparatorFactory(String name);
+
+  Optional<GrouperFactory> getGrouperFactory(String typeName);
 
   boolean hasJob(String name);
 

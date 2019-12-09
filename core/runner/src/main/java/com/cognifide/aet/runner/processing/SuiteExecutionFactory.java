@@ -15,6 +15,7 @@
  */
 package com.cognifide.aet.runner.processing;
 
+import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
 import com.cognifide.aet.runner.MessagesManager;
 import com.cognifide.aet.runner.RunnerConfiguration;
@@ -22,6 +23,7 @@ import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import com.cognifide.aet.runner.processing.steps.CollectDispatcher;
 import com.cognifide.aet.runner.processing.steps.CollectionResultsRouter;
 import com.cognifide.aet.runner.processing.steps.ComparisonResultsRouter;
+import com.cognifide.aet.runner.processing.steps.GroupingResultsRouter;
 import com.cognifide.aet.runner.scheduler.CollectorJobSchedulerService;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -61,6 +63,14 @@ public class SuiteExecutionFactory {
       RunIndexWrapper runIndexWrapper) throws JMSException {
     return new ComparisonResultsRouter(timeoutWatch, jmsConnection,
         runnerConfiguration, runIndexWrapper);
+  }
+
+  GroupingResultsRouter newGroupingResultsRouter(
+      TimeoutWatch timeoutWatch, RunIndexWrapper<?> runIndexWrapper) throws JMSException {
+    Suite suite = runIndexWrapper.get().getRealSuite();
+    int messagesToReceive = CountGroupingResults.INSTANCE.apply(suite);
+    return new GroupingResultsRouter(
+        timeoutWatch, jmsConnection, runnerConfiguration, runIndexWrapper, messagesToReceive);
   }
 
   public MessagesSender newMessagesSender(Destination jmsReplyTo) throws JMSException {

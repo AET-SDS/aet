@@ -49,18 +49,17 @@ public class UrlRunIndexWrapperTest {
 
   @Before
   public void setUp() throws Exception {
-    urlRunIndexWrapper = new UrlRunIndexWrapper(objectToRunWrapper);
-  }
-
-  @Test
-  public void getUrls_expectOne() {
     test = Optional
         .of(new com.cognifide.aet.communication.api.metadata.Test("testName", "proxy", "chrome"));
     url = Optional.of(new Url("urlName", "urlUrl", "urlDomain"));
     when(objectToRunWrapper.getRealSuite()).thenReturn(suite);
     when(suite.getTest(any(String.class))).thenReturn(test);
     when(objectToRunWrapper.getObjectToRun()).thenReturn(url.get());
+    urlRunIndexWrapper = new UrlRunIndexWrapper(objectToRunWrapper);
+  }
 
+  @Test
+  public void getUrls_expectOne() {
     ArrayList<MetadataRunDecorator<Url>> urls = urlRunIndexWrapper
         .getUrls();
     assertThat(urls.size(), is(1));

@@ -16,16 +16,20 @@
 package com.cognifide.aet.runner.processing;
 
 import com.cognifide.aet.communication.api.ProcessingError;
-import com.cognifide.aet.communication.api.messages.ProgressMessage;
+import com.cognifide.aet.communication.api.messages.FullProgressLog;
 import com.cognifide.aet.communication.api.messages.ProcessingErrorMessage;
 import com.cognifide.aet.communication.api.messages.ProgressLog;
+import com.cognifide.aet.communication.api.messages.ProgressMessage;
+import com.cognifide.aet.communication.api.metadata.Statistics;
+import com.cognifide.aet.communication.api.metadata.Suite;
+import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
 import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.runner.RunnerConfiguration;
-import com.cognifide.aet.communication.api.messages.FullProgressLog;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
 import com.cognifide.aet.runner.processing.steps.CollectDispatcher;
 import com.cognifide.aet.runner.processing.steps.CollectionResultsRouter;
 import com.cognifide.aet.runner.processing.steps.ComparisonResultsRouter;
+import com.cognifide.aet.runner.processing.steps.GroupingResultsRouter;
 import java.util.concurrent.TimeUnit;
 import javax.jms.JMSException;
 import org.slf4j.Logger;
@@ -44,6 +48,7 @@ public class SuiteProcessor {
   private final CollectDispatcher collectDispatcher;
   private final CollectionResultsRouter collectionResultsRouter;
   private final ComparisonResultsRouter comparisonResultsRouter;
+  private final GroupingResultsRouter groupingResultsRouter;
   private final RunIndexWrapper runIndexWrapper;
   private final RunnerConfiguration runnerConfiguration;
   private final MessagesSender messagesSender;
@@ -61,23 +66,28 @@ public class SuiteProcessor {
         .newCollectionResultsRouter(timeoutWatch, this.runIndexWrapper);
     comparisonResultsRouter = suiteExecutionFactory
         .newComparisonResultsRouter(timeoutWatch, this.runIndexWrapper);
+    groupingResultsRouter = suiteExecutionFactory
+        .newGroupingResultsRouter(timeoutWatch, this.runIndexWrapper);
     collectionResultsRouter.addObserver(messagesSender);
     comparisonResultsRouter.addObserver(messagesSender);
+    groupingResultsRouter.addObserver(messagesSender);
     collectionResultsRouter.addChangeObserver(comparisonResultsRouter);
+    comparisonResultsRouter.addChangeObserver(groupingResultsRouter);
   }
 
   public void startProcessing() throws JMSException {
     timeoutWatch.update();
     if (tryProcess()) {
       checkStatusUntilFinishedOrTimedOut();
-      if (comparisonResultsRouter.isFinished()) {
+      if (lastTaskIsFinished()) {
         timer.finish();
         LOGGER.info("Finished suite run: {}. Task finished in {} ms ({}).",
             runIndexWrapper.get().getCorrelationId(), timer.getExecutionTimeInMillis(),
             timer.getExecutionTimeInMMSS());
-        LOGGER.info("Total tasks finished in steps: collect: {}; compare: {}.",
+        LOGGER.info("Total tasks finished in steps: collect: {}; compare: {}, group: {}.",
             collectionResultsRouter.getTotalTasksCount(),
-            comparisonResultsRouter.getTotalTasksCount());
+            comparisonResultsRouter.getTotalTasksCount(),
+            groupingResultsRouter.getTotalTasksCount());
       } else if (suiteIsTimedOut()) {
         timer.finish();
         LOGGER.warn(
@@ -87,10 +97,15 @@ public class SuiteProcessor {
             TimeUnit.NANOSECONDS.toSeconds(timeoutWatch.getLastUpdateDifference()));
         forceFinishSuite();
       }
+      Suite suite = runIndexWrapper.get().getRealSuite();
+      suite.setFinishedTimestamp(new Timestamp(System.currentTimeMillis()));
+      long delta = suite.getFinishedTimestamp().get() - suite.getRunTimestamp().get();
+      suite.setStatistics(new Statistics(delta));
     }
   }
 
   public void cleanup() {
+    groupingResultsRouter.closeConnections();
     comparisonResultsRouter.closeConnections();
     collectionResultsRouter.closeConnections();
     collectDispatcher.closeConnections();
@@ -100,10 +115,13 @@ public class SuiteProcessor {
     return timeoutWatch.isTimedOut(runnerConfiguration.getFt());
   }
 
+  private boolean lastTaskIsFinished() {
+    return groupingResultsRouter.isFinished();
+  }
+
   private void checkStatusUntilFinishedOrTimedOut() {
     String logMessage = "";
-    while (!comparisonResultsRouter.isFinished() && !timeoutWatch
-        .isTimedOut(runnerConfiguration.getFt())) {
+    while (!lastTaskIsFinished() && !suiteIsTimedOut()) {
       try {
         FullProgressLog currentLog = composeProgressLog();
         if (!currentLog.toString().equals(logMessage)) {
@@ -121,7 +139,8 @@ public class SuiteProcessor {
   private FullProgressLog composeProgressLog() {
     ProgressLog collectLog = collectionResultsRouter.getProgress();
     ProgressLog compareLog = comparisonResultsRouter.getProgress();
-    return new FullProgressLog(collectLog, compareLog);
+    ProgressLog groupingLog = groupingResultsRouter.getProgress();
+    return new FullProgressLog(collectLog, compareLog, groupingLog);
   }
 
   private synchronized boolean tryProcess() throws JMSException {
@@ -140,6 +159,7 @@ public class SuiteProcessor {
         runIndexWrapper.get().getCorrelationId()));
     timeoutWatch.update();
     checkStatusUntilFinishedOrTimedOut();
+    //todo abort grouping
     if (!comparisonResultsRouter.isFinished()) {
       comparisonResultsRouter.abort();
       messagesSender.sendMessage(new ProcessingErrorMessage(ProcessingError

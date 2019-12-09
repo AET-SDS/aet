@@ -17,18 +17,18 @@ package com.cognifide.aet.runner.processing.steps;
 
 import com.cognifide.aet.communication.api.JobStatus;
 import com.cognifide.aet.communication.api.ProcessingError;
+import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
-import com.cognifide.aet.communication.api.metadata.Statistics;
+import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.metadata.Step;
-import com.cognifide.aet.communication.api.metadata.Suite;
-import com.cognifide.aet.communication.api.metadata.Suite.Timestamp;
+import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.communication.api.queues.JmsConnection;
-import com.cognifide.aet.communication.api.util.ExecutionTimer;
 import com.cognifide.aet.communication.api.queues.QueuesConstant;
 import com.cognifide.aet.runner.RunnerConfiguration;
 import com.cognifide.aet.runner.processing.TimeoutWatch;
 import com.cognifide.aet.runner.processing.data.wrappers.RunIndexWrapper;
+import java.util.List;
 import java.util.Optional;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,16 +36,16 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ComparisonResultsRouter extends StepManager implements ChangeObserver,
-    TaskFinishPoint {
+public class ComparisonResultsRouter extends StepManagerObservable
+    implements ChangeObserver, TaskFinishPoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ComparisonResultsRouter.class);
 
   private static final String STEP_NAME = "COMPARED";
 
-  private final RunIndexWrapper runIndexWrapper;
+  private static final String MODULE_NAME = "comparison";
 
-  private final ExecutionTimer timer;
+  private final RunIndexWrapper<?> runIndexWrapper;
 
   private boolean collectingFinished;
 
@@ -56,7 +56,6 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
     super(timeoutWatch, jmsConnection, runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.runIndexWrapper = runIndexWrapper;
-    timer = ExecutionTimer.createAndRun("comparison");
   }
 
   @Override
@@ -67,7 +66,6 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
   @Override
   public void informChangesCompleted() {
     collectingFinished = true;
-    persistMetadataIfFinished();
   }
 
   @Override
@@ -85,6 +83,7 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
             messagesReceivedFailed.get(), getTotalTasksCount(), correlationId);
 
         addComparatorToSuite(comparatorResultData);
+        sendGrouperJobData(comparatorResultData);
         if (comparatorResultData.getStatus() != JobStatus.SUCCESS) {
           onError(comparatorResultData.getProcessingError());
         }
@@ -93,21 +92,33 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
             correlationId, e);
         onError(ProcessingError.comparingError(e.getMessage()));
       } finally {
-        persistMetadataIfFinished();
+        if (isFinished()) {
+          notifyCompleted();
+          timer.finishAndLog(runIndexWrapper.get().getRealSuite().getName());
+          LOGGER.info(
+              "Comparison stage finished (received {} messages). CorrelationId: {}",
+              messagesToReceive.get(),
+              correlationId);
+        }
       }
     }
   }
 
-  private void persistMetadataIfFinished() {
-    if (allResultsReceived()) {
-      LOGGER.info("All results received ({})! Persisting metadata. CorrelationId: {}",
-          messagesToReceive.get(), correlationId);
-      final Suite currentSuite = this.runIndexWrapper.get().getRealSuite();
-      timer.finishAndLog(currentSuite.getName());
-      currentSuite.setFinishedTimestamp(new Timestamp(System.currentTimeMillis()));
-      long delta = currentSuite.getFinishedTimestamp().get() - currentSuite.getRunTimestamp().get();
-      currentSuite.setStatistics(new Statistics(delta));
-    }
+  private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
+    List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
+    SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
+    GrouperJobData grouperJobData =
+        new GrouperJobData(
+            runIndexWrapper.get().getCompany(),
+            runIndexWrapper.get().getProject(),
+            runIndexWrapper.get().getName(),
+            comparatorResultData.getTestName(),
+            suiteComparatorsCount, // todo too much data being sent?
+            comparatorResultData.getComparisonResult().getStepResult(),
+            comparatorResultData.getComparisonResult().getType());
+    ObjectMessage message = session.createObjectMessage(grouperJobData);
+    message.setJMSCorrelationID(correlationId);
+    sender.send(message);
   }
 
   private void addComparatorToSuite(ComparatorResultData comparisonResult) {
@@ -155,7 +166,7 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
 
   @Override
   protected String getQueueOutName() {
-    return null;
+    return QueuesConstant.GROUPER.getJobsQueueName();
   }
 
   @Override
@@ -163,4 +174,8 @@ public class ComparisonResultsRouter extends StepManager implements ChangeObserv
     return STEP_NAME;
   }
 
+  @Override
+  protected String getModuleNameForTimer() {
+    return MODULE_NAME;
+  }
 }
