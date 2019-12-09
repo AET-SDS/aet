@@ -18,6 +18,7 @@ package com.cognifide.aet.job.common.comparators.source.diff;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import com.cognifide.aet.models.source.ResultDelta;
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;

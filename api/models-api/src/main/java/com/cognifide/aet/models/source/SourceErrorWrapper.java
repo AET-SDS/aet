@@ -1,36 +1,46 @@
-/**
+/*
  * AET
- * <p>
+ *
  * Copyright (C) 2013 Cognifide Limited
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.models;
+package com.cognifide.aet.models.source;
 
+import com.cognifide.aet.models.ErrorWrapper;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
-public class ScreenErrorWrapper implements ErrorWrapper {
+public class SourceErrorWrapper implements ErrorWrapper {
 
-  private final String name;
-  private final Map<String, String> data;
+  public static final String COMPARATOR_TYPE = "source";
+  public static final Type ARTIFACT_TYPE =
+      new TypeToken<Map<String, List<ResultDelta>>>() {
+      }.getType();
+
+  private final Map<String, List<ResultDelta>> result;
   private final String urlName;
+  private final Map<String, String> data;
 
-  public ScreenErrorWrapper(String name, Map<String, String> data, String urlName) {
-    this.name = name;
-    this.data = data;
+  public SourceErrorWrapper(
+      Map<String, List<ResultDelta>> result, String urlName, Map<String, String> data) {
+    this.result = result;
     this.urlName = urlName;
+    this.data = data;
   }
 
-  public String getName() {
-    return name;
+  public Map<String, List<ResultDelta>> getResult() {
+    return result;
   }
 
   public Map<String, String> getData() {
