@@ -15,7 +15,6 @@
  */
 package com.cognifide.aet.models.jserrors;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.models.ErrorWrapper;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;

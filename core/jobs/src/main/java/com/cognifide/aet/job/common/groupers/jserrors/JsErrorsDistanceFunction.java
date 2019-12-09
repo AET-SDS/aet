@@ -15,8 +15,8 @@
  */
 package com.cognifide.aet.job.common.groupers.jserrors;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import java.util.Objects;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 

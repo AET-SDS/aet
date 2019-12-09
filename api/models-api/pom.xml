@@ -35,10 +35,6 @@
   <dependencies>
     <dependency>
       <groupId>com.cognifide.aet</groupId>
-      <artifactId>jobs-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.cognifide.aet</groupId>
       <artifactId>selenium</artifactId>
     </dependency>
     <dependency>

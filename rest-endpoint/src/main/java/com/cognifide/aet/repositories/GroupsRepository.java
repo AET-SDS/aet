@@ -15,8 +15,8 @@
  */
 package com.cognifide.aet.repositories;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.models.ErrorType;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.gson.reflect.TypeToken;

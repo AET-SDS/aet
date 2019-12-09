@@ -16,7 +16,6 @@
 
 package com.cognifide.aet.job.common.groupers.jserrors;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperFactory;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.common.comparators.jserrors.JsErrorsComparator;
@@ -24,6 +23,7 @@ import com.cognifide.aet.job.common.groupers.DistanceFunction;
 import com.cognifide.aet.job.common.groupers.GroupingAlgorithm;
 import com.cognifide.aet.job.common.groupers.dbscan.DbscanAlgorithm;
 import com.cognifide.aet.job.common.groupers.dbscan.DbscanConfiguration;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import java.util.concurrent.atomic.AtomicLong;

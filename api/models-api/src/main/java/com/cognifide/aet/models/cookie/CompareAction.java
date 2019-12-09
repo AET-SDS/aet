@@ -15,16 +15,15 @@
  */
 package com.cognifide.aet.models.cookie;
 
-import com.cognifide.aet.job.api.exceptions.ParametersException;
-
 /**
  * @author lukasz.wieczorek
  */
 public enum CompareAction {
+  LIST,
+  TEST,
+  COMPARE;
 
-  LIST, TEST, COMPARE;
-
-  public static CompareAction fromString(String actionName) throws ParametersException {
+  public static CompareAction fromString(String actionName) {
     CompareAction result = LIST;
     for (CompareAction value : values()) {
       if (value.toString().equalsIgnoreCase(actionName)) {
@@ -34,5 +33,4 @@ public enum CompareAction {
     }
     return result;
   }
-
 }

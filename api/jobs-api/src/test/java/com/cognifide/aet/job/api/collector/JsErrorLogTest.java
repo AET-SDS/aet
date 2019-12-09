@@ -18,6 +18,7 @@ package com.cognifide.aet.job.api.collector;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import org.junit.Before;
 import org.junit.Test;
 

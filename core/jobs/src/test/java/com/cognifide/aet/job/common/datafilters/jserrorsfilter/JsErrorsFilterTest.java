@@ -17,13 +17,12 @@ package com.cognifide.aet.job.common.datafilters.jserrorsfilter;
 
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.HashMap;

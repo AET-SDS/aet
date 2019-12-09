@@ -15,6 +15,7 @@
  */
 package com.cognifide.aet.job.api.collector;
 
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import java.util.Set;
 import org.openqa.selenium.WebDriver;
 

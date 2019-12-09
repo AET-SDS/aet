@@ -16,7 +16,6 @@
 package com.cognifide.aet.repositories;
 
 import com.cognifide.aet.communication.api.metadata.Comparator;
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorWrapper;
 import com.cognifide.aet.models.accessibility.AccessibilityErrorWrapper;
@@ -25,6 +24,7 @@ import com.cognifide.aet.models.accessibility.AccessibilityReportConfiguration;
 import com.cognifide.aet.models.cookie.CookieCompareComparatorResult;
 import com.cognifide.aet.models.cookie.CookieErrorWrapper;
 import com.cognifide.aet.models.cookie.CookieTestComparatorResult;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.cognifide.aet.models.jserrors.JsErrorWrapper;
 import com.cognifide.aet.models.screen.ScreenErrorWrapper;
 import com.cognifide.aet.models.source.ResultDelta;
