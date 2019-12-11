@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/Cognifide/aet.svg?branch=master)](https://travis-ci.org/Cognifide/aet)
 [![Apache License, Version 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/)
 [![][gitter img]][gitter]
+[![codecov](https://codecov.io/gh/AET-SDS/aet/branch/develop/graph/badge.svg)](https://codecov.io/gh/AET-SDS/aet)
 
 # AET
 <p align="center">
