@@ -1004,22 +1004,13 @@
               <goal>prepare-agent</goal>
             </goals>
           </execution>
-          <!-- merge submodules jacoco into current module build -->
+          <!-- generate report for codecov tool -->
           <execution>
-            <id>merge-submodules</id>
+            <id>report</id>
+            <phase>test</phase>
             <goals>
-              <goal>merge</goal>
+              <goal>report</goal>
             </goals>
-            <configuration>
-              <fileSets>
-                <fileSet>
-                  <directory>${project.build.directory}</directory>
-                  <includes>
-                    <include>*.exec</include>
-                  </includes>
-                </fileSet>
-              </fileSets>
-            </configuration>
           </execution>
         </executions>
       </plugin>
