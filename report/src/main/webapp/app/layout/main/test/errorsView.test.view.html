@@ -21,25 +21,30 @@
   <div ng-repeat="urlErrors in errorsView.errors['js-errors']">
     <div
       ng-repeat="error in urlErrors.jsErrors">
+      <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':error.urlName})">
       <div class="reports-list-item reports-list-new-item failed">
           <i class="fas fa-times failed reports-list-icon"></i>
           <span class="errorCategory">JS Error</span>
           <span class="errorUrl">URL: {{error.urlName}}</span>
           <span class="errorMessage">{{error.errorMessage}}</span>
       </div>
+    </a>
     </div>
   </div>
   <div ng-repeat="screenError in errorsView.errors['screen']">
+      <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':screenError.urlName})">
       <div class="reports-list-item reports-list-new-item failed">
           <i class="fas fa-times failed reports-list-icon"></i>
-          <span class="errorCategory">{{screenError.name}}</span>
+          <span class="errorCategory">Screen {{screenError.name}}</span>
           <span class="errorUrl">URL: {{screenError.urlName}}</span>
           <span class="errorMessage">Difference: {{errorsView.formatDifference(screenError.data.percentagePixelDifference)}}%, {{screenError.data.pixelDifference}}px</span>
       </div>
+      </a>
   </div>
   <div ng-repeat="urlErrors in errorsView.errors['status-codes']">
     <div
       ng-repeat="error in urlErrors.filteredStatusCodes">
+      <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':error.urlName})">
       <div class="reports-list-item reports-list-new-item failed">
           <i class="fas fa-times failed reports-list-icon"></i>
           <span class="errorCategory">Status Code Error</span>
@@ -47,41 +52,53 @@
           <span class="errorUrl">CODE: {{error.code}}</span>
           <span class="errorMessage">{{error.url}}</span>
       </div>
+    </a>
     </div>
   </div>
 
   <div ng-repeat="cookieError in errorsView.errors['cookie']">
+      <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':cookieError.urlName})">
     <div class="reports-list-item reports-list-new-item failed">
         <i class="fas fa-times failed reports-list-icon"></i>
         <span class="errorCategory">Cookie Error</span>
         <span class="errorUrl">URL: {{cookieError.urlName}}</span>
         <span class="errorUrl">Action: {{cookieError.result.compareAction}}</span>
-        <span class="errorUrl">Cookie with name: {{cookieError.result.cookieName}} and value: {{cookieError.result.cookieValue}} not found</span>
+        <span class="errorMessage">Cookie with name: {{cookieError.result.cookieName}} and value: {{cookieError.result.cookieValue}} not found</span>
     </div>
+  </a>
 </div>
 <div ng-repeat="w3cError in errorsView.errors['source_w3c-html5']">
+    <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':w3cError.urlName})">
   <div class="reports-list-item reports-list-new-item failed">
       <i class="fas fa-times failed reports-list-icon"></i>
       <span class="errorCategory">W3C Source Error</span>
       <span class="errorUrl">URL: {{w3cError.urlName}}</span>
-      <span class="errorUrl">Number: {{w3cError.errorCount}}</span>
+      <span class="errorUrl">Number of errors: {{w3cError.errorCount}}</span>
+      <span class="errorUrl">Number of warnings: {{w3cError.warningCount}}</span>
   </div>
+</a>
 </div>
 <div ng-repeat="sourceError in errorsView.errors['source']">
+    <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':sourceError.urlName})">
   <div class="reports-list-item reports-list-new-item failed">
       <i class="fas fa-times failed reports-list-icon"></i>
       <span class="errorCategory">Source Error</span>
       <span class="errorUrl">URL: {{sourceError.urlName}}</span>
       <span class="errorUrl">Type: {{sourceError.data.sourceCompareType}}</span>
+      <span class="errorUrl">Number of differences: {{sourceError.result.differences.length}}</span>
   </div>
+</a>
 </div>
 <div ng-repeat="accessError in errorsView.errors['accessibility']">
-  <div class="reports-list-item reports-list-new-item failed">
-      <i class="fas fa-times failed reports-list-icon"></i>
-      <span class="errorCategory">Source Error</span>
-      <span class="errorUrl">URL: {{accessError.urlName}}</span>
-      <span class="errorUrl">Number: {{accessError.errorCount}}</span>
-  </div>
+  <a ui-sref="url({'suite':$root.params.project,'test':errorsView.testName, 'url':accessError.urlName})">
+      <div class="reports-list-item reports-list-new-item failed">
+          <i class="fas fa-times failed reports-list-icon"></i>
+          <span class="errorCategory">Accessibility Error</span>
+          <span class="errorUrl">URL: {{accessError.urlName}}</span>
+          <span class="errorUrl">Number of errors: {{accessError.errorCount}}</span>
+      </div>
+  </a>
+
 </div>
 
 </div>

@@ -200,11 +200,7 @@ define([], function () {
       }
       const url = $location.path();
       const urlParts = url.split("/")
-<<<<<<< HEAD
       urlParts.length === 3 ? vm.errorsView = false : vm.errorsView = true
-=======
-      urlParts.length === 3 ? vm.errorsView = true : vm.errorsView = false
->>>>>>> 109bfa655ce3bc02711e79c21100955f0ef67c29
       var testName = $stateParams.test;
       vm.model = metadataAccessService.getTest(testName);
       vm.updatePatterns = function () {
