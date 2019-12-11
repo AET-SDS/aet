@@ -22,6 +22,10 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.api.grouper.SimilarityValue;
+import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithm;
+import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithmConfiguration;
+import com.cognifide.aet.job.common.groupers.algorithm.GroupingException;
+import com.cognifide.aet.job.common.groupers.algorithm.JsErrorMetric;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
@@ -39,7 +43,8 @@ import org.slf4j.LoggerFactory;
 public class JsErrorsGrouper implements GrouperJob {
 
   public static final String NAME = "js-errors"; // todo ErrorType?
-  private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {}.getType();
+  private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {
+  }.getType();
   private static final Logger LOGGER = LoggerFactory.getLogger(JsErrorsGrouper.class);
 
   private final ArtifactsDAO artifactsDAO;
@@ -69,10 +74,20 @@ public class JsErrorsGrouper implements GrouperJob {
         inputArtifactId,
         result);
     if (currentMessagesRemaining == 0) {
-      List<SimilarityValue<JsErrorLog>> similarityValues = calculateDistances(jsErrors);
-      String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, similarityValues);
-      result.setArtifactId(outputArtifactId);
-      LOGGER.debug("JsErrors grouped! Output artifactId: {}", outputArtifactId);
+
+      try {
+        GroupingAlgorithm<JsErrorLog> algorithm = new GroupingAlgorithm<>(jsErrors,
+            new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorMetric()));
+        List<List<JsErrorLog>> groups = algorithm.group();
+
+        String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
+        result.setArtifactId(outputArtifactId);
+
+        LOGGER.debug("JsErrors grouped! Number of groups: {}. ArtifactId: {}", groups.size(),
+            outputArtifactId);
+      } catch (GroupingException e) {
+        e.printStackTrace();
+      }
     }
     return result;
   }

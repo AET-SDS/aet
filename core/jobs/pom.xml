@@ -207,7 +207,7 @@
             <configuration>
               <instructions>
                 <Bundle-Vendor>Cognifide Ltd.</Bundle-Vendor>
-                <Import-Package>javax.annotation;resolution:=optional,*</Import-Package>
+                <Import-Package>javax.annotation.*;resolution:=optional,org.christopherfrantz.*;resolution:=optional,*</Import-Package>
                 <Export-Package>com.cognifide.aet.job.common.*,collectors.*</Export-Package>
               </instructions>
             </configuration>
