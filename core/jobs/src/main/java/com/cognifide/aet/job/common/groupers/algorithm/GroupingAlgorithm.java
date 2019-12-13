@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GroupingAlgorithm<T> {
 
@@ -43,13 +44,11 @@ public class GroupingAlgorithm<T> {
 
   private List<List<T>> performGrouping() {
     List<List<T>> result = new ArrayList<>();
-    List<T> related;
-    int index = 0;
 
     for (T currentElement : elementsToGroup) {
       if (!processedElements.contains(currentElement)) {
         processedElements.add(currentElement);
-        related = getRelated(currentElement);
+        List<T> related = getRelated(currentElement); // todo should be set imo
 
         if (related.size() >= config.getMinimumGroupSize()) {
           for (int j = 0; j < related.size(); j++) {
@@ -58,7 +57,8 @@ public class GroupingAlgorithm<T> {
               processedElements.add(relatedElement);
               List<T> individualRelated = getRelated(relatedElement);
               if (individualRelated.size() >= config.getMinimumGroupSize()) {
-                combineRelatedElements(related, individualRelated);
+                individualRelated.removeIf(related::contains);
+                related.addAll(individualRelated);
               }
             }
           }
@@ -71,15 +71,8 @@ public class GroupingAlgorithm<T> {
   }
 
   private List<T> getRelated(final T inputElement) {
-    List<T> related = new ArrayList<>();
-    elementsToGroup.stream()
+    return elementsToGroup.stream()
         .filter(e -> config.getDistanceFunction().apply(inputElement, e) <= config.getThreshold())
-        .forEach(related::add);
-
-    return related;
-  }
-
-  private void combineRelatedElements(List<T> related1, List<T> related2) {
-    related2.stream().filter(r -> !related1.contains(r)).forEach(related1::add);
+        .collect(Collectors.toList());
   }
 }
