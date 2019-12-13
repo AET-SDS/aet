@@ -15,16 +15,19 @@
  */
 package com.cognifide.aet.job.common.groupers.algorithm;
 
+import com.cognifide.aet.job.common.groupers.DistanceFunction;
+
 public class GroupingAlgorithmConfiguration<T> {
 
   private final double threshold;
   private final int minimumGroupSize;
-  private final Metric<T> metric;
+  private final DistanceFunction<T> distanceFunction;
 
-  public GroupingAlgorithmConfiguration(double threshold, int minGroupSize, Metric<T> metric) {
+  public GroupingAlgorithmConfiguration(
+      double threshold, int minGroupSize, DistanceFunction<T> distanceFunction) {
     this.threshold = threshold;
     this.minimumGroupSize = minGroupSize;
-    this.metric = metric;
+    this.distanceFunction = distanceFunction;
   }
 
   public double getThreshold() {
@@ -35,7 +38,7 @@ public class GroupingAlgorithmConfiguration<T> {
     return minimumGroupSize;
   }
 
-  public Metric<T> getMetric() {
-    return metric;
+  public DistanceFunction<T> getDistanceFunction() {
+    return distanceFunction;
   }
 }

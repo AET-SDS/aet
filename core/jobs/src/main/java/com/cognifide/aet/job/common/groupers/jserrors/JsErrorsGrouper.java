@@ -21,11 +21,9 @@ import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
-import com.cognifide.aet.job.api.grouper.SimilarityValue;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithm;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithmConfiguration;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingException;
-import com.cognifide.aet.job.common.groupers.algorithm.JsErrorMetric;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +74,7 @@ public class JsErrorsGrouper implements GrouperJob {
 
       try {
         GroupingAlgorithm<JsErrorLog> algorithm = new GroupingAlgorithm<>(jsErrors,
-            new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorMetric()));
+            new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
         List<List<JsErrorLog>> groups = algorithm.group();
 
         String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
@@ -101,31 +98,5 @@ public class JsErrorsGrouper implements GrouperJob {
       LOGGER.error("Could not fetch jsErrors: {}", inputArtifactId, e);
       // todo change jobStatus? partial success?
     }
-  }
-
-  private static List<SimilarityValue<JsErrorLog>> calculateDistances(List<JsErrorLog> jsErrors) {
-    int listSize = jsErrors.size() * (jsErrors.size() - 1) / 2;
-    List<SimilarityValue<JsErrorLog>> distances = new ArrayList<>(listSize);
-    for (int i = 0; i < jsErrors.size(); i++) {
-      JsErrorLog jsError1 = jsErrors.get(i);
-      for (int j = i + 1; j < jsErrors.size(); j++) {
-        JsErrorLog jsError2 = jsErrors.get(j);
-        distances.add(getSimilarityValue(jsError1, jsError2));
-      }
-    }
-    return distances;
-  }
-
-  private static SimilarityValue<JsErrorLog> getSimilarityValue(JsErrorLog e1, JsErrorLog e2) {
-    String msg1 = e1.getErrorMessage();
-    String msg2 = e2.getErrorMessage();
-    int similarity = calculateRelativeDistance(msg1, msg2);
-    return new SimilarityValue<>(e1, e2, similarity);
-  }
-
-  private static int calculateRelativeDistance(String s1, String s2) {
-    int distance = new LevenshteinDistance().apply(s1, s2);
-    int longerLength = Math.max(s1.length(), s2.length());
-    return (longerLength - distance) * 100 / longerLength;
   }
 }

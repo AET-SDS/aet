@@ -73,7 +73,7 @@ public class GroupingAlgorithm<T> {
   private List<T> getRelated(final T inputElement) {
     List<T> related = new ArrayList<>();
     elementsToGroup.stream()
-        .filter(e -> config.getMetric().calculate(inputElement, e) <= config.getThreshold())
+        .filter(e -> config.getDistanceFunction().apply(inputElement, e) <= config.getThreshold())
         .forEach(related::add);
 
     return related;
