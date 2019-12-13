@@ -71,20 +71,9 @@ public class JsErrorsGrouper implements GrouperJob {
         inputArtifactId,
         result);
     if (currentMessagesRemaining == 0) {
-
-      try {
-        GroupingAlgorithm<JsErrorLog> algorithm = new GroupingAlgorithm<>(jsErrors,
-            new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
-        List<List<JsErrorLog>> groups = algorithm.group();
-
-        String outputArtifactId = artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
-        result.setArtifactId(outputArtifactId);
-
-        LOGGER.debug("JsErrors grouped! Number of groups: {}. ArtifactId: {}", groups.size(),
-            outputArtifactId);
-      } catch (GroupingException e) {
-        e.printStackTrace();
-      }
+      String outputArtifactId = performGrouping();
+      result.setArtifactId(outputArtifactId);
+      LOGGER.debug("JsErrors grouped! Output artifactId: {}", outputArtifactId);
     }
     return result;
   }
@@ -97,6 +86,20 @@ public class JsErrorsGrouper implements GrouperJob {
     } catch (IOException e) {
       LOGGER.error("Could not fetch jsErrors: {}", inputArtifactId, e);
       // todo change jobStatus? partial success?
+    }
+  }
+
+  private String performGrouping() {
+    try {
+      GroupingAlgorithm<JsErrorLog> algorithm =
+          new GroupingAlgorithm<>(
+              jsErrors,
+              new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
+      List<List<JsErrorLog>> groups = algorithm.group();
+      return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
+    } catch (GroupingException e) {
+      e.printStackTrace(); // todo
+      return null;
     }
   }
 }

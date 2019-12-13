@@ -33,7 +33,7 @@ public class GroupingAlgorithm<T> {
   }
 
   public List<List<T>> group() throws GroupingException {
-    if (elementsToGroup.isEmpty() || elementsToGroup.size() < 2 || config.getThreshold() < 0) {
+    if (config.getThreshold() < 0) {
       throw new GroupingException("error");
     }
 
