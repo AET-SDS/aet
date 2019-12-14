@@ -91,11 +91,11 @@ public class JsErrorsGrouper implements GrouperJob {
 
   private String performGrouping() {
     try {
-      DBSCANAlgorithm<JsErrorLog> algorithm =
-          new DBSCANAlgorithm<>(
-              jsErrors,
-              new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
-      List<List<JsErrorLog>> groups = algorithm.group();
+      DBSCANAlgorithm<JsErrorLog> algorithm = new DBSCANAlgorithm<>(
+          new GroupingAlgorithmConfiguration<>(0.1, 1,
+              new JsErrorsDistanceFunction())
+      );
+      Set<Set<JsErrorLog>> groups = algorithm.group(jsErrors);
       return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
     } catch (GroupingException e) {
       e.printStackTrace(); // todo
