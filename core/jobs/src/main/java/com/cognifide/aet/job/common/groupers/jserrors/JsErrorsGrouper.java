@@ -21,7 +21,7 @@ import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
-import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithm;
+import com.cognifide.aet.job.common.groupers.algorithm.DBSCANAlgorithm;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithmConfiguration;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingException;
 import com.cognifide.aet.vs.ArtifactsDAO;
@@ -91,8 +91,8 @@ public class JsErrorsGrouper implements GrouperJob {
 
   private String performGrouping() {
     try {
-      GroupingAlgorithm<JsErrorLog> algorithm =
-          new GroupingAlgorithm<>(
+      DBSCANAlgorithm<JsErrorLog> algorithm =
+          new DBSCANAlgorithm<>(
               jsErrors,
               new GroupingAlgorithmConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
       List<List<JsErrorLog>> groups = algorithm.group();
