@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,11 +103,11 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_when2ElementsAreCompletelyDifferent_expectSetOfSize2()
       throws GroupingException {
-    List<T> list = createListAndPrepareMockito(1);
+    prepareMockReturnValues(1);
     config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(list);
+    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
     assertThat(result.size(), is(2));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
@@ -116,12 +115,12 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenElementsHaveSimilarityGreaterThanThreshold_expectSetOfSize2()
       throws GroupingException {
-    List<T> list = createListAndPrepareMockito(0.2);
+    prepareMockReturnValues(0.2);
     double threshold = 0.1;
     config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(list);
+    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
     assertThat(result.size(), is(2));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
@@ -129,12 +128,12 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenElementsHaveSimilarityLessThanOrEqualThanThreshold_expectSetOfSize1()
       throws GroupingException {
-    List<T> list = createListAndPrepareMockito(0.05);
+    prepareMockReturnValues(0.05);
     double threshold = 0.1;
     config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(list);
+    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
     assertThat(result.size(), is(1));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
@@ -142,12 +141,12 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenMinGroupSizeIsGreaterThan1AndElementsAreDifferent_expectSetOfSize0()
       throws GroupingException {
-    List<T> list = createListAndPrepareMockito(1);
+    prepareMockReturnValues(1);
     int minGroupSize = 2;
     config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(list);
+    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
     assertThat(result.size(), is(0));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
@@ -155,26 +154,28 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenMinGroupSizeIsGreaterThan1AndElementsAreTheSame_expectSetOfSize1()
       throws GroupingException {
-    List<T> list = createListAndPrepareMockito(0.05);
+    prepareMockReturnValues(0.05);
     int minGroupSize = 2;
     config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(list);
+    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
     assertThat(result.size(), is(1));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
 
-  private List<T> createListAndPrepareMockito(double similarity) {
-    List<T> list = createListOfTwoObjects();
-    T object1 = list.get(0);
-    T object2 = list.get(1);
-
-    when(distanceFunction.apply(any(), any())).thenReturn(similarity);
-    when(distanceFunction.apply(eq(object1), eq(object1))).thenReturn((double) 0);
-    when(distanceFunction.apply(eq(object2), eq(object2))).thenReturn((double) 0);
-
-    return list;
+  private void prepareMockReturnValues(final double similarity) {
+    when(distanceFunction.apply(any(), any())).thenAnswer(
+        invocation -> {
+          Object arg1 = invocation.getArguments()[0];
+          Object arg2 = invocation.getArguments()[1];
+          if (arg1.equals(arg2)) {
+            return (double) 0;
+          } else {
+            return similarity;
+          }
+        }
+    );
   }
 
   private List<T> createListOfTwoObjects() {

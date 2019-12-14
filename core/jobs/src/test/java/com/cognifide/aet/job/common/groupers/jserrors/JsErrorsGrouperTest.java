@@ -95,7 +95,7 @@ public class JsErrorsGrouperTest {
     jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1));
     GrouperJobData grouperJobData = newGrouperJobData("");
     jsErrorsGrouper.group(grouperJobData);
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, Lists.newArrayList());
+    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, Sets.newHashSet());
   }
 
   @Test
