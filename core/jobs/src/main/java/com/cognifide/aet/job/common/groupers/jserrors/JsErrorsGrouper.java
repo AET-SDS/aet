@@ -22,7 +22,7 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.job.common.groupers.algorithm.DBSCANAlgorithm;
-import com.cognifide.aet.job.common.groupers.algorithm.GroupingAlgorithmConfiguration;
+import com.cognifide.aet.job.common.groupers.algorithm.DBSCANConfiguration;
 import com.cognifide.aet.job.common.groupers.algorithm.GroupingException;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
@@ -92,13 +92,14 @@ public class JsErrorsGrouper implements GrouperJob {
   private String performGrouping() {
     try {
       DBSCANAlgorithm<JsErrorLog> algorithm = new DBSCANAlgorithm<>(
-          new GroupingAlgorithmConfiguration<>(0.1, 1,
+          new DBSCANConfiguration<>(0.1, 1,
               new JsErrorsDistanceFunction())
       );
       Set<Set<JsErrorLog>> groups = algorithm.group(jsErrors);
+
       return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
     } catch (GroupingException e) {
-      e.printStackTrace(); // todo
+      LOGGER.error("There is an error with grouping js errors");
       return null;
     }
   }

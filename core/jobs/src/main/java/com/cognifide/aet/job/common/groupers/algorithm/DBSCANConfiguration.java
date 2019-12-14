@@ -17,13 +17,13 @@ package com.cognifide.aet.job.common.groupers.algorithm;
 
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
 
-public class GroupingAlgorithmConfiguration<T> {
+public class DBSCANConfiguration<T> {
 
   private final double threshold;
   private final int minimumGroupSize;
   private final DistanceFunction<T> distanceFunction;
 
-  public GroupingAlgorithmConfiguration(
+  public DBSCANConfiguration(
       double threshold, int minGroupSize, DistanceFunction<T> distanceFunction) {
     this.threshold = threshold;
     this.minimumGroupSize = minGroupSize;

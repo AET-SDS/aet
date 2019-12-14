@@ -22,17 +22,17 @@ import java.util.stream.Collectors;
 
 public class DBSCANAlgorithm<T> implements GroupingAlgorithm<T> {
 
-  private final GroupingAlgorithmConfiguration<T> config;
+  private final DBSCANConfiguration<T> config;
   private final Set<T> processedElements = new HashSet<>();
 
-  public DBSCANAlgorithm(GroupingAlgorithmConfiguration<T> config) {
+  public DBSCANAlgorithm(DBSCANConfiguration<T> config) {
     this.config = config;
   }
 
   @Override
   public Set<Set<T>> group(Collection<T> elementsToGroup) throws GroupingException {
     if (config.getThreshold() < 0) {
-      throw new GroupingException("error");
+      throw new GroupingException("Threshold cannot be less than 0");
     }
 
     processedElements.clear();
