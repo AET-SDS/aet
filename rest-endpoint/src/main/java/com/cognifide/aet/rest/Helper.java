@@ -21,9 +21,14 @@ import com.cognifide.aet.communication.api.util.ValidatorProvider;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.SimpleDBKey;
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public final class Helper {
+
+  private static final Gson GSON = new Gson();
 
   static final String REST_PREFIX = "/api";
   static final String ARTIFACT_PART_PATH = "artifact";
@@ -129,6 +134,26 @@ public final class Helper {
 
   public static String responseAsJson(Gson GSON, String format, Object... args) {
     return GSON.toJson(new ErrorMessage(format, args));
+  }
+
+  public static void createNotFoundSuiteResponse(HttpServletResponse response, String correlationId,
+      DBKey dbKey) throws IOException {
+    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+    response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
+    response.getWriter().write(
+        responseAsJson(GSON, "Unable to get Suite Metadata with correlationId: %s for %s",
+            correlationId, dbKey.toString())
+    );
+  }
+
+  public static void createNotFoundTestResponse(HttpServletResponse response, String testName,
+      DBKey dbKey) throws IOException {
+    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+    response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
+    response.getWriter().write(
+        responseAsJson(GSON, "Unable to get test with name: %s for %s", testName,
+            dbKey.toString())
+    );
   }
 
   private static class ErrorMessage {
