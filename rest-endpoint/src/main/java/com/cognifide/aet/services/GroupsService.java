@@ -44,11 +44,11 @@ public class GroupsService implements Serializable {
   @Reference
   private ArtifactsDAO artifactsDAO;
 
-  public Map<ErrorType, Groups> getGroupsFromTest(Test test, DBKey dbKey,
+  public Map<ErrorType, Set<Set>> getGroupsFromTest(Test test, DBKey dbKey,
       String errorType) {
-    Map<ErrorType, Groups> groupsMap = new HashMap<>();
+    Map<ErrorType, Set<Set>> groupsMap = new HashMap<>();
 
-    if (Strings.isNullOrEmpty(errorType)) {
+    if (!Strings.isNullOrEmpty(errorType)) {
       String artifactId = test.getGrouperResults().get(errorType);
       if (!Strings.isNullOrEmpty(artifactId)) {
         ErrorType type = ErrorType.byStringType(errorType);
@@ -56,7 +56,7 @@ public class GroupsService implements Serializable {
       }
     } else {
       for (Entry<String, String> entry : test.getGrouperResults().entrySet()) {
-        ErrorType type = ErrorType.byStringType(errorType);
+        ErrorType type = ErrorType.byStringType(entry.getKey());
         groupsMap.put(type, processGroups(type, entry.getValue(), dbKey));
       }
     }
@@ -64,7 +64,7 @@ public class GroupsService implements Serializable {
     return groupsMap;
   }
 
-  public Groups processGroups(ErrorType errorType, String artifactId, DBKey dbKey) {
+  public Set<Set> processGroups(ErrorType errorType, String artifactId, DBKey dbKey) {
     try {
       switch (errorType) {
         case JS_ERRORS:

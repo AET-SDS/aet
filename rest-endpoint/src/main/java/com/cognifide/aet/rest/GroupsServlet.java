@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.component.annotations.Activate;
@@ -83,7 +84,7 @@ public class GroupsServlet extends BasicDataServlet {
           .filter(t -> t.getName().equals(testName)).findFirst();
       if (test.isPresent()) {
         String errorType = Helper.getErrorTypeFromRequest(req);
-        Map<ErrorType, Groups> groupsMap = groupsService
+        Map<ErrorType, Set<Set>> groupsMap = groupsService
             .getGroupsFromTest(test.get(), dbKey, errorType);
 
         resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
