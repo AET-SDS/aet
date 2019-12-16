@@ -35,6 +35,7 @@ public final class Helper {
   static final String LOCK_PART_PATH = "/lock";
   static final String XUNIT_PART_PATH = "/xunit";
   static final String ERRORS_PART_PATH = "errors";
+  static final String GROUPS_PART_PATH = "groups";
   static final String PATH_SEPARATOR = "/";
 
   public static final String COMPANY_PARAM = "company";
@@ -69,6 +70,10 @@ public final class Helper {
 
   public static String getErrorsPath() {
     return REST_PREFIX + PATH_SEPARATOR + ERRORS_PART_PATH;
+  }
+
+  public static String getGroupsPath() {
+    return REST_PREFIX + PATH_SEPARATOR + GROUPS_PART_PATH;
   }
 
   public static String getReportPath() {
