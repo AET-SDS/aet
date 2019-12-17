@@ -91,31 +91,11 @@ public class ErrorsServlet extends BasicDataServlet {
         resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
         resp.getWriter().write(GSON.toJson(errorsMap));
       } else {
-        createNotFoundTestResponse(resp, testName, dbKey);
+        Helper.createNotFoundTestResponse(resp, testName, dbKey);
       }
     } else {
-      createNotFoundSuiteResponse(resp, correlationId, dbKey);
+      Helper.createNotFoundSuiteResponse(resp, correlationId, dbKey);
     }
-  }
-
-  private void createNotFoundTestResponse(HttpServletResponse response, String testName,
-      DBKey dbKey)
-      throws IOException {
-    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-    response.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
-    response.getWriter().write(
-        responseAsJson(GSON, "Unable to get test with name: %s for %s", testName, dbKey.toString())
-    );
-  }
-
-  private void createNotFoundSuiteResponse(HttpServletResponse response, String correlationId,
-      DBKey dbKey) throws IOException {
-    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-    response.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
-    response.getWriter().write(
-        responseAsJson(GSON, "Unable to get Suite Metadata with correlationId: %s for %s",
-            correlationId, dbKey.toString())
-    );
   }
 
   @Override
