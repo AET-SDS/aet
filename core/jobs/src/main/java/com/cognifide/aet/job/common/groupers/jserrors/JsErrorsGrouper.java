@@ -21,9 +21,8 @@ import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
+import com.cognifide.aet.job.common.groupers.GroupingAlgorithm;
 import com.cognifide.aet.job.common.groupers.GroupingException;
-import com.cognifide.aet.job.common.groupers.dbscan.DbscanAlgorithm;
-import com.cognifide.aet.job.common.groupers.dbscan.DbscanConfiguration;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
@@ -47,11 +46,17 @@ public class JsErrorsGrouper implements GrouperJob {
   private final DBKey dbKey;
   private final AtomicLong messagesRemaining;
   private final List<JsErrorLog> jsErrors = new ArrayList<>();
+  private final GroupingAlgorithm<JsErrorLog> algorithm;
 
-  JsErrorsGrouper(ArtifactsDAO artifactsDAO, DBKey dbKey, AtomicLong messagesRemaining) {
+  JsErrorsGrouper(
+      ArtifactsDAO artifactsDAO,
+      DBKey dbKey,
+      AtomicLong messagesRemaining,
+      GroupingAlgorithm<JsErrorLog> algorithm) {
     this.artifactsDAO = artifactsDAO;
     this.dbKey = dbKey;
     this.messagesRemaining = messagesRemaining;
+    this.algorithm = algorithm;
   }
 
   @Override
@@ -90,8 +95,6 @@ public class JsErrorsGrouper implements GrouperJob {
 
   private String performGrouping() {
     try {
-      DbscanAlgorithm<JsErrorLog> algorithm =
-          new DbscanAlgorithm<>(new DbscanConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
       Set<Set<JsErrorLog>> groups = algorithm.group(jsErrors);
       return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
     } catch (GroupingException e) {

@@ -30,6 +30,8 @@ import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.communication.api.metadata.ComparatorStepResult;
 import com.cognifide.aet.communication.api.metadata.ComparatorStepResult.Status;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
+import com.cognifide.aet.job.common.groupers.GroupingAlgorithm;
+import com.cognifide.aet.job.common.groupers.GroupingException;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.SimpleDBKey;
@@ -51,6 +53,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class JsErrorsGrouperTest {
 
   @Mock private ArtifactsDAO artifactsDao;
+  @Mock private GroupingAlgorithm<JsErrorLog> algorithm;
   private final DBKey dbKey = new SimpleDBKey("company", "project");
   private final Type inputArtifactType = new TypeToken<Set<JsErrorLog>>() {}.getType();
   private JsErrorsGrouper jsErrorsGrouper;
@@ -63,7 +66,7 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenInputArtifactIdNull_expectNoCallToArtifactsDao() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData(null);
     jsErrorsGrouper.group(grouperJobData);
     verifyZeroInteractions(artifactsDao);
@@ -71,7 +74,7 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenInputArtifactIdEmpty_expectNoCallToArtifactsDao() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     jsErrorsGrouper.group(grouperJobData);
     verifyZeroInteractions(artifactsDao);
@@ -79,7 +82,7 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenInputArtifactIdIsNotEmpty_expectOneCallToArtifactsDao() throws IOException {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("artifactId");
     jsErrorsGrouper.group(grouperJobData);
     verify(artifactsDao, times(1)).getJsonFormatArtifact(dbKey, "artifactId", inputArtifactType);
@@ -87,15 +90,23 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenIsLastExpectedMessage_expectSaveToArtifactsDao() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     jsErrorsGrouper.group(grouperJobData);
     verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, Sets.newHashSet());
   }
 
   @Test
+  public void group_whenIsLastExpectedMessage_expectOneAlgorithmCall() throws GroupingException {
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1), algorithm);
+    GrouperJobData grouperJobData = newGrouperJobData("");
+    jsErrorsGrouper.group(grouperJobData);
+    verify(algorithm, times(1)).group(any());
+  }
+
+  @Test
   public void group_whenIsLastExpectedMessage_expectResultIsReadyTrue() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     GrouperResultData result = jsErrorsGrouper.group(grouperJobData);
     assertTrue(result.isReady());
@@ -103,7 +114,7 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenIsLastExpectedMessage_expectOutputArtifactIdNotNullNorEmpty() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(1), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     GrouperResultData result = jsErrorsGrouper.group(grouperJobData);
     assertFalse(Strings.isNullOrEmpty(result.getArtifactId()));
@@ -111,15 +122,23 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenIsNotLastExpectedMessage_expectNoCallToArtifactsDao() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     jsErrorsGrouper.group(grouperJobData);
     verifyZeroInteractions(artifactsDao);
   }
 
   @Test
+  public void group_whenIsNotLastExpectedMessage_expectNoAlgorithmCall() {
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
+    GrouperJobData grouperJobData = newGrouperJobData("");
+    jsErrorsGrouper.group(grouperJobData);
+    verifyZeroInteractions(algorithm);
+  }
+
+  @Test
   public void group_whenIsNotLastExpectedMessage_expectResultIsReadyFalse() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     GrouperResultData result = jsErrorsGrouper.group(grouperJobData);
     assertFalse(result.isReady());
@@ -127,7 +146,7 @@ public class JsErrorsGrouperTest {
 
   @Test
   public void group_whenIsNotLastExpectedMessage_expectOutputArtifactIdNullOrEmpty() {
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
+    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2), algorithm);
     GrouperJobData grouperJobData = newGrouperJobData("");
     GrouperResultData result = jsErrorsGrouper.group(grouperJobData);
     assertTrue(Strings.isNullOrEmpty(result.getArtifactId()));
