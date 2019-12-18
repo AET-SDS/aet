@@ -21,9 +21,9 @@ import com.cognifide.aet.communication.api.job.GrouperJobData;
 import com.cognifide.aet.communication.api.job.GrouperResultData;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
-import com.cognifide.aet.job.common.groupers.algorithm.DBSCANAlgorithm;
-import com.cognifide.aet.job.common.groupers.algorithm.DBSCANConfiguration;
-import com.cognifide.aet.job.common.groupers.algorithm.GroupingException;
+import com.cognifide.aet.job.common.groupers.GroupingException;
+import com.cognifide.aet.job.common.groupers.dbscan.DbscanAlgorithm;
+import com.cognifide.aet.job.common.groupers.dbscan.DbscanConfiguration;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
@@ -90,8 +90,8 @@ public class JsErrorsGrouper implements GrouperJob {
 
   private String performGrouping() {
     try {
-      DBSCANAlgorithm<JsErrorLog> algorithm =
-          new DBSCANAlgorithm<>(new DBSCANConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
+      DbscanAlgorithm<JsErrorLog> algorithm =
+          new DbscanAlgorithm<>(new DbscanConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
       Set<Set<JsErrorLog>> groups = algorithm.group(jsErrors);
       return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
     } catch (GroupingException e) {

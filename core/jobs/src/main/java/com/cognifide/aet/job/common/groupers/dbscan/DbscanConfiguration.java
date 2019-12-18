@@ -13,17 +13,17 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.groupers.algorithm;
+package com.cognifide.aet.job.common.groupers.dbscan;
 
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
 
-public class DBSCANConfiguration<T> {
+public class DbscanConfiguration<T> {
 
   private final double threshold;
   private final int minimumGroupSize;
   private final DistanceFunction<T> distanceFunction;
 
-  public DBSCANConfiguration(
+  public DbscanConfiguration(
       double threshold, int minGroupSize, DistanceFunction<T> distanceFunction) {
     this.threshold = threshold;
     this.minimumGroupSize = minGroupSize;

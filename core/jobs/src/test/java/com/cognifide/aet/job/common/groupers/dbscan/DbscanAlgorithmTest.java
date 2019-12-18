@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.cognifide.aet.job.common.groupers.algorithm;
+package com.cognifide.aet.job.common.groupers.dbscan;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
+import com.cognifide.aet.job.common.groupers.GroupingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,32 +37,33 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DBSCANAlgorithmTest<T> {
+public class DbscanAlgorithmTest<T> {
 
-  @Mock private DistanceFunction<T> distanceFunction;
-  private DBSCANConfiguration<T> config;
-  private DBSCANAlgorithm<T> algorithm;
+  @Mock
+  private DistanceFunction<T> distanceFunction;
+  private DbscanConfiguration<T> config;
+  private DbscanAlgorithm<T> algorithm;
 
   @Test(expected = NullPointerException.class)
   public void group_whenConfigurationIsNull_expectException() throws GroupingException {
     config = null;
-    algorithm = new DBSCANAlgorithm<>(config);
+    algorithm = new DbscanAlgorithm<>(config);
 
     algorithm.group(Collections.emptySet());
   }
 
   @Test(expected = NullPointerException.class)
   public void group_whenDistanceFunctionIsNull_expectException() throws GroupingException {
-    config = new DBSCANConfiguration<>(0.1, 1, null);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, null);
+    algorithm = new DbscanAlgorithm<>(config);
 
     algorithm.group(createElementsToGroup(1));
   }
 
   @Test
   public void group_whenThresholdIsLessThanZero_expectException() {
-    config = new DBSCANConfiguration<>(-1.0, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(-1.0, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     try {
       algorithm.group(Collections.emptySet());
@@ -73,8 +75,8 @@ public class DBSCANAlgorithmTest<T> {
 
   @Test
   public void group_whenElementsToGroupAreEmpty_expectEmptySet() throws GroupingException {
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(Collections.emptySet());
     assertTrue(result.isEmpty());
@@ -82,8 +84,8 @@ public class DBSCANAlgorithmTest<T> {
 
   @Test(expected = NullPointerException.class)
   public void group_whenElementsToGroupIsNull_expectException() throws GroupingException {
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     algorithm.group(null);
   }
@@ -91,8 +93,8 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_when2ElementsAreTheSame_expectSetOfSize1() throws GroupingException {
     when(distanceFunction.apply(any(), any())).thenReturn((double) 0);
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
@@ -102,8 +104,8 @@ public class DBSCANAlgorithmTest<T> {
   public void group_when2ElementsAreCompletelyDifferent_expectSetOfSize2()
       throws GroupingException {
     prepareMockReturnValues(1);
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(2));
@@ -114,8 +116,8 @@ public class DBSCANAlgorithmTest<T> {
       throws GroupingException {
     prepareMockReturnValues(0.2);
     double threshold = 0.1;
-    config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(threshold, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(2));
@@ -126,8 +128,8 @@ public class DBSCANAlgorithmTest<T> {
       throws GroupingException {
     prepareMockReturnValues(0.05);
     double threshold = 0.1;
-    config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(threshold, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
@@ -138,8 +140,8 @@ public class DBSCANAlgorithmTest<T> {
       throws GroupingException {
     prepareMockReturnValues(1);
     int minGroupSize = 2;
-    config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, minGroupSize, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(0));
@@ -150,8 +152,8 @@ public class DBSCANAlgorithmTest<T> {
       throws GroupingException {
     prepareMockReturnValues(0.05);
     int minGroupSize = 2;
-    config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, minGroupSize, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
@@ -160,8 +162,8 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenThereAre2Elements_expect4FunctionCalls() throws GroupingException {
     prepareMockReturnValues(1);
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     algorithm.group(createElementsToGroup(2));
     verify(distanceFunction, times(4)).apply(any(), any());
@@ -170,8 +172,8 @@ public class DBSCANAlgorithmTest<T> {
   @Test
   public void group_whenThereAre5Elements_expect25FunctionCalls() throws GroupingException {
     prepareMockReturnValues(1);
-    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
-    algorithm = new DBSCANAlgorithm<>(config);
+    config = new DbscanConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
 
     algorithm.group(createElementsToGroup(5));
     verify(distanceFunction, times(25)).apply(any(), any());

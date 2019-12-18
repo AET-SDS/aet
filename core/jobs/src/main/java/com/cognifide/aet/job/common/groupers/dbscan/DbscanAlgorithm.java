@@ -13,19 +13,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.job.common.groupers.algorithm;
+package com.cognifide.aet.job.common.groupers.dbscan;
 
+import com.cognifide.aet.job.common.groupers.GroupingAlgorithm;
+import com.cognifide.aet.job.common.groupers.GroupingException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DBSCANAlgorithm<T> implements GroupingAlgorithm<T> {
+public class DbscanAlgorithm<T> implements GroupingAlgorithm<T> {
 
-  private final DBSCANConfiguration<T> config;
+  private final DbscanConfiguration<T> config;
   private final Set<T> processedElements = new HashSet<>();
 
-  public DBSCANAlgorithm(DBSCANConfiguration<T> config) {
+  public DbscanAlgorithm(DbscanConfiguration<T> config) {
     this.config = config;
   }
 
