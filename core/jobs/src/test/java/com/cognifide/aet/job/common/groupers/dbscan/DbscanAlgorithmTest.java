@@ -69,7 +69,20 @@ public class DbscanAlgorithmTest<T> {
       algorithm.group(Collections.emptySet());
       fail("GroupingException expected");
     } catch (GroupingException e) {
-      assertThat(e.getMessage(), is("Threshold cannot be less than 0"));
+      assertThat(e.getMessage(), is("Threshold cannot be less than 0 or more than 1"));
+    }
+  }
+
+  @Test
+  public void group_whenThresholdIsMoreThanOne_expectException() {
+    config = new DbscanConfiguration<>(1.1, 1, distanceFunction);
+    algorithm = new DbscanAlgorithm<>(config);
+
+    try {
+      algorithm.group(Collections.emptySet());
+      fail("GroupingException expected");
+    } catch (GroupingException e) {
+      assertThat(e.getMessage(), is("Threshold cannot be less than 0 or more than 1"));
     }
   }
 
