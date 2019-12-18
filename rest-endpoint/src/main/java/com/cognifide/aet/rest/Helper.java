@@ -136,24 +136,26 @@ public final class Helper {
     return GSON.toJson(new ErrorMessage(format, args));
   }
 
-  public static void createNotFoundSuiteResponse(HttpServletResponse response, String correlationId,
-      DBKey dbKey) throws IOException {
+  public static void createNotFoundSuiteResponse(
+      HttpServletResponse response, String correlationId, DBKey dbKey) throws IOException {
+    String json =
+        responseAsJson(
+            GSON,
+            "Unable to get Suite Metadata with correlationId: %s for %s",
+            correlationId,
+            dbKey.toString());
     response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
     response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
-    response.getWriter().write(
-        responseAsJson(GSON, "Unable to get Suite Metadata with correlationId: %s for %s",
-            correlationId, dbKey.toString())
-    );
+    response.getWriter().write(json);
   }
 
-  public static void createNotFoundTestResponse(HttpServletResponse response, String testName,
-      DBKey dbKey) throws IOException {
+  public static void createNotFoundTestResponse(
+      HttpServletResponse response, String testName, DBKey dbKey) throws IOException {
+    String json =
+        responseAsJson(GSON, "Unable to get test with name: %s for %s", testName, dbKey.toString());
     response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
     response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
-    response.getWriter().write(
-        responseAsJson(GSON, "Unable to get test with name: %s for %s", testName,
-            dbKey.toString())
-    );
+    response.getWriter().write(json);
   }
 
   private static class ErrorMessage {

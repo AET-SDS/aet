@@ -1,13 +1,13 @@
-/**
+/*
  * AET
- * <p>
+ *
  * Copyright (C) 2013 Cognifide Limited
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -21,7 +21,6 @@ import static com.cognifide.aet.rest.Helper.responseAsJson;
 import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.models.ErrorType;
-import com.cognifide.aet.models.Groups;
 import com.cognifide.aet.services.GroupsService;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.MetadataDAO;
@@ -45,16 +44,11 @@ import org.slf4j.LoggerFactory;
 public class GroupsServlet extends BasicDataServlet {
 
   private static final long serialVersionUID = 8530962038721555964L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(GroupsServlet.class);
 
-  @Reference
-  private MetadataDAO metadataDAO;
-  @Reference
-  private GroupsService groupsService;
-
-  @Reference
-  private transient HttpService httpService;
+  @Reference private MetadataDAO metadataDAO;
+  @Reference private GroupsService groupsService;
+  @Reference private transient HttpService httpService;
 
   @Override
   protected void process(DBKey dbKey, HttpServletRequest req, HttpServletResponse resp)
@@ -80,12 +74,12 @@ public class GroupsServlet extends BasicDataServlet {
     }
 
     if (suite != null) {
-      Optional<Test> test = suite.getTests().stream()
-          .filter(t -> t.getName().equals(testName)).findFirst();
+      Optional<Test> test =
+          suite.getTests().stream().filter(t -> t.getName().equals(testName)).findFirst();
       if (test.isPresent()) {
         String errorType = Helper.getErrorTypeFromRequest(req);
-        Map<ErrorType, Set<Set>> groupsMap = groupsService
-            .getGroupsFromTest(test.get(), dbKey, errorType);
+        Map<ErrorType, Set<Set>> groupsMap =
+            groupsService.getGroupsFromTest(test.get(), dbKey, errorType);
 
         resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
         resp.getWriter().write(GSON.toJson(groupsMap));
