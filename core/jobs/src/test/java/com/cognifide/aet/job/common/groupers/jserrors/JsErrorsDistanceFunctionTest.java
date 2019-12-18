@@ -18,6 +18,7 @@ package com.cognifide.aet.job.common.groupers.jserrors;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import org.junit.Test;
@@ -29,10 +30,20 @@ public class JsErrorsDistanceFunctionTest {
   private JsErrorLog error2;
 
   @Test
-  public void apply_whenErrorMessagesAreTheSame_expect0() {
+  public void apply_whenErrorsAreEqual_expect0() {
     String message = "Test error message";
     error1 = new JsErrorLog(message, null, 0);
-    error2 = new JsErrorLog(message, null, 1);
+    error2 = new JsErrorLog(message, null, 0);
+
+    Double result = function.apply(error1, error2);
+    assertThat(result, is((double) 0));
+  }
+
+  @Test
+  public void apply_whenErrorMessagesAreTheSameButOtherParametersNot_expect0() {
+    String message = "Test error message";
+    error1 = new JsErrorLog(message, "abc", 123);
+    error2 = new JsErrorLog(message, "xyz", 456);
 
     Double result = function.apply(error1, error2);
     assertThat(result, is((double) 0));
@@ -60,7 +71,7 @@ public class JsErrorsDistanceFunctionTest {
     error2 = new JsErrorLog("", null, 0);
 
     Double result = function.apply(error1, error2);
-    assertThat(Double.isNaN(result), is(true));
+    assertTrue(Double.isNaN(result));
   }
 
   @Test
@@ -87,20 +98,20 @@ public class JsErrorsDistanceFunctionTest {
     error2 = new JsErrorLog("Test errors messages", null, 1);
 
     Double result = function.apply(error1, error2);
-    assertThat(result > 0 && result <= 0.1, is(true));
+    assertTrue(result > 0 && result <= 0.1);
   }
 
   @Test
-  public void apply_whenMessagesAreDifferent_expectValue() {
+  public void apply_whenMessagesAreDifferent_expectConcreteValue() {
     error1 = new JsErrorLog("First test error", null, 1);
     error2 = new JsErrorLog("Some other test error", null, 2);
 
     Double result = function.apply(error1, error2);
-    assertThat(result, is(1 - 12/21.0));
+    assertThat(result, is(1 - 12 / 21.0));
   }
 
   @Test
-  public void apply_whenSecondMessageIsHalfTheSame_expectZeroPointHalf() {
+  public void apply_whenHalfTheSame_expectDistanceEqualHalf() {
     error1 = new JsErrorLog("abcd", null, 1);
     error2 = new JsErrorLog("abcdabcd", null, 2);
 

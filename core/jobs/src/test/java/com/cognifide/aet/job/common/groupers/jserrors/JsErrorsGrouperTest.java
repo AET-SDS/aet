@@ -53,11 +53,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class JsErrorsGrouperTest {
 
-  @Mock
-  private ArtifactsDAO artifactsDao;
+  @Mock private ArtifactsDAO artifactsDao;
   private final DBKey dbKey = new SimpleDBKey("company", "project");
-  private final Type inputArtifactType = new TypeToken<Set<JsErrorLog>>() {
-  }.getType();
+  private final Type inputArtifactType = new TypeToken<Set<JsErrorLog>>() {}.getType();
   private JsErrorsGrouper jsErrorsGrouper;
 
   @Before
@@ -136,85 +134,6 @@ public class JsErrorsGrouperTest {
     GrouperJobData grouperJobData = newGrouperJobData("");
     GrouperResultData result = jsErrorsGrouper.group(grouperJobData);
     assertTrue(Strings.isNullOrEmpty(result.getArtifactId()));
-  }
-
-  @Test
-  @Ignore // todo
-  public void group_whenTwoSameErrors_expectSimilarity100() throws IOException {
-    JsErrorLog e = new JsErrorLog("errorMessage", "sourceName", 0);
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e));
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
-    GrouperJobData grouperJobData = newGrouperJobData("inputArtifactId");
-    jsErrorsGrouper.group(grouperJobData);
-    jsErrorsGrouper.group(grouperJobData);
-    List<SimilarityValue<JsErrorLog>> expectedOutput =
-        Lists.newArrayList(new SimilarityValue<>(e, e, 100));
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, expectedOutput);
-  }
-
-  @Test
-  @Ignore // todo
-  public void group_whenTwoSameErrorMessagesButOtherParametersDifferent_expectSimilarity100()
-      throws IOException {
-    JsErrorLog e1 = new JsErrorLog("errorMessage", "qwe1", 123);
-    JsErrorLog e2 = new JsErrorLog("errorMessage", "9poi", 987);
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
-    GrouperJobData grouperJobData = newGrouperJobData("inputArtifactId");
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e1));
-    jsErrorsGrouper.group(grouperJobData);
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e2));
-    jsErrorsGrouper.group(grouperJobData);
-    List<SimilarityValue<JsErrorLog>> expectedOutput =
-        Lists.newArrayList(new SimilarityValue<>(e1, e2, 100));
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, expectedOutput);
-  }
-
-  @Test
-  @Ignore // todo
-  public void group_whenTwoVeryDifferentErrors_expectSimilarity0() throws IOException {
-    JsErrorLog e1 = new JsErrorLog("abcdef", "", 0);
-    JsErrorLog e2 = new JsErrorLog("uvwxyz", "", 0);
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
-    GrouperJobData grouperJobData = newGrouperJobData("inputArtifactId");
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e1));
-    jsErrorsGrouper.group(grouperJobData);
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e2));
-    jsErrorsGrouper.group(grouperJobData);
-    List<SimilarityValue<JsErrorLog>> expectedOutput =
-        Lists.newArrayList(new SimilarityValue<>(e1, e2, 0));
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, expectedOutput);
-  }
-
-  @Test
-  @Ignore // todo
-  public void group_whenOneErrorEmptyAndSecondNot_expectSimilarity0() throws IOException {
-    JsErrorLog e1 = new JsErrorLog("", "", 0);
-    JsErrorLog e2 = new JsErrorLog("notEmpty", "", 0);
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
-    GrouperJobData grouperJobData = newGrouperJobData("inputArtifactId");
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e1));
-    jsErrorsGrouper.group(grouperJobData);
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e2));
-    jsErrorsGrouper.group(grouperJobData);
-    List<SimilarityValue<JsErrorLog>> expectedOutput =
-        Lists.newArrayList(new SimilarityValue<>(e1, e2, 0));
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, expectedOutput);
-  }
-
-  @Test
-  @Ignore // todo
-  public void group_whenHalfTheSame_expectSimilarity50() throws IOException {
-    JsErrorLog e1 = new JsErrorLog("abc", "", 0);
-    JsErrorLog e2 = new JsErrorLog("abcxyz", "", 0);
-    jsErrorsGrouper = new JsErrorsGrouper(artifactsDao, dbKey, new AtomicLong(2));
-    GrouperJobData grouperJobData = newGrouperJobData("inputArtifactId");
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e1));
-    jsErrorsGrouper.group(grouperJobData);
-    when(artifactsDao.getJsonFormatArtifact(any(), any(), any())).thenReturn(Sets.newHashSet(e2));
-    jsErrorsGrouper.group(grouperJobData);
-    List<SimilarityValue<JsErrorLog>> expectedOutput =
-        Lists.newArrayList(new SimilarityValue<>(e1, e2, 50));
-    verify(artifactsDao, times(1)).saveArtifactInJsonFormat(dbKey, expectedOutput);
   }
 
   private GrouperJobData newGrouperJobData(String inputArtifactId) {

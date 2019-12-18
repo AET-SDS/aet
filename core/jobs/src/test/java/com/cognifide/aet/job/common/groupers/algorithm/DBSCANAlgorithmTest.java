@@ -18,6 +18,7 @@ package com.cognifide.aet.job.common.groupers.algorithm;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -37,10 +38,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class DBSCANAlgorithmTest<T> {
 
-  @Mock
-  private DistanceFunction<T> distanceFunction;
+  @Mock private DistanceFunction<T> distanceFunction;
   private DBSCANConfiguration<T> config;
-
   private DBSCANAlgorithm<T> algorithm;
 
   @Test(expected = NullPointerException.class)
@@ -56,7 +55,7 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(0.1, 1, null);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    algorithm.group(Collections.singletonList((T) new Object()));
+    algorithm.group(createElementsToGroup(1));
   }
 
   @Test
@@ -78,11 +77,11 @@ public class DBSCANAlgorithmTest<T> {
     algorithm = new DBSCANAlgorithm<>(config);
 
     Set<Set<T>> result = algorithm.group(Collections.emptySet());
-    assertThat(result.isEmpty(), is(true));
+    assertTrue(result.isEmpty());
   }
 
   @Test(expected = NullPointerException.class)
-  public void group_whenElementsToGroupsIsNull_expectException() throws GroupingException {
+  public void group_whenElementsToGroupIsNull_expectException() throws GroupingException {
     config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
@@ -95,9 +94,8 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
-    verify(distanceFunction, times(4)).apply(any(), any());
   }
 
   @Test
@@ -107,9 +105,8 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(2));
-    verify(distanceFunction, times(4)).apply(any(), any());
   }
 
   @Test
@@ -120,9 +117,8 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(2));
-    verify(distanceFunction, times(4)).apply(any(), any());
   }
 
   @Test
@@ -133,9 +129,8 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(threshold, 1, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
-    verify(distanceFunction, times(4)).apply(any(), any());
   }
 
   @Test
@@ -146,9 +141,8 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(0));
-    verify(distanceFunction, times(4)).apply(any(), any());
   }
 
   @Test
@@ -159,26 +153,49 @@ public class DBSCANAlgorithmTest<T> {
     config = new DBSCANConfiguration<>(0.1, minGroupSize, distanceFunction);
     algorithm = new DBSCANAlgorithm<>(config);
 
-    Set<Set<T>> result = algorithm.group(createListOfTwoObjects());
+    Set<Set<T>> result = algorithm.group(createElementsToGroup(2));
     assertThat(result.size(), is(1));
+  }
+
+  @Test
+  public void group_whenThereAre2Elements_expect4FunctionCalls() throws GroupingException {
+    prepareMockReturnValues(1);
+    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DBSCANAlgorithm<>(config);
+
+    algorithm.group(createElementsToGroup(2));
     verify(distanceFunction, times(4)).apply(any(), any());
   }
 
-  private void prepareMockReturnValues(final double similarity) {
-    when(distanceFunction.apply(any(), any())).thenAnswer(
-        invocation -> {
-          Object arg1 = invocation.getArguments()[0];
-          Object arg2 = invocation.getArguments()[1];
-          if (arg1.equals(arg2)) {
-            return (double) 0;
-          } else {
-            return similarity;
-          }
-        }
-    );
+  @Test
+  public void group_whenThereAre5Elements_expect25FunctionCalls() throws GroupingException {
+    prepareMockReturnValues(1);
+    config = new DBSCANConfiguration<>(0.1, 1, distanceFunction);
+    algorithm = new DBSCANAlgorithm<>(config);
+
+    algorithm.group(createElementsToGroup(5));
+    verify(distanceFunction, times(25)).apply(any(), any());
   }
 
-  private List<T> createListOfTwoObjects() {
-    return Arrays.asList((T) new Object(), (T) new Object());
+  private void prepareMockReturnValues(final double similarity) {
+    when(distanceFunction.apply(any(), any()))
+        .thenAnswer(
+            invocation -> {
+              Object arg1 = invocation.getArguments()[0];
+              Object arg2 = invocation.getArguments()[1];
+              if (arg1.equals(arg2)) {
+                return (double) 0;
+              } else {
+                return similarity;
+              }
+            });
+  }
+
+  private List<T> createElementsToGroup(int amount) {
+    List<T> list = new ArrayList<>();
+    for (int i = 0; i < amount; i++) {
+      list.add((T) new Object());
+    }
+    return list;
   }
 }

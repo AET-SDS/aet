@@ -40,8 +40,7 @@ import org.slf4j.LoggerFactory;
 public class JsErrorsGrouper implements GrouperJob {
 
   public static final String NAME = "js-errors"; // todo ErrorType?
-  private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {
-  }.getType();
+  private static final Type COMPARATOR_OUTPUT_TYPE = new TypeToken<Set<JsErrorLog>>() {}.getType();
   private static final Logger LOGGER = LoggerFactory.getLogger(JsErrorsGrouper.class);
 
   private final ArtifactsDAO artifactsDAO;
@@ -91,15 +90,13 @@ public class JsErrorsGrouper implements GrouperJob {
 
   private String performGrouping() {
     try {
-      DBSCANAlgorithm<JsErrorLog> algorithm = new DBSCANAlgorithm<>(
-          new DBSCANConfiguration<>(0.1, 1,
-              new JsErrorsDistanceFunction())
-      );
+      DBSCANAlgorithm<JsErrorLog> algorithm =
+          new DBSCANAlgorithm<>(new DBSCANConfiguration<>(0.1, 1, new JsErrorsDistanceFunction()));
       Set<Set<JsErrorLog>> groups = algorithm.group(jsErrors);
-
       return artifactsDAO.saveArtifactInJsonFormat(dbKey, groups);
     } catch (GroupingException e) {
-      LOGGER.error("There is an error with grouping js errors");
+      LOGGER.error("JsErrors could not be grouped", e);
+      // todo change jobStatus?
       return null;
     }
   }
