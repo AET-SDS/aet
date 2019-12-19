@@ -37,7 +37,7 @@ public class GroupsFactory implements Serializable {
 
   @Reference private ArtifactsDAO artifactsDAO;
 
-  public Set<Set> processGroups(ErrorType errorType, DBKey dbKey, String artifactId) {
+  public Set<Set<?>> processGroups(ErrorType errorType, DBKey dbKey, String artifactId) {
     try {
       switch (errorType) {
         case JS_ERRORS:

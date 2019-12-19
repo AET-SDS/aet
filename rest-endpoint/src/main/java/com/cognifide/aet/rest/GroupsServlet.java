@@ -78,7 +78,7 @@ public class GroupsServlet extends BasicDataServlet {
           suite.getTests().stream().filter(t -> t.getName().equals(testName)).findFirst();
       if (test.isPresent()) {
         String errorType = Helper.getErrorTypeFromRequest(req);
-        Map<ErrorType, Set<Set>> groupsMap =
+        Map<ErrorType, Set<Set<?>>> groupsMap =
             groupsService.getGroupsFromTest(test.get(), dbKey, errorType);
 
         resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);

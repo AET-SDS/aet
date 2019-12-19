@@ -35,8 +35,8 @@ public class GroupsService implements Serializable {
 
   @Reference private GroupsFactory groupsFactory;
 
-  public Map<ErrorType, Set<Set>> getGroupsFromTest(Test test, DBKey dbKey, String errorType) {
-    Map<ErrorType, Set<Set>> groupsMap = new HashMap<>();
+  public Map<ErrorType, Set<Set<?>>> getGroupsFromTest(Test test, DBKey dbKey, String errorType) {
+    Map<ErrorType, Set<Set<?>>> groupsMap = new HashMap<>();
 
     if (!Strings.isNullOrEmpty(errorType)) {
       String artifactId = test.getGrouperResults().get(errorType);
