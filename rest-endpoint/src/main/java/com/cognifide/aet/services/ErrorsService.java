@@ -20,7 +20,7 @@ import com.cognifide.aet.communication.api.metadata.ComparatorStepResult.Status;
 import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
-import com.cognifide.aet.factories.ErrorWrapperFactory;
+import com.cognifide.aet.repositories.ErrorWrapperRepository;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorWrapper;
 import com.cognifide.aet.models.W3cHtml5ErrorWrapper;
@@ -43,7 +43,7 @@ public class ErrorsService implements Serializable {
   private static final long serialVersionUID = 4620465433359434447L;
 
   @Reference
-  private ErrorWrapperFactory errorWrapperFactory;
+  private ErrorWrapperRepository errorWrapperRepository;
 
   public Map<ErrorType, List<ErrorWrapper>> getErrorsFromTest(Test test, DBKey dbKey,
       String errorType) {
@@ -85,7 +85,8 @@ public class ErrorsService implements Serializable {
         continue;
       }
       ErrorType type = ErrorType.byStringType(errorType);
-      ErrorWrapper errorWrapper = errorWrapperFactory.processError(type, comparator, dbKey, urlName,
+      ErrorWrapper errorWrapper = errorWrapperRepository
+          .processError(type, comparator, dbKey, urlName,
           step.getName());
       if (type == ErrorType.SOURCE) {
         type = comparator.getParameters().get(Comparator.COMPARATOR_PARAMETER).equals(

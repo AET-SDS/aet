@@ -16,6 +16,7 @@
 package com.cognifide.aet.communication.api.metadata;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,6 +107,10 @@ public class Test implements Serializable, Commentable, Named {
 
   public Set<Url> getUrls() {
     return urls;
+  }
+
+  public Map<String, String> getGrouperResults() {
+    return ImmutableMap.copyOf(grouperResults);
   }
 
   @Override

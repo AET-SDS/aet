@@ -17,12 +17,11 @@ package com.cognifide.aet.rest;
 
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.models.ErrorType;
-import com.cognifide.aet.models.ErrorWrapper;
-import com.cognifide.aet.services.ErrorsService;
+import com.cognifide.aet.services.GroupsService;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.MetadataDAO;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -30,22 +29,22 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 
 @Component(immediate = true)
-public class ErrorsServlet extends BasicTestDataServlet {
+public class GroupsServlet extends BasicTestDataServlet {
 
-  private static final long serialVersionUID = 4312853975173807071L;
+  private static final long serialVersionUID = 8530962038721555964L;
 
   @Reference
   private MetadataDAO metadataDAO;
   @Reference
-  private ErrorsService errorsService;
+  private GroupsService groupsService;
   @Reference
-  private transient HttpService httpService;
+  private HttpService httpService;
 
   @Override
   protected String getJsonResponse(String errorType, Test test, DBKey dbKey) {
-    Map<ErrorType, List<ErrorWrapper>> errorsMap = errorsService
-        .getErrorsFromTest(test, dbKey, errorType);
-    return GSON.toJson(errorsMap);
+    Map<ErrorType, Set<Set<?>>> groupsMap =
+        groupsService.getGroupsFromTest(test, dbKey, errorType);
+    return GSON.toJson(groupsMap);
   }
 
   @Override
@@ -65,11 +64,11 @@ public class ErrorsServlet extends BasicTestDataServlet {
 
   @Activate
   public void start() {
-    register(Helper.getErrorsPath());
+    register(Helper.getGroupsPath());
   }
 
   @Deactivate
   public void stop() {
-    unregister(Helper.getErrorsPath());
+    unregister(Helper.getGroupsPath());
   }
 }

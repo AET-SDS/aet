@@ -21,9 +21,14 @@ import com.cognifide.aet.communication.api.util.ValidatorProvider;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.SimpleDBKey;
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public final class Helper {
+
+  private static final Gson GSON = new Gson();
 
   static final String REST_PREFIX = "/api";
   static final String ARTIFACT_PART_PATH = "artifact";
@@ -35,6 +40,7 @@ public final class Helper {
   static final String LOCK_PART_PATH = "/lock";
   static final String XUNIT_PART_PATH = "/xunit";
   static final String ERRORS_PART_PATH = "errors";
+  static final String GROUPS_PART_PATH = "groups";
   static final String PATH_SEPARATOR = "/";
 
   public static final String COMPANY_PARAM = "company";
@@ -69,6 +75,10 @@ public final class Helper {
 
   public static String getErrorsPath() {
     return REST_PREFIX + PATH_SEPARATOR + ERRORS_PART_PATH;
+  }
+
+  public static String getGroupsPath() {
+    return REST_PREFIX + PATH_SEPARATOR + GROUPS_PART_PATH;
   }
 
   public static String getReportPath() {
@@ -124,6 +134,28 @@ public final class Helper {
 
   public static String responseAsJson(Gson GSON, String format, Object... args) {
     return GSON.toJson(new ErrorMessage(format, args));
+  }
+
+  public static void createNotFoundSuiteResponse(
+      HttpServletResponse response, String correlationId, DBKey dbKey) throws IOException {
+    String json =
+        responseAsJson(
+            GSON,
+            "Unable to get Suite Metadata with correlationId: %s for %s",
+            correlationId,
+            dbKey.toString());
+    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+    response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
+    response.getWriter().write(json);
+  }
+
+  public static void createNotFoundTestResponse(
+      HttpServletResponse response, String testName, DBKey dbKey) throws IOException {
+    String json =
+        responseAsJson(GSON, "Unable to get test with name: %s for %s", testName, dbKey.toString());
+    response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+    response.setContentType(APPLICATION_JSON_CONTENT_TYPE);
+    response.getWriter().write(json);
   }
 
   private static class ErrorMessage {
