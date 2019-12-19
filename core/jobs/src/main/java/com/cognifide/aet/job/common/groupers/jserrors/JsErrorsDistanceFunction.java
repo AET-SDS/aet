@@ -17,6 +17,7 @@ package com.cognifide.aet.job.common.groupers.jserrors;
 
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.common.groupers.DistanceFunction;
+import java.util.Objects;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class JsErrorsDistanceFunction implements DistanceFunction<JsErrorLog> {
@@ -25,8 +26,11 @@ public class JsErrorsDistanceFunction implements DistanceFunction<JsErrorLog> {
 
   @Override
   public Double apply(JsErrorLog a, JsErrorLog b) {
-    String s1 = a.getErrorMessage();
-    String s2 = b.getErrorMessage();
+    String s1 = Objects.requireNonNull(a.getErrorMessage());
+    String s2 = Objects.requireNonNull(b.getErrorMessage());
+    if (Objects.equals(s1, s2)) {
+      return 0d;
+    }
     int distance = levenshteinDistance.apply(s1, s2);
     int longer = Math.max(s1.length(), s2.length());
     return 1 - ((longer - distance) / (double) longer);

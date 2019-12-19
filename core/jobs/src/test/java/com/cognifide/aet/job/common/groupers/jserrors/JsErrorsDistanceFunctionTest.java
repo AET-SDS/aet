@@ -57,7 +57,7 @@ public class JsErrorsDistanceFunctionTest {
     function.apply(error1, error2);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void apply_whenOneOfMessagesIsNull_expectException() {
     error1 = new JsErrorLog(null, null, 0);
     error2 = new JsErrorLog("test", null, 1);
@@ -66,12 +66,12 @@ public class JsErrorsDistanceFunctionTest {
   }
 
   @Test
-  public void apply_whenBothMessagesAreEmpty_expectNaN() {
+  public void apply_whenBothMessagesAreEmpty_expect0() {
     error1 = new JsErrorLog("", null, 0);
     error2 = new JsErrorLog("", null, 0);
 
     Double result = function.apply(error1, error2);
-    assertTrue(Double.isNaN(result));
+    assertThat(result, is((double) 0));
   }
 
   @Test
