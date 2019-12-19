@@ -45,16 +45,11 @@ import org.slf4j.LoggerFactory;
 public class ErrorsServlet extends BasicDataServlet {
 
   private static final long serialVersionUID = 4312853975173807071L;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(ErrorsServlet.class);
 
-  @Reference
-  private MetadataDAO metadataDAO;
-  @Reference
-  private ErrorsService errorsService;
-
-  @Reference
-  private transient HttpService httpService;
+  @Reference private MetadataDAO metadataDAO;
+  @Reference private ErrorsService errorsService;
+  @Reference private transient HttpService httpService;
 
   @Override
   protected void process(DBKey dbKey, HttpServletRequest req, HttpServletResponse resp)

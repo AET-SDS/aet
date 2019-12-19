@@ -33,24 +33,43 @@ public class GroupsService implements Serializable {
 
   private static final long serialVersionUID = -1177482293065252166L;
 
-  @Reference private GroupsFactory groupsFactory;
+  @Reference
+  private GroupsFactory groupsFactory;
 
   public Map<ErrorType, Set<Set<?>>> getGroupsFromTest(Test test, DBKey dbKey, String errorType) {
+    if (!Strings.isNullOrEmpty(errorType)) {
+      return getGroupsOfSpecifiedErrorType(errorType, test.getGrouperResults(), dbKey);
+    } else {
+      return getGroupsOfAllErrorTypes(test.getGrouperResults(), dbKey);
+    }
+  }
+
+  private Map<ErrorType, Set<Set<?>>> getGroupsOfSpecifiedErrorType(String errorType,
+      Map<String, String> grouperResult, DBKey dbKey) {
     Map<ErrorType, Set<Set<?>>> groupsMap = new HashMap<>();
 
-    if (!Strings.isNullOrEmpty(errorType)) {
-      String artifactId = test.getGrouperResults().get(errorType);
-      if (!Strings.isNullOrEmpty(artifactId)) {
-        ErrorType type = ErrorType.byStringType(errorType);
-        groupsMap.put(type, groupsFactory.processGroups(type, dbKey, artifactId));
-      }
-    } else {
-      for (Entry<String, String> entry : test.getGrouperResults().entrySet()) {
-        ErrorType type = ErrorType.byStringType(entry.getKey());
-        groupsMap.put(type, groupsFactory.processGroups(type, dbKey, entry.getValue()));
-      }
+    String artifactId = grouperResult.get(errorType);
+    if (!Strings.isNullOrEmpty(artifactId)) {
+      putGroupsToMap(errorType, artifactId, dbKey, groupsMap);
     }
 
     return groupsMap;
+  }
+
+  private Map<ErrorType, Set<Set<?>>> getGroupsOfAllErrorTypes(Map<String, String> grouperResult,
+      DBKey dbKey) {
+    Map<ErrorType, Set<Set<?>>> groupsMap = new HashMap<>();
+
+    for (Entry<String, String> entry : grouperResult.entrySet()) {
+      putGroupsToMap(entry.getKey(), entry.getValue(), dbKey, groupsMap);
+    }
+
+    return groupsMap;
+  }
+
+  private void putGroupsToMap(String errorType, String artifactId, DBKey dbKey,
+      Map<ErrorType, Set<Set<?>>> groupsMap) {
+    ErrorType type = ErrorType.byStringType(errorType);
+    groupsMap.put(type, groupsFactory.processGroups(type, dbKey, artifactId));
   }
 }
