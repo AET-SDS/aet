@@ -15,10 +15,12 @@
  */
 package com.cognifide.aet.job.common.groupers;
 
+/** General exception thrown when grouping fails. */
 public class GroupingException extends Exception {
 
   private static final long serialVersionUID = -7006642565625349049L;
 
+  /** @param message exception message */
   public GroupingException(String message) {
     super(message);
   }

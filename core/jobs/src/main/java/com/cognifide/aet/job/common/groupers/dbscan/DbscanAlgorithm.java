@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of grouping algorithm, known as the DBSCAN algorithm.
+ *
+ * @param <T> {@inheritDoc}
+ */
 public class DbscanAlgorithm<T> implements GroupingAlgorithm<T> {
 
   private final DbscanConfiguration<T> config;

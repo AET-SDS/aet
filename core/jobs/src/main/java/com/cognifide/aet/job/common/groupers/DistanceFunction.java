@@ -17,7 +17,14 @@ package com.cognifide.aet.job.common.groupers;
 
 import java.util.function.BiFunction;
 
-// todo javadoc
+/**
+ * Function calculating distance between two objects of the same type.
+ *
+ * @param <T> class of objects for which the distance will be calculated
+ */
 public interface DistanceFunction<T> extends BiFunction<T, T, Double> {
 
+  /** @return distance between two input objects, with value between 0 and 1 */
+  @Override
+  Double apply(T first, T second);
 }

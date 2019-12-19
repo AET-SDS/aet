@@ -18,7 +18,19 @@ package com.cognifide.aet.job.common.groupers;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * Algorithm implementing grouping logic of the elements of the same type T. Class T must provide
+ * correct {@link Object#hashCode()} implementation, as the output of this algorithm are sets.
+ *
+ * @param <T> class of objects to be grouped, needs to provide correct {@link Object#hashCode()}
+ *     implementation
+ */
 public interface GroupingAlgorithm<T> {
 
+  /**
+   * @param elementsToGroup collection of elements to be grouped
+   * @return set of groups
+   * @throws GroupingException when grouping could not be executed
+   */
   Set<Set<T>> group(Collection<T> elementsToGroup) throws GroupingException;
 }
