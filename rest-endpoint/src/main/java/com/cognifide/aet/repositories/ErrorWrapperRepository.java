@@ -13,7 +13,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.factories;
+package com.cognifide.aet.repositories;
 
 import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.job.api.collector.JsErrorLog;
@@ -44,8 +44,8 @@ import java.util.Set;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(service = ErrorWrapperFactory.class, immediate = true)
-public class ErrorWrapperFactory implements Serializable {
+@Component(service = ErrorWrapperRepository.class, immediate = true)
+public class ErrorWrapperRepository implements Serializable {
 
   private static final long serialVersionUID = -565635532690309676L;
 

@@ -16,7 +16,7 @@
 package com.cognifide.aet.services;
 
 import com.cognifide.aet.communication.api.metadata.Test;
-import com.cognifide.aet.factories.GroupsFactory;
+import com.cognifide.aet.repositories.GroupsRepository;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.vs.DBKey;
 import com.google.common.base.Strings;
@@ -34,7 +34,7 @@ public class GroupsService implements Serializable {
   private static final long serialVersionUID = -1177482293065252166L;
 
   @Reference
-  private GroupsFactory groupsFactory;
+  private GroupsRepository groupsRepository;
 
   public Map<ErrorType, Set<Set<?>>> getGroupsFromTest(Test test, DBKey dbKey, String errorType) {
     if (!Strings.isNullOrEmpty(errorType)) {
@@ -70,6 +70,6 @@ public class GroupsService implements Serializable {
   private void putGroupsToMap(String errorType, String artifactId, DBKey dbKey,
       Map<ErrorType, Set<Set<?>>> groupsMap) {
     ErrorType type = ErrorType.byStringType(errorType);
-    groupsMap.put(type, groupsFactory.processGroups(type, dbKey, artifactId));
+    groupsMap.put(type, groupsRepository.processGroups(type, dbKey, artifactId));
   }
 }

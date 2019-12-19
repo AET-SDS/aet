@@ -15,81 +15,42 @@
  */
 package com.cognifide.aet.rest;
 
-import static com.cognifide.aet.rest.Helper.isValidCorrelationId;
-import static com.cognifide.aet.rest.Helper.responseAsJson;
-
-import com.cognifide.aet.communication.api.metadata.Suite;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.models.ErrorType;
 import com.cognifide.aet.models.ErrorWrapper;
 import com.cognifide.aet.services.ErrorsService;
 import com.cognifide.aet.vs.DBKey;
 import com.cognifide.aet.vs.MetadataDAO;
-import com.cognifide.aet.vs.StorageException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(immediate = true)
-public class ErrorsServlet extends BasicDataServlet {
+public class ErrorsServlet extends BasicTestDataServlet {
 
   private static final long serialVersionUID = 4312853975173807071L;
-  private static final Logger LOGGER = LoggerFactory.getLogger(ErrorsServlet.class);
 
-  @Reference private MetadataDAO metadataDAO;
-  @Reference private ErrorsService errorsService;
-  @Reference private transient HttpService httpService;
+  @Reference
+  private MetadataDAO metadataDAO;
+  @Reference
+  private ErrorsService errorsService;
+  @Reference
+  private transient HttpService httpService;
 
   @Override
-  protected void process(DBKey dbKey, HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    String correlationId = req.getParameter(Helper.CORRELATION_ID_PARAM);
-    String testName = req.getParameter(Helper.TEST_RERUN_PARAM);
+  protected String getJsonResponse(String errorType, Test test, DBKey dbKey) {
+    Map<ErrorType, List<ErrorWrapper>> errorsMap = errorsService
+        .getErrorsFromTest(test, dbKey, errorType);
+    return GSON.toJson(errorsMap);
+  }
 
-    Suite suite;
-    try {
-      if (isValidCorrelationId(correlationId)) {
-        suite = metadataDAO.getSuite(dbKey, correlationId);
-      } else {
-        resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
-        resp.getWriter()
-            .write(responseAsJson(GSON, "Invalid correlationId of suite was specified."));
-        return;
-      }
-    } catch (StorageException e) {
-      LOGGER.error("Failed to get suite", e);
-      resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
-      resp.getWriter().write(responseAsJson(GSON, "Failed to get suite %s", e.getMessage()));
-      return;
-    }
-
-    if (suite != null) {
-      Optional<Test> test = suite.getTests().stream()
-          .filter(t -> t.getName().equals(testName)).findFirst();
-      if (test.isPresent()) {
-        String errorType = Helper.getErrorTypeFromRequest(req);
-        Map<ErrorType, List<ErrorWrapper>> errorsMap = errorsService
-            .getErrorsFromTest(test.get(), dbKey, errorType);
-
-        resp.setContentType(Helper.APPLICATION_JSON_CONTENT_TYPE);
-        resp.getWriter().write(GSON.toJson(errorsMap));
-      } else {
-        Helper.createNotFoundTestResponse(resp, testName, dbKey);
-      }
-    } else {
-      Helper.createNotFoundSuiteResponse(resp, correlationId, dbKey);
-    }
+  @Override
+  protected MetadataDAO getMetadataDAO() {
+    return metadataDAO;
   }
 
   @Override

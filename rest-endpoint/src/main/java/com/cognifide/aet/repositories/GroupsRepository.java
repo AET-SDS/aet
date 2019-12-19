@@ -13,7 +13,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.cognifide.aet.factories;
+package com.cognifide.aet.repositories;
 
 import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.models.ErrorType;
@@ -27,8 +27,8 @@ import java.util.Set;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(service = GroupsFactory.class, immediate = true)
-public class GroupsFactory implements Serializable {
+@Component(service = GroupsRepository.class, immediate = true)
+public class GroupsRepository implements Serializable {
 
   private static final Type JS_ERRORS_GROUPS_TYPE =
       new TypeToken<Set<Set<JsErrorLog>>>() {}.getType();
