@@ -30,7 +30,7 @@
   <packaging>bundle</packaging>
 
   <name>AET :: API :: Models API</name>
-  <description>API for AET jobs - collectors, comparators, filters</description> <!--TODO -->
+  <description>Domain objects representing errors</description>
 
   <dependencies>
     <dependency>
@@ -65,7 +65,7 @@
                 <Bundle-Name>${project.name}</Bundle-Name>
                 <Bundle-Vendor>Cognifide Ltd.</Bundle-Vendor>
                 <Import-Package>javax.annotation;resolution:=optional,*</Import-Package>
-                <Export-Package>com.cognifide.aet.models.*</Export-Package> <!--TODO -->
+                <Export-Package>com.cognifide.aet.models.*</Export-Package>
               </instructions>
             </configuration>
           </execution>

@@ -37,7 +37,7 @@ public class JsErrorLog implements Serializable, Comparable<JsErrorLog> {
 
   private boolean ignored;
 
-  private String urlName;
+  private String urlName;//todo remove
 
   private final List<FilterInfo> matchingFilters;
 
