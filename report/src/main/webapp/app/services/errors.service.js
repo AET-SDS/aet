@@ -27,7 +27,9 @@ define(['angularAMD', 'endpointConfiguration', 'requestParametersService'],
                                requestParametersService) {
             var service = {
                 getErrorsUrl: getErrorsUrl,
-                getErrors: getErrors
+                getGroupsUrl : getGroupsUrl,
+                getErrors: getErrors,
+                getGroups: getGroups
             },
                 requestParams = requestParametersService.get(),
             endpoint = endpointConfiguration.getEndpoint();
@@ -36,6 +38,14 @@ define(['angularAMD', 'endpointConfiguration', 'requestParametersService'],
 
             function getErrorsUrl(testName) {
                 return endpoint.getUrl + 'errors?' +
+                    'company=' + requestParams.company +
+                    '&project=' + requestParams.project +
+                    '&correlationId=' + requestParams.correlationId +
+                    '&testName=' + testName;
+            }
+
+            function getGroupsUrl(testName){
+                return endpoint.getUrl + 'groups?' +
                     'company=' + requestParams.company +
                     '&project=' + requestParams.project +
                     '&correlationId=' + requestParams.correlationId +
@@ -58,6 +68,25 @@ define(['angularAMD', 'endpointConfiguration', 'requestParametersService'],
                     return deferred.promise;
                 }).catch(function (exception) {
                     handleFailed('Failed to load errors for test ' + testName, exception);
+                });
+            }
+
+            function getGroups(testName) {
+                var deferred = $q.defer(),
+                    url = getGroupsUrl(testName);
+
+                return $http({
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (data) {
+                    console.log('data', data);
+                    deferred.resolve(data.data);
+                    return deferred.promise;
+                }).catch(function (exception) {
+                    handleFailed('Failed to load groups for test ' + testName, exception);
                 });
             }
 

@@ -39,6 +39,11 @@ define([], function () {
         console.log('errors', data);
           vm.errors = data;
       });
+
+      errorsService.getGroups($stateParams.test).then(function(data) {
+        console.log('groups', data);
+          vm.groups = data;
+      });
       vm.urls = metadataAccessService.getTestUrls($stateParams.test);
       vm.testName = $stateParams.test;
       vm.formatDifference = formatDifference
