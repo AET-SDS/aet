@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import org.junit.Test;
 
 public class JsErrorsDistanceFunctionTest {

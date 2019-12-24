@@ -16,9 +16,9 @@
 package com.cognifide.aet.worker.drivers.chrome;
 
 import com.cognifide.aet.job.api.collector.HttpRequestExecutor;
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.collector.ProxyServerWrapper;
 import com.cognifide.aet.job.api.collector.WebCommunicationWrapper;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.google.common.collect.Ordering;
 import java.util.Set;
 import java.util.TreeSet;

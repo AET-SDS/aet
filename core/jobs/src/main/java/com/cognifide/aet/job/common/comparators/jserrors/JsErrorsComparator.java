@@ -16,12 +16,12 @@
 package com.cognifide.aet.job.common.comparators.jserrors;
 
 import com.cognifide.aet.communication.api.metadata.ComparatorStepResult;
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.comparator.ComparatorJob;
 import com.cognifide.aet.job.api.comparator.ComparatorProperties;
 import com.cognifide.aet.job.api.datafilter.DataFilterJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;

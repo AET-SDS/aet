@@ -22,6 +22,7 @@ import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.api.exceptions.ProcessingException;
 import com.cognifide.aet.job.common.comparators.w3chtml5.parser.W3cHtml5ValidationResultParser;
 import com.cognifide.aet.job.common.comparators.w3chtml5.wrapper.NuValidatorWrapper;
+import com.cognifide.aet.models.w3chtml5.W3cHtml5ComparatorResult;
 import com.cognifide.aet.vs.ArtifactsDAO;
 import java.io.InputStream;
 import java.util.List;

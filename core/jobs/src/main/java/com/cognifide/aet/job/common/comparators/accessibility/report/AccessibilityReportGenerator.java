@@ -15,8 +15,10 @@
  */
 package com.cognifide.aet.job.common.comparators.accessibility.report;
 
-import com.cognifide.aet.job.common.collectors.accessibility.AccessibilityIssue;
-import com.cognifide.aet.job.common.collectors.accessibility.AccessibilityIssue.IssueType;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue.IssueType;
+import com.cognifide.aet.models.accessibility.AccessibilityReport;
+import com.cognifide.aet.models.accessibility.AccessibilityReportConfiguration;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

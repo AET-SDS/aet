@@ -37,6 +37,7 @@
     <module>communication-api</module>
     <module>datastorage-api</module>
     <module>jobs-api</module>
+    <module>models-api</module>
     <module>validation-api</module>
   </modules>
 

@@ -15,11 +15,11 @@
  */
 package com.cognifide.aet.job.common.datafilters.jserrorsfilter;
 
-import com.cognifide.aet.job.api.collector.FilterInfo;
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.datafilter.AbstractDataModifierJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
 import com.cognifide.aet.job.common.utils.ParamsHelper;
+import com.cognifide.aet.models.jserrors.FilterInfo;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

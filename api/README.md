@@ -18,5 +18,8 @@ Contains API for AET datastorage, e.g. DAO interfaces.
 ### jobs-api
 Contains interface abstraction for AET jobs, e.g. `DataFilter`, `CollectorJob`, `ComparatorJob`. All modules containing jobs implementations (e.g. `jobs`) depends on this one. 
 
+### models-api
+Contains error models.
+
 ### validation-api
 Contains suite validation interfaces.

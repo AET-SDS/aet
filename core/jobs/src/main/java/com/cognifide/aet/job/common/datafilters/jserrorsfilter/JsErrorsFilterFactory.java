@@ -15,10 +15,10 @@
  */
 package com.cognifide.aet.job.common.datafilters.jserrorsfilter;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.datafilter.DataFilterFactory;
 import com.cognifide.aet.job.api.datafilter.DataFilterJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import java.util.Map;
 import java.util.Set;
 import org.osgi.service.component.annotations.Component;

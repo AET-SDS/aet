@@ -15,7 +15,7 @@
  */
 package com.cognifide.aet.worker.drivers.chrome;
 
-import com.cognifide.aet.job.api.collector.JsErrorLog;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.logging.LogEntry;

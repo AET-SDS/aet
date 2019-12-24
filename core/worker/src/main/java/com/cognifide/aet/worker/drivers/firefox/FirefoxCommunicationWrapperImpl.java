@@ -16,9 +16,9 @@
 package com.cognifide.aet.worker.drivers.firefox;
 
 import com.cognifide.aet.job.api.collector.HttpRequestExecutor;
-import com.cognifide.aet.job.api.collector.JsErrorLog;
 import com.cognifide.aet.job.api.collector.ProxyServerWrapper;
 import com.cognifide.aet.job.api.collector.WebCommunicationWrapper;
+import com.cognifide.aet.models.jserrors.JsErrorLog;
 import com.cognifide.aet.worker.helpers.JavaScriptError;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;

@@ -18,7 +18,7 @@ package com.cognifide.aet.job.common.datafilters.accessibilityfilter;
 import com.cognifide.aet.job.api.datafilter.DataFilterFactory;
 import com.cognifide.aet.job.api.datafilter.DataFilterJob;
 import com.cognifide.aet.job.api.exceptions.ParametersException;
-import com.cognifide.aet.job.common.collectors.accessibility.AccessibilityIssue;
+import com.cognifide.aet.models.accessibility.AccessibilityIssue;
 import java.util.List;
 import java.util.Map;
 import org.osgi.service.component.annotations.Component;

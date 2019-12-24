@@ -17,7 +17,9 @@ package com.cognifide.aet.job.common.comparators.source.diff;
 
 import static com.cognifide.aet.job.common.comparators.source.diff.DiffMatchPatch.Diff;
 
-import com.cognifide.aet.job.common.comparators.source.diff.ResultDelta.TYPE;
+import com.cognifide.aet.models.source.ResultChunk;
+import com.cognifide.aet.models.source.ResultDelta;
+import com.cognifide.aet.models.source.ResultDelta.TYPE;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import difflib.Delta;
