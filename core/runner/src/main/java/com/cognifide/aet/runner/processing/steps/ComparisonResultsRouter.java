@@ -107,6 +107,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
   private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
     List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
     SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
+    LOGGER.info("map: {}", suiteComparatorsCount.abc());
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
