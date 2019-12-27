@@ -211,3 +211,20 @@ body {
 		font-weight: 700;
 	}
 }
+.relativeContainer {
+	position: relative;
+	height: 80px;
+	$elements: 15;
+	$top: 12px;
+	$left: 6px;
+@for $i from 1 to $elements {
+	div:nth-of-type(#{$i}) {
+		position: absolute;
+		top: $top * ($i - 1);
+		width: calc(100% - 10px);
+		left: $left * ($i - 1);
+  }
+}
+}
+
+
