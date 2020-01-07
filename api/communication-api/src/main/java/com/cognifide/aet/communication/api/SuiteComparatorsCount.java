@@ -97,10 +97,19 @@ public class SuiteComparatorsCount implements Serializable {
     for (Entry<Comparator, Integer> entry : map.get(testName).entrySet()) {
       if (entry.getKey().getType().equals("source")) {
         String compType = entry.getKey().getParameters().get(Comparator.COMPARATOR_PARAMETER);
-        if (compType.equals("w3c-html5")) {
+        if (compType != null && compType.equals("w3c-html5")) {
           result.put("source_w3c-html5", new AtomicInteger(entry.getValue()));
         } else {
           result.put("source", new AtomicInteger(entry.getValue()));
+        }
+      } else if (entry.getKey().getType().equals("cookie")) {
+        String actionType = entry.getKey().getParameters().get("action");
+        if (actionType != null && actionType.equals("compare")) {
+          result.put("cookie_compare", new AtomicInteger(entry.getValue()));
+        } else if (actionType != null && actionType.equals("test")) {
+          result.put("cookie_test", new AtomicInteger(entry.getValue()));
+        } else {
+          result.put("cookie", new AtomicInteger(entry.getValue()));
         }
       } else {
         result.put(entry.getKey().getType(), new AtomicInteger(entry.getValue()));

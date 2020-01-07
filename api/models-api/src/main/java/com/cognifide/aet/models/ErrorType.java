@@ -21,6 +21,8 @@ public enum ErrorType {
   ACCESSIBILITY("accessibility"),
   SCREEN("screen"),
   COOKIE("cookie"),
+  COOKIE_COMPARE("cookie_compare"),
+  COOKIE_TEST("cookie_test"),
   SOURCE("source"),
   SOURCE_W3CHTML5("source_w3c-html5"),
   UNKNOWN("");

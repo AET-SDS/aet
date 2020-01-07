@@ -1,13 +1,13 @@
 /**
  * AET
- *
+ * <p>
  * Copyright (C) 2013 Cognifide Limited
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -20,6 +20,7 @@ import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
+import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
@@ -52,7 +53,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
   private boolean aborted;
 
   public ComparisonResultsRouter(TimeoutWatch timeoutWatch, JmsConnection jmsConnection,
-      RunnerConfiguration runnerConfiguration, RunIndexWrapper runIndexWrapper) throws JMSException {
+      RunnerConfiguration runnerConfiguration, RunIndexWrapper runIndexWrapper)
+      throws JMSException {
     super(timeoutWatch, jmsConnection, runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.runIndexWrapper = runIndexWrapper;
@@ -108,6 +110,28 @@ public class ComparisonResultsRouter extends StepManagerObservable
     List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
     SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
     LOGGER.info("map: {}", suiteComparatorsCount.abc());
+    String type = comparatorResultData.getComparisonResult().getType();
+    if (type.equals("source")) {
+      String compType = comparatorResultData.getComparisonResult().getParameters()
+          .get(Comparator.COMPARATOR_PARAMETER);
+      if (compType != null && compType.equals("w3c-html5")) {
+        type = "source_w3c-html5";
+      } else {
+        type = "source";
+      }
+      LOGGER.info("TYPE {} COMPtype {}", type, compType);
+    } else if (type.equals("cookie")) {
+      String actionType = comparatorResultData.getComparisonResult().getParameters()
+          .get("action");
+      if (actionType != null && actionType.equals("compare")) {
+        type = "cookie_compare";
+      } else if (actionType != null && actionType.equals("test")) {
+        type = "cookie_test";
+      } else {
+        type = "cookie";
+      }
+      LOGGER.info("TYPE {} ACTIONtype {}", type, actionType);
+    }
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
@@ -116,7 +140,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
             comparatorResultData.getTestName(),
             suiteComparatorsCount, // todo too much data being sent?
             comparatorResultData.getComparisonResult().getStepResult(),
-            comparatorResultData.getComparisonResult().getType());
+            type);
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);
     sender.send(message);
