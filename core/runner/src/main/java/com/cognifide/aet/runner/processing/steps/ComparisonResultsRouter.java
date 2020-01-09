@@ -20,7 +20,6 @@ import com.cognifide.aet.communication.api.ProcessingError;
 import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.job.ComparatorResultData;
 import com.cognifide.aet.communication.api.job.GrouperJobData;
-import com.cognifide.aet.communication.api.metadata.Comparator;
 import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Test;
 import com.cognifide.aet.communication.api.metadata.Url;
@@ -109,29 +108,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
   private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
     List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
     SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
-    LOGGER.info("map: {}", suiteComparatorsCount.abc());
-    String type = comparatorResultData.getComparisonResult().getType();
-    if (type.equals("source")) {
-      String compType = comparatorResultData.getComparisonResult().getParameters()
-          .get(Comparator.COMPARATOR_PARAMETER);
-      if (compType != null && compType.equals("w3c-html5")) {
-        type = "source_w3c-html5";
-      } else {
-        type = "source";
-      }
-      LOGGER.info("TYPE {} COMPtype {}", type, compType);
-    } else if (type.equals("cookie")) {
-      String actionType = comparatorResultData.getComparisonResult().getParameters()
-          .get("action");
-      if (actionType != null && actionType.equals("compare")) {
-        type = "cookie_compare";
-      } else if (actionType != null && actionType.equals("test")) {
-        type = "cookie_test";
-      } else {
-        type = "cookie";
-      }
-      LOGGER.info("TYPE {} ACTIONtype {}", type, actionType);
-    }
+    String type = SuiteComparatorsCount
+        .getComparatorKey(comparatorResultData.getComparisonResult());
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
@@ -155,7 +133,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
       if (step != null) {
         step.addComparator(comparisonResult.getComparisonResult());
       } else {
-        LOGGER.error("Fatal error while saving comparison result: {} of suite.", comparisonResult,
+        LOGGER.error("Fatal error while saving comparison result: {} of suite: {}.", comparisonResult,
             runIndexWrapper.get().getCorrelationId());
       }
     }

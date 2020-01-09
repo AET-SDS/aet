@@ -95,35 +95,18 @@ public class SuiteComparatorsCount implements Serializable {
   public Map<String, AtomicInteger> prepareCountdownsByComparatorTypes(String testName) {
     Map<String, AtomicInteger> result = new HashMap<>();
     for (Entry<Comparator, Integer> entry : map.get(testName).entrySet()) {
-      if (entry.getKey().getType().equals("source")) {
-        String compType = entry.getKey().getParameters().get(Comparator.COMPARATOR_PARAMETER);
-        if (compType != null && compType.equals("w3c-html5")) {
-          result.put("source_w3c-html5", new AtomicInteger(entry.getValue()));
-        } else {
-          result.put("source", new AtomicInteger(entry.getValue()));
-        }
-      } else if (entry.getKey().getType().equals("cookie")) {
-        String actionType = entry.getKey().getParameters().get("action");
-        if (actionType != null && actionType.equals("compare")) {
-          result.put("cookie_compare", new AtomicInteger(entry.getValue()));
-        } else if (actionType != null && actionType.equals("test")) {
-          result.put("cookie_test", new AtomicInteger(entry.getValue()));
-        } else {
-          result.put("cookie", new AtomicInteger(entry.getValue()));
-        }
-      } else {
-        result.put(entry.getKey().getType(), new AtomicInteger(entry.getValue()));
-      }
+      result.put(getComparatorKey(entry.getKey()), new AtomicInteger(entry.getValue()));
     }
 
     return result;
-//    // todo enum as key
-//    return map.get(testName).entrySet().stream()
-//        .collect(
-//            Collectors.toMap(e -> e.getKey().getType(), it -> new AtomicInteger(it.getValue())));
   }
 
-  public Map<String, Map<Comparator, Integer>> abc() {
-    return map;
+  public static String getComparatorKey(Comparator comparator) {
+    StringBuilder key = new StringBuilder(comparator.getType());
+    for (Entry<String, String> param : comparator.getParameters().entrySet()) {
+      key.append("_").append(param.getKey()).append("=").append(param.getValue());
+    }
+
+    return key.toString();
   }
 }
