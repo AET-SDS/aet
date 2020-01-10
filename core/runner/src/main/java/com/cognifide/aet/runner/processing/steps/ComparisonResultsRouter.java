@@ -1,13 +1,13 @@
 /**
  * AET
- *
+ * <p>
  * Copyright (C) 2013 Cognifide Limited
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -52,7 +52,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
   private boolean aborted;
 
   public ComparisonResultsRouter(TimeoutWatch timeoutWatch, JmsConnection jmsConnection,
-      RunnerConfiguration runnerConfiguration, RunIndexWrapper runIndexWrapper) throws JMSException {
+      RunnerConfiguration runnerConfiguration, RunIndexWrapper runIndexWrapper)
+      throws JMSException {
     super(timeoutWatch, jmsConnection, runIndexWrapper.get().getCorrelationId(),
         runnerConfiguration.getMttl());
     this.runIndexWrapper = runIndexWrapper;
@@ -107,6 +108,8 @@ public class ComparisonResultsRouter extends StepManagerObservable
   private void sendGrouperJobData(ComparatorResultData comparatorResultData) throws JMSException {
     List<Test> tests = runIndexWrapper.get().getRealSuite().getTests();
     SuiteComparatorsCount suiteComparatorsCount = SuiteComparatorsCount.of(tests);
+    String type = SuiteComparatorsCount
+        .getComparatorKey(comparatorResultData.getComparisonResult());
     GrouperJobData grouperJobData =
         new GrouperJobData(
             runIndexWrapper.get().getCompany(),
@@ -115,7 +118,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
             comparatorResultData.getTestName(),
             suiteComparatorsCount, // todo too much data being sent?
             comparatorResultData.getComparisonResult().getStepResult(),
-            comparatorResultData.getComparisonResult().getType());
+            type);
     ObjectMessage message = session.createObjectMessage(grouperJobData);
     message.setJMSCorrelationID(correlationId);
     sender.send(message);
@@ -130,7 +133,7 @@ public class ComparisonResultsRouter extends StepManagerObservable
       if (step != null) {
         step.addComparator(comparisonResult.getComparisonResult());
       } else {
-        LOGGER.error("Fatal error while saving comparison result: {} of suite.", comparisonResult,
+        LOGGER.error("Fatal error while saving comparison result: {} of suite: {}.", comparisonResult,
             runIndexWrapper.get().getCorrelationId());
       }
     }

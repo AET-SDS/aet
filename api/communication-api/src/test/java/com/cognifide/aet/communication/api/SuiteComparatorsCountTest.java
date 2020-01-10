@@ -192,6 +192,42 @@ public class SuiteComparatorsCountTest {
     assertThat(countdowns.get("type2").get(), is(1));
   }
 
+  @Test
+  public void getComparatorKey_whenNoParameters_expectKeyWithOnlyComparatorType() {
+    Comparator comparator = prepareComparatorWithParameters(0);
+    String key = SuiteComparatorsCount.getComparatorKey(comparator);
+
+    assertThat(key, is(comparator.getType()));
+  }
+
+  @Test
+  public void getComparatorKey_whenOneParameter_expectKeyWithTypeAndOneParameter() {
+    Comparator comparator = prepareComparatorWithParameters(1);
+    String key = SuiteComparatorsCount.getComparatorKey(comparator);
+
+    assertThat(key,
+        is(String.format("%s_%s=%s", comparator.getType(), "param0", "0")));
+  }
+
+  @Test
+  public void getComparatorKey_whenMoreParameters_expectKeyWithTypeAndParameters() {
+    Comparator comparator = prepareComparatorWithParameters(2);
+    String key = SuiteComparatorsCount.getComparatorKey(comparator);
+
+    assertThat(key,
+        is(String.format("%s_%s=%s_%s=%s", comparator.getType(), "param0",
+            "0", "param1", "1")));
+  }
+
+  private Comparator prepareComparatorWithParameters(int numberOfParameters) {
+    Comparator comparator = new Comparator("comp");
+    for(int i = 0; i < numberOfParameters; i++) {
+      comparator.addParameter("param" + i, String.valueOf(i));
+    }
+
+    return comparator;
+  }
+
   private static Set<Comparator> getComparators(String type, int amount) {
     Set<Comparator> comparators = new HashSet<>();
     for (int i = 0; i < amount; i++) {

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -92,9 +93,20 @@ public class SuiteComparatorsCount implements Serializable {
    * @throws NullPointerException when test name not found
    */
   public Map<String, AtomicInteger> prepareCountdownsByComparatorTypes(String testName) {
-    // todo enum as key
-    return map.get(testName).entrySet().stream()
-        .collect(
-            Collectors.toMap(e -> e.getKey().getType(), it -> new AtomicInteger(it.getValue())));
+    Map<String, AtomicInteger> result = new HashMap<>();
+    for (Entry<Comparator, Integer> entry : map.get(testName).entrySet()) {
+      result.put(getComparatorKey(entry.getKey()), new AtomicInteger(entry.getValue()));
+    }
+
+    return result;
+  }
+
+  public static String getComparatorKey(Comparator comparator) {
+    StringBuilder key = new StringBuilder(comparator.getType());
+    for (Entry<String, String> param : comparator.getParameters().entrySet()) {
+      key.append("_").append(param.getKey()).append("=").append(param.getValue());
+    }
+
+    return key.toString();
   }
 }
