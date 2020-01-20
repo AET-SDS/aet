@@ -20,10 +20,12 @@ import com.cognifide.aet.communication.api.SuiteComparatorsCount;
 import com.cognifide.aet.communication.api.SuiteTestIdentifier;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import org.osgi.service.component.annotations.Component;
@@ -44,31 +46,52 @@ public class GrouperDispatcherFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GrouperDispatcherFactory.class);
 
-  private final ConcurrentMap<SuiteTestIdentifier, AtomicInteger> lifespanCountdowns =
-      new ConcurrentHashMap<>();
-  private final ConcurrentMap<SuiteTestIdentifier, GrouperDispatcher> dispatchers =
-      new ConcurrentHashMap<>();
+  private final Cache<SuiteTestIdentifier, AtomicInteger> lifespanCountdowns;
+  private final Cache<SuiteTestIdentifier, GrouperDispatcher> dispatchers;
+
+  public GrouperDispatcherFactory() {
+    this(CacheBuilder.newBuilder());
+  }
+
+  GrouperDispatcherFactory(CacheBuilder<Object, Object> cacheBuilder) {
+    cacheBuilder.expireAfterAccess(20, TimeUnit.MINUTES); // todo configure
+    this.lifespanCountdowns = cacheBuilder.build();
+    this.dispatchers =
+        cacheBuilder
+            .removalListener(
+                it ->
+                    LOGGER.info(
+                        "Removed GrouperDispatcher (cause: {}) by key {}",
+                        it.getCause(),
+                        it.getKey()))
+            .build();
+  }
 
   /**
    * Used to obtain grouper dispatcher instance. Will return existing object if there's already been
    * a call with the same test identifier and the then returned object hasn't been force-removed and
    * its life didn't end yet. In other case, will create new grouper dispatcher object.
    *
-   * @param suiteTestIdentifier   unique identifier of test within suite run
+   * @param suiteTestIdentifier unique identifier of test within suite run
    * @param suiteComparatorsCount comparator type counts provider
-   * @param grouperJobs           grouper jobs map supplier
+   * @param grouperJobs grouper jobs map supplier
    * @return instance of grouper dispatcher
-   * @throws IllegalArgumentException when there are no comparators in the suite
+   * @throws com.google.common.util.concurrent.UncheckedExecutionException when there are no
+   *     comparators in the suite
    */
   public GrouperDispatcher getDispatcher(
       SuiteTestIdentifier suiteTestIdentifier,
       SuiteComparatorsCount suiteComparatorsCount,
       Supplier<Map<String, GrouperJob>> grouperJobs) {
-    lifespanCountdowns.computeIfAbsent(
-        suiteTestIdentifier, it -> newCountdown(suiteTestIdentifier, suiteComparatorsCount));
-    return dispatchers.computeIfAbsent(
-        suiteTestIdentifier,
-        it -> newDispatcher(suiteTestIdentifier, suiteComparatorsCount, grouperJobs.get()));
+    try {
+      lifespanCountdowns.get(
+          suiteTestIdentifier, () -> newCountdown(suiteTestIdentifier, suiteComparatorsCount));
+      return dispatchers.get(
+          suiteTestIdentifier,
+          () -> newDispatcher(suiteTestIdentifier, suiteComparatorsCount, grouperJobs.get()));
+    } catch (ExecutionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -82,8 +105,8 @@ public class GrouperDispatcherFactory {
     int lifespanRemaining = countDown(suiteTestIdentifier);
     if (lifespanRemaining == 0) {
       LOGGER.info("Removing GrouperDispatcher for id: {}", suiteTestIdentifier);
-      dispatchers.remove(suiteTestIdentifier);
-      lifespanCountdowns.remove(suiteTestIdentifier);
+      dispatchers.invalidate(suiteTestIdentifier);
+      lifespanCountdowns.invalidate(suiteTestIdentifier);
     }
     return lifespanRemaining;
   }
@@ -94,8 +117,10 @@ public class GrouperDispatcherFactory {
    * @param suiteTestIdentifier unique identifier of test within suite run
    */
   public void forceRemove(SuiteTestIdentifier suiteTestIdentifier) {
-    GrouperDispatcher dispatcher = dispatchers.remove(suiteTestIdentifier);
-    AtomicInteger countdown = lifespanCountdowns.remove(suiteTestIdentifier);
+    GrouperDispatcher dispatcher = dispatchers.getIfPresent(suiteTestIdentifier);
+    AtomicInteger countdown = lifespanCountdowns.getIfPresent(suiteTestIdentifier);
+    dispatchers.invalidate(suiteTestIdentifier);
+    lifespanCountdowns.invalidate(suiteTestIdentifier);
     if (Objects.isNull(dispatcher) || Objects.isNull(countdown)) {
       LOGGER.warn(
           "Tried to force remove non-existing GrouperDispatcher: {}, countdown: {}",
@@ -125,7 +150,7 @@ public class GrouperDispatcherFactory {
   }
 
   private int countDown(SuiteTestIdentifier suiteTestIdentifier) {
-    AtomicInteger remainingJobsCountdown = lifespanCountdowns.get(suiteTestIdentifier);
+    AtomicInteger remainingJobsCountdown = lifespanCountdowns.getIfPresent(suiteTestIdentifier);
     return remainingJobsCountdown.decrementAndGet();
   }
 }

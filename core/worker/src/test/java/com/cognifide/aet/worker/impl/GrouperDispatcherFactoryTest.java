@@ -28,11 +28,15 @@ import com.cognifide.aet.communication.api.metadata.Step;
 import com.cognifide.aet.communication.api.metadata.Url;
 import com.cognifide.aet.job.api.grouper.GrouperJob;
 import com.cognifide.aet.worker.api.GrouperDispatcher;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.testing.FakeTicker;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +53,7 @@ public class GrouperDispatcherFactoryTest {
     grouperDispatcherFactory = new GrouperDispatcherFactory();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = UncheckedExecutionException.class)
   public void getDispatcher_whenNoComparatorsFound_expectException() {
     comparatorsCount = getComparatorsCount(0);
     grouperDispatcherFactory.getDispatcher(id, comparatorsCount, grouperJobs);
@@ -82,6 +86,25 @@ public class GrouperDispatcherFactoryTest {
     GrouperDispatcher dispatcher2 =
         grouperDispatcherFactory.getDispatcher(id, comparatorsCount, grouperJobs);
     assertThat(dispatcher1, is(dispatcher2));
+  }
+
+  @Test
+  public void
+  getDispatcher_whenNotRemovedManually_expectRemovedAutomaticallyAfterFiniteAmountOfTime() {
+    FakeTicker fakeTicker = new FakeTicker();
+    grouperDispatcherFactory =
+        new GrouperDispatcherFactory(CacheBuilder.newBuilder().ticker(fakeTicker));
+
+    comparatorsCount = getComparatorsCount(1);
+    GrouperDispatcher dispatcher1 =
+        grouperDispatcherFactory.getDispatcher(id, comparatorsCount, grouperJobs);
+    GrouperDispatcher dispatcher2 =
+        grouperDispatcherFactory.getDispatcher(id, comparatorsCount, grouperJobs);
+    fakeTicker.advance(60, TimeUnit.MINUTES);
+    GrouperDispatcher dispatcher3 =
+        grouperDispatcherFactory.getDispatcher(id, comparatorsCount, grouperJobs);
+    assertThat(dispatcher1, is(dispatcher2));
+    assertThat(dispatcher1, not(dispatcher3));
   }
 
   @Test(expected = NullPointerException.class)

@@ -118,6 +118,7 @@
     <jetty.plugin.version>9.2.10.v20150310</jetty.plugin.version>
     <mongo.driver.version>3.2.2</mongo.driver.version>
     <junit.version>4.11</junit.version>
+    <guava.version>25.1-jre</guava.version>
 
     <!-- properties for maven uploads -->
     <target.tomcat.serverId>aet-vagrant-instance</target.tomcat.serverId>
@@ -158,7 +159,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>25.1-jre</version>
+        <version>${guava.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -479,6 +480,12 @@
 
 
       <!-- Tests -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-testlib</artifactId>
+        <version>${guava.version}</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
