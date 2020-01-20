@@ -34,9 +34,14 @@ define([], function () {
       setTimeout(function(){
         const groups = document.querySelectorAll(".relativeContainer");
         groups.forEach((group,i) => {
-          const groupItems = group.querySelectorAll('.reports-list-new-item').length;
-          group.style.height = `${83 + groupItems * 12}px`;
-          group.style.width = `calc(${group.offsetWidth}px - ${groupItems*6}px)`;
+          const groupItems = group.querySelectorAll('.reports-list-new-item');
+          const groupItemsLength = groupItems.length;
+          groupItemsLength > 4 ? group.style.height = `${83 + 4 * 12}px` : group.style.height = `${83 + groupItemsLength * 12}px`;
+          groupItemsLength > 4 ? group.style.width = `calc(${group.offsetWidth}px - 18px)` : group.style.width = `calc(${group.offsetWidth}px - ${groupItemsLength*6}px + 6px)`;
+          groupItems.forEach((item,i)=>{
+            i > 3 ? item.style.display = 'none': null;
+          })
+
         })
       },100)
     })
@@ -49,19 +54,23 @@ define([], function () {
       if($event.currentTarget.style.position === "static"){
         $event.currentTarget.style.position = "relative";
         const listItems = $event.currentTarget.querySelectorAll('.reports-list-new-item');
-        listItems.forEach(item =>{
-          item.style.position = 'absolute'
+        listItems.forEach((item,i) =>{
+          item.style.position = 'absolute';
+          i > 3 ? item.style.display = 'none': null;
+          item.style.marginLeft = '0px'
         })
-        $event.currentTarget.style.height = `${83 + listItems.length * 12}px`;
-        $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px - ${listItems.length*6}px)`;
+        listItems.length > 4 ? $event.currentTarget.style.height = `${83 + 4 * 12}px` : $event.currentTarget.style.height = `${83 + listItems.length * 12}px`;
+        listItems.length > 4 ? $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px - ${3*6}px + 40px)`: $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px - ${listItems.length*6}px + 46px)`;
       } else {
         $event.currentTarget.style.position = "static";
         const listItems = $event.currentTarget.querySelectorAll('.reports-list-new-item');
         listItems.forEach(item =>{
-          item.style.position = 'static'
+          item.style.position = 'static';
+          item.style.display = 'flex';
+          item.style.marginLeft = '40px';
         })
         $event.currentTarget.style.height = `${95 * listItems.length}px`;
-        $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px + ${listItems.length*6}px)`;
+        listItems.length > 4 ? $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px + ${3*6}px - 40px)`: $event.currentTarget.style.width = `calc(${$event.currentTarget.offsetWidth}px + ${listItems.length*6}px - 46px)`;
       }
     }
 

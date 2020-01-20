@@ -34,6 +34,10 @@
   </div>
   <!-- JS errors section when groups active-->
   <div ng-if="$root.groupingChecked" ng-repeat="group in errorsView.groups['js-errors']">
+    <div class="groupHeader">
+      <span class="errorCategory">JS errors group</span>
+      <span class="errorCategory">Count : {{group.length}}</span>
+    </div>
     <div class="relativeContainer" ng-click="errorsView.handleGroupClick($event)">
       <div class="reports-list-item reports-list-new-item failed" ng-repeat="error in group">
           <i class="fas fa-times failed reports-list-icon"></i>
@@ -42,7 +46,6 @@
           <span class="errorMessage">{{error.errorMessage}}</span>
       </div>
     </div>
-
   </div>
 
 
