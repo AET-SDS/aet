@@ -159,7 +159,6 @@ public class SuiteProcessor {
         runIndexWrapper.get().getCorrelationId()));
     timeoutWatch.update();
     checkStatusUntilFinishedOrTimedOut();
-    //todo abort grouping
     if (!comparisonResultsRouter.isFinished()) {
       comparisonResultsRouter.abort();
       messagesSender.sendMessage(new ProcessingErrorMessage(ProcessingError
