@@ -54,6 +54,7 @@ require.config({
     'patternsService': 'services/patterns.service',
     'userSettingsService': 'services/userSettings.service',
     'viewModeService': 'services/viewMode.service',
+    'errorsService' : 'services/errors.service',
     //toolbarTop
     'toolbarTopController': 'layout/toolbar/toolbarTop.controller',
     //toolbarBottom

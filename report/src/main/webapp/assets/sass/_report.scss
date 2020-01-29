@@ -34,7 +34,6 @@
     box-sizing: border-box;
     min-width: 200px;
     margin-right: 10px;
-
     &-url {
       position: absolute;
       bottom: 0;
@@ -57,18 +56,25 @@
         margin-left: 0;
       }
     }
+    &-new-item {
+      height: 80px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+    }
 
     @media (max-width: 1200px) {
       flex-basis: calc(33.33% - 7px);
     }
 
-    &:nth-child(4n+4) {
+    &:nth-child(4n + 4) {
       @media (min-width: 1200px) {
         margin-right: 0;
       }
     }
 
-    &:nth-child(3n+3) {
+    &:nth-child(3n + 3) {
       @media (max-width: 1200px) {
         margin-right: 0;
       }
@@ -80,7 +86,8 @@
       background: $passed_bg;
       border-top: solid 10px $passed;
 
-      span, svg {
+      span,
+      svg {
         color: $passed;
       }
     }
@@ -90,7 +97,8 @@
       background: $failed_bg;
       border-top: solid 10px $failed;
 
-      span, svg {
+      span,
+      svg {
         color: $failed;
       }
     }
@@ -99,18 +107,19 @@
       background: $rebased_bg;
       border-top: solid 10px darken($rebased, 10%);
 
-      span, svg {
-        color: $white
+      span,
+      svg {
+        color: $white;
       }
-
     }
 
     &.warning {
       background: $warning_bg;
       border-top: solid 10px $warning;
 
-      span, svg {
-        color: $warning
+      span,
+      svg {
+        color: $warning;
       }
     }
 
@@ -118,7 +127,8 @@
       background: $passed_bg;
       border-top: solid 10px $passed;
 
-      span, svg {
+      span,
+      svg {
         color: $conditionallyPassed;
       }
     }
@@ -172,7 +182,8 @@
     }
   }
 
-  .errors-count, .success-count {
+  .errors-count,
+  .success-count {
     @extend .test-count;
   }
 
@@ -217,7 +228,7 @@
         padding-left: 15px;
 
         &:before {
-          content: '-';
+          content: "-";
           position: absolute;
           left: 0;
         }
@@ -231,7 +242,7 @@
 }
 
 .test-icons {
-  @include transition(all .3s);
+  @include transition(all 0.3s);
   position: absolute;
   width: 100%;
   text-align: center;
@@ -341,4 +352,39 @@ img.cognifide-logo {
     display: inline !important;
     color: $passed !important;
   }
+}
+
+.reports-list-new-item {
+  height: 80px;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+.groupHeader {
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+.reports-list-icon.fa-w-12 {
+  width: 45px;
+  height: 45px;
+  margin-left: 10px;
+}
+.errorCategory {
+  color: #77777c !important;
+  font-size: 18px;
+  margin: 0 40px;
+  width: 150px;
+  min-width: 150px;
+}
+.errorUrl {
+  margin-right: 40px;
+  width: 200px;
+  min-width: 200px;
+}
+.errorMessage {
+  overflow: hidden;
 }

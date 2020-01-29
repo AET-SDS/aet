@@ -42,7 +42,7 @@
     background: $red_dark;
 
     &:hover {
-      color: $white
+      color: $white;
     }
   }
 
@@ -70,4 +70,22 @@
   svg {
     margin-right: 6px;
   }
+}
+
+.button-active {
+  background: grey;
+  color: white;
+  padding: 5px 10px;
+  border: 1px solid grey;
+  cursor: pointer;
+}
+.button-inactive {
+  border: 1px solid grey;
+  background: white;
+  color: grey;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.margin-left {
+  margin-left: 300px;
 }
